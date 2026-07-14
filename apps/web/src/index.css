@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-gemini-bg: #131314;
+  --color-gemini-surface: #1e1f20;
+  --color-gemini-surface-hover: #28292a;
+  --color-gemini-text: #e3e3e3;
+  --color-gemini-text-muted: #c4c7c5;
+  --color-gemini-border: #444746;
+  --color-gemini-blue: #4285f4;
+  --color-gemini-purple: #9b72cb;
+  --color-gemini-red: #d96570;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-gemini-bg);
+    color: var(--color-gemini-text);
+  }
+}
+
+.gemini-gradient-text {
+  background: linear-gradient(74deg, #4285f4 0%, #9b72cb 46%, #d96570 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gemini-gradient-bg {
+  background: linear-gradient(74deg, #4285f4 0%, #9b72cb 46%, #d96570 100%);
+}
