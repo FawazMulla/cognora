@@ -12,7 +12,7 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { env } from "../lib/env";
-import { schema } from "./schema";
+import * as schema from "./schema";
 
 // Create a connection pool using Postgres.js.
 // max: 10 — limits simultaneous connections to avoid exhausting Supabase pooler.

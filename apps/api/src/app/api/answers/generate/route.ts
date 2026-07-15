@@ -1,8 +1,9 @@
-import { answerGeneratorNode, qualityVerifierNode } from "@/lib/agents/answer-agent";
+import { NextResponse } from "next/server";
+import { answerGeneratorNode, qualityVerifierNode } from "../../../../lib/agents/answer-agent";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { studentModels, studentTopicProfiles } from "@/db/schema";
-import { env } from "@/lib/env";
+import { studentModels, studentTopicProfiles } from "../../../../db/schema";
+import { env } from "../../../../lib/env";
 import { eq, and } from "drizzle-orm";
 import { z } from "zod";
 
@@ -35,9 +36,9 @@ export async function POST(request: Request) {
     // Fetch Student Model snapshot (FR-026)
     let snapshot: any = {};
     const sm = await db.select().from(studentModels).where(eq(studentModels.userId, userId)).limit(1);
-    if (sm.length) {
-      snapshot.preferredStyle = sm[0].preferredStyle;
-      snapshot.learningPace = sm[0].learningPace;
+    if (sm.length && sm[0]) {
+      snapshot.preferredStyle = (sm[0] as any).preferredStyle;
+      snapshot.learningPace = (sm[0] as any).learningPace;
     }
 
     if (subjectId && topic) {
@@ -48,8 +49,8 @@ export async function POST(request: Request) {
           eq(studentTopicProfiles.topic, topic)
         )).limit(1);
       
-      if (topicProfile.length) {
-        snapshot.confidence = topicProfile[0].confidence;
+      if (topicProfile.length && topicProfile[0]) {
+        snapshot.confidence = (topicProfile[0] as any).confidence;
       }
     }
 
@@ -77,8 +78,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      answer: generated.answer,
-      wordCount: generated.wordCount || generated.answer.split(/\s+/).length,
+      answer: generated.answer || 'Answer generation failed. Please try again.',
+      wordCount: generated.wordCount || (generated.answer || '').split(/\s+/).length,
       qualityWarning: !verifyResult.passed ? verifyResult.reason : null
     }, { status: 200 });
 

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { answerBank, pyqQuestions } from "@/db/schema";
-import { env } from "@/lib/env";
+import { answerBank, pyqQuestions } from "../../../../../db/schema";
+import { env } from "../../../../../lib/env";
 import { eq, and } from "drizzle-orm";
-import { aiGateway } from "@/lib/ai-gateway";
+import { aiGateway } from "../../../../../lib/ai-gateway";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -19,8 +19,8 @@ export async function POST(
 
     const pyqId = params.id;
     const pyqs = await db.select().from(pyqQuestions).where(eq(pyqQuestions.id, pyqId)).limit(1);
-    if (!pyqs.length) return NextResponse.json({ error: "PYQ not found" }, { status: 404 });
-    const pyq = pyqs[0];
+    const pyq = pyqs[0] as any;
+    if (!pyq) return NextResponse.json({ error: "PYQ not found" }, { status: 404 });
 
     const body = await request.json();
     const format = body.format || "Topper";
@@ -30,9 +30,10 @@ export async function POST(
       .where(and(eq(answerBank.pyqQuestionId, pyqId), eq(answerBank.format, format)))
       .limit(1);
     
-    if (cachedAnswers.length > 0) {
+    const cachedAnswer = cachedAnswers[0] as any;
+    if (cachedAnswer) {
       return NextResponse.json({ 
-        answer: cachedAnswers[0].content, 
+        answer: cachedAnswer.content, 
         cached: true 
       }, { status: 200 });
     }
@@ -47,7 +48,7 @@ export async function POST(
       format,
       markValue: pyq.markValue,
       content: generation.answer,
-    });
+    } as any);
 
     return NextResponse.json({ 
       answer: generation.answer, 

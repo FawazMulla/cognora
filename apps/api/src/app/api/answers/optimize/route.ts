@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { answerOptimizerNode } from "@/lib/agents/answer-agent";
+import { answerOptimizerNode } from "../../../../lib/agents/answer-agent";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { studentTopicProfiles } from "@/db/schema";
-import { env } from "@/lib/env";
+import { studentTopicProfiles } from "../../../../db/schema";
+import { env } from "../../../../lib/env";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);

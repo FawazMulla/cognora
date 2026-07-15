@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { modelRouting } from "@/db/schema";
-import { env } from "@/lib/env";
+import { modelRouting } from "../../../../db/schema";
+import { env } from "../../../../lib/env";
 import { eq } from "drizzle-orm";
-import { redis } from "@/lib/redis";
+import { redis } from "../../../../lib/redis";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);

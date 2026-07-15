@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { studySessions } from "@/db/schema";
-import { env } from "@/lib/env";
+import { studySessions } from "../../../../../db/schema";
+import { env } from "../../../../../lib/env";
 import { eq } from "drizzle-orm";
-import { runRagPipeline } from "@/lib/agents/rag-agent";
+import { runRagPipeline } from "../../../../../lib/agents/rag-agent";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -27,11 +27,10 @@ export async function POST(
 
     // Verify session
     const sessions = await db.select().from(studySessions).where(eq(studySessions.id, sessionId)).limit(1);
-    if (!sessions.length || sessions[0].userId !== userId) {
+    const session = sessions[0] as any;
+    if (!session || session.userId !== userId) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
     }
-
-    const session = sessions[0];
 
     // Note: Streaming response would normally use Next.js Response streams or ai sdk
     // For this MVP, we wait for the answer and return it.

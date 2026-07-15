@@ -10,6 +10,11 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     headers.set('Authorization', `Bearer ${session.access_token}`);
   }
   
+  const byokKey = localStorage.getItem('byok_gemini_key');
+  if (byokKey) {
+    headers.set('x-api-key', byokKey);
+  }
+  
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,

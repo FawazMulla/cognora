@@ -30,11 +30,12 @@ export function createPyqProcessingWorker(
             const { resourceId, userId, subjectId } = job.data;
             if (!resourceId) throw new Error("resourceId required for extraction");
 
-            const res = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
-            if (!res.length) throw new Error("Resource not found");
+                        const res = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
+            const resourceRecord = res[0];
+            if (!resourceRecord) throw new Error("Resource not found");
 
             // Extract questions via AI Gateway (simulated)
-            const extractedResult = await aiGateway.invoke("knowledge_extraction", { text: res[0].rawText, mode: 'pyq' });
+            const extractedResult = await aiGateway.invoke("knowledge_extraction", { text: resourceRecord.rawText, mode: 'pyq' });
             
             // Mock extracted data
             const questions = [

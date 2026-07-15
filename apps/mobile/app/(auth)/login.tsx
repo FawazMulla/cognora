@@ -2,7 +2,6 @@ import { Link, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, Alert } from 'react-native';
 import { saveAccessToken, saveRefreshToken, saveUserId } from '../../lib/secure-storage';
-import { useAPI } from '../../lib/query-client'; // Assuming there is some utility, or we can use fetch directly
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -45,7 +44,7 @@ export default function LoginScreen() {
         });
 
         if (profileRes.ok) {
-          router.replace('/(app)/');
+          router.replace('/(app)');
         } else {
           router.replace('/(auth)/onboarding');
         }

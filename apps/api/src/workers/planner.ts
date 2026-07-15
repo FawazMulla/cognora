@@ -1,13 +1,15 @@
 import { Worker, Job } from "bullmq";
-import { connection } from "@/lib/redis";
+import { redis } from "../lib/redis";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { env } from "@/lib/env";
-import { studySessions, subjects, studentModels, studentTopicProfiles } from "@/db/schema";
+import { env } from "../lib/env";
+import { studySessions, subjects, studentModels, studentTopicProfiles } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 
 const client = postgres(env.DATABASE_URL, { max: 5 });
 const db = drizzle(client);
+
+const connection = redis as unknown as any;
 
 export const planGenerationWorker = new Worker(
   "academic-planner",
@@ -21,28 +23,29 @@ export const planGenerationWorker = new Worker(
 
     // 2. Fetch student model for preferences
     const [studentModel] = await db.select().from(studentModels).where(eq(studentModels.userId, userId));
-    const studyPace = studentModel?.learningPace || 'standard';
+    const studyPace = (studentModel as any)?.learningPace || 'standard';
 
     let dailyPlan = [];
 
     // 3. Logic: For each subject, find weak topics and upcoming exams
     for (const subject of userSubjects) {
+      const subj = subject as any;
       const weakTopics = await db.select().from(studentTopicProfiles)
         .where(
           and(
             eq(studentTopicProfiles.userId, userId),
-            eq(studentTopicProfiles.subjectId, subject.id),
+            eq(studentTopicProfiles.subjectId, subj.id),
             eq(studentTopicProfiles.weakFlag, 'weak')
           )
         )
         .limit(3);
 
-      const daysToExam = subject.examDate ? Math.ceil((new Date(subject.examDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
+      const daysToExam = subj.examDate ? Math.ceil((new Date(subj.examDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
 
       if (daysToExam !== null && daysToExam <= 7) {
-        dailyPlan.push({ subjectId: subject.id, type: 'exam_prep', topic: weakTopics[0]?.topic || 'General Revision', urgency: 'high' });
+        dailyPlan.push({ subjectId: subj.id, type: 'exam_prep', topic: (weakTopics[0] as any)?.topic || 'General Revision', urgency: 'high' });
       } else if (weakTopics.length > 0) {
-        dailyPlan.push({ subjectId: subject.id, type: 'weak_topic_revision', topic: weakTopics[0].topic, urgency: 'medium' });
+        dailyPlan.push({ subjectId: subj.id, type: 'weak_topic_revision', topic: (weakTopics[0] as any).topic, urgency: 'medium' });
       }
     }
 

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { flashcards } from "@/db/schema";
-import { env } from "@/lib/env";
+import { flashcards } from "../../../../../db/schema";
+import { env } from "../../../../../lib/env";
 import { eq } from "drizzle-orm";
-import { calculateSM2 } from "@/lib/sm2";
+import { calculateSM2 } from "../../../../../lib/sm2";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -26,11 +26,11 @@ export async function POST(
     }
 
     const cards = await db.select().from(flashcards).where(eq(flashcards.id, cardId)).limit(1);
-    if (!cards.length || cards[0].userId !== userId) {
+    const card = cards[0] as any;
+    if (!card || card.userId !== userId) {
       return NextResponse.json({ error: "Flashcard not found" }, { status: 404 });
     }
 
-    const card = cards[0];
     const { intervalDays, easeFactor, dueDate } = calculateSM2(
       rating,
       card.intervalDays || 1,

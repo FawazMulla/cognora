@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { uploadInitSchema } from "@/lib/validators/resource";
+import { uploadInitSchema } from "../../../../lib/validators/resource";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { resources } from "@/db/schema";
-import { env } from "@/lib/env";
+import { resources } from "../../../../db/schema";
+import { env } from "../../../../lib/env";
 import { eq, and } from "drizzle-orm";
-import { supabaseAdmin } from "@/lib/supabase";
+import { supabaseAdmin } from "../../../../lib/supabase";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -36,13 +36,14 @@ export async function POST(request: Request) {
       )
     ).limit(1);
 
-    if (existing.length > 0) {
+    const existRecord = existing[0] as any;
+    if (existRecord) {
       // Resource already exists, do not upload again
       return NextResponse.json({
         message: "Resource already exists",
-        resourceId: existing[0].id,
+        resourceId: existRecord.id,
         presignedUrl: null,
-        status: existing[0].status
+        status: existRecord.status
       }, { status: 200 });
     }
 
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      resourceId: newResource[0].id,
+      resourceId: (newResource[0] as any).id,
       presignedUrl: uploadData.signedUrl,
       storagePath,
     }, { status: 200 });

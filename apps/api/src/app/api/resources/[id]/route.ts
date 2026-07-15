@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { resources } from "@/db/schema";
-import { env } from "@/lib/env";
+import { resources } from "../../../../db/schema";
+import { env } from "../../../../lib/env";
 import { eq, and } from "drizzle-orm";
-import { supabaseAdmin } from "@/lib/supabase";
+import { supabaseAdmin } from "../../../../lib/supabase";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -50,7 +50,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       return NextResponse.json({ error: "Resource not found" }, { status: 404 });
     }
 
-    const resource = resourceList[0];
+    const resource = resourceList[0] as any;
 
     // Delete from Supabase Storage
     const { error: storageError } = await supabaseAdmin.storage

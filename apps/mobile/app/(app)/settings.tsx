@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
 
 export default function SettingsScreen() {
   const [examReminders, setExamReminders] = useState(true);
@@ -9,11 +9,11 @@ export default function SettingsScreen() {
   const [branch, setBranch] = useState('Computer Science');
 
   const handleSave = () => {
-    alert('Settings saved successfully!');
+    Alert.alert('Settings saved successfully!');
   };
 
   const handleLogout = () => {
-    alert('Logging out...');
+    Alert.alert('Logging out...');
   };
 
   return (

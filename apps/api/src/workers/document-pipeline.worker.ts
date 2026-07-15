@@ -49,9 +49,10 @@ export function createDocumentPipelineWorker(
             await updateStatus(data.resourceId, "classifying");
 
             const res = await db.select().from(resources).where(eq(resources.id, data.resourceId)).limit(1);
-            if (res.length === 0) throw new Error("Resource not found");
+            const resourceRecord = res[0];
+            if (!resourceRecord) throw new Error("Resource not found");
 
-            const classification = await aiGateway.invoke("classification", { filename: res[0].filename });
+            const classification = await aiGateway.invoke("classification", { filename: resourceRecord.filename });
 
             if (classification.confidence < 0.70) {
               await updateStatus(data.resourceId, "classifying");
@@ -71,11 +72,10 @@ export function createDocumentPipelineWorker(
             await updateStatus(data.resourceId, "ocr");
 
             const res = await db.select().from(resources).where(eq(resources.id, data.resourceId)).limit(1);
+            const resourceRecord = res[0];
+            if (!resourceRecord) throw new Error("Resource not found");
             
-            // Download file from Supabase storage (stub for real download)
-            // const { data: fileData, error } = await supabaseAdmin.storage.from('resources').download(res[0].storageUrl);
-            
-            const ocrResult = await aiGateway.invoke("ocr", { url: res[0].storageUrl });
+            const ocrResult = await aiGateway.invoke("ocr", { url: resourceRecord.storageUrl });
             
             await db.update(resources)
               .set({ rawText: ocrResult.text })
@@ -95,7 +95,10 @@ export function createDocumentPipelineWorker(
             await updateStatus(data.resourceId, "embedding");
 
             const res = await db.select().from(resources).where(eq(resources.id, data.resourceId)).limit(1);
-            const text = res[0].rawText || "";
+            const resourceRecord = res[0];
+            if (!resourceRecord) throw new Error("Resource not found");
+            
+            const text = resourceRecord.rawText || "";
 
             // Stub chunking logic: split by 500 characters
             const chunks = [];
@@ -108,7 +111,7 @@ export function createDocumentPipelineWorker(
               const chunkRecords = chunks.map((chunk, idx) => ({
                 resourceId: data.resourceId,
                 userId: data.userId,
-                subjectId: res[0].subjectId,
+                subjectId: resourceRecord.subjectId,
                 chunkIndex: idx,
                 content: chunk,
                 tokens: Math.floor(chunk.length / 4), // Rough estimate
@@ -161,8 +164,10 @@ export function createDocumentPipelineWorker(
             await updateStatus(data.resourceId, "graphing");
             
             const res = await db.select().from(resources).where(eq(resources.id, data.resourceId)).limit(1);
+            const resourceRecord = res[0];
+            if (!resourceRecord) throw new Error("Resource not found");
             
-            const kgResult = await aiGateway.invoke("knowledge_extraction", { text: res[0].rawText });
+            const kgResult = await aiGateway.invoke("knowledge_extraction", { text: resourceRecord.rawText });
             
             // In a real implementation, we would insert nodes to knowledgeGraphNodes
             

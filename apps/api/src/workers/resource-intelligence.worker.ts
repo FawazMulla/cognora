@@ -11,7 +11,6 @@ import { aiGateway } from "../lib/ai-gateway";
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
 
-// A simple interface for the jobs we dispatch to this queue
 export interface ResourceIntelligenceJobData {
   resourceId: string;
   userId: string;
@@ -27,13 +26,14 @@ export function createResourceIntelligenceWorker(
       const { resourceId, userId } = job.data;
 
       try {
+        const res = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
+        const resourceRecord = res[0];
+        if (!resourceRecord) throw new Error("Resource not found");
+
         switch (job.name) {
           case "generate-summary": {
-            const res = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
-            if (!res.length) throw new Error("Resource not found");
-
-            const result = await aiGateway.invoke("summary_gen", { text: res[0].rawText });
-            const currentData = (res[0].intelligenceData as any) || {};
+            const result = await aiGateway.invoke("summary_gen", { text: resourceRecord.rawText });
+            const currentData = (resourceRecord.intelligenceData as any) || {};
             await db.update(resources)
               .set({ intelligenceData: { ...currentData, summary: result.summary } })
               .where(eq(resources.id, resourceId));
@@ -42,11 +42,9 @@ export function createResourceIntelligenceWorker(
           }
 
           case "generate-key-topics": {
-            const res = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
-            if (!res.length) throw new Error("Resource not found");
-            const result = await aiGateway.invoke("summary_gen", { text: res[0]?.rawText, mode: 'key_topics' });
+            const result = await aiGateway.invoke("summary_gen", { text: resourceRecord.rawText, mode: 'key_topics' });
             
-            const currentData = (res[0].intelligenceData as any) || {};
+            const currentData = (resourceRecord.intelligenceData as any) || {};
             await db.update(resources)
               .set({ intelligenceData: { ...currentData, keyTopics: result.topics } })
               .where(eq(resources.id, resourceId));
@@ -55,29 +53,26 @@ export function createResourceIntelligenceWorker(
           }
 
           case "generate-flashcards": {
-            const res = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
-            // Simulate chunk processing
-            const result = await aiGateway.invoke("flashcard_gen", { text: res[0]?.rawText });
+            const result = await aiGateway.invoke("flashcard_gen", { text: resourceRecord.rawText });
             
             // Insert mock flashcard
             await db.insert(flashcards).values({
               userId,
-              subjectId: res[0]?.subjectId || "",
+              subjectId: resourceRecord.subjectId || "",
+              cardType: "concept",
               front: "Mock Front",
               back: "Mock Back",
               sourceResourceId: resourceId,
               sourceChunkIndex: 0,
-            });
+            } as any);
 
             return { processed: true, message: "Flashcards generated" };
           }
 
           case "generate-definitions": {
-            const res = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
-            if (!res.length) throw new Error("Resource not found");
             const result = await aiGateway.invoke("knowledge_extraction", { type: 'definitions' });
             
-            const currentData = (res[0].intelligenceData as any) || {};
+            const currentData = (resourceRecord.intelligenceData as any) || {};
             await db.update(resources)
               .set({ intelligenceData: { ...currentData, definitions: result.definitions } })
               .where(eq(resources.id, resourceId));
@@ -86,11 +81,9 @@ export function createResourceIntelligenceWorker(
           }
 
           case "generate-viva-questions": {
-            const res = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
-            if (!res.length) throw new Error("Resource not found");
             const result = await aiGateway.invoke("quiz_gen", { type: 'viva' });
             
-            const currentData = (res[0].intelligenceData as any) || {};
+            const currentData = (resourceRecord.intelligenceData as any) || {};
             await db.update(resources)
               .set({ intelligenceData: { ...currentData, vivaQuestions: result.questions } })
               .where(eq(resources.id, resourceId));
@@ -99,11 +92,9 @@ export function createResourceIntelligenceWorker(
           }
 
           case "generate-exam-questions": {
-            const res = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
-            if (!res.length) throw new Error("Resource not found");
             const result = await aiGateway.invoke("quiz_gen", { type: 'exam' });
             
-            const currentData = (res[0].intelligenceData as any) || {};
+            const currentData = (resourceRecord.intelligenceData as any) || {};
             await db.update(resources)
               .set({ intelligenceData: { ...currentData, expectedExamQuestions: result.questions } })
               .where(eq(resources.id, resourceId));

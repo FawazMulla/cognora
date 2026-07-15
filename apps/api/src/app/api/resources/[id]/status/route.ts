@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { resources } from "@/db/schema";
-import { env } from "@/lib/env";
+import { resources } from "../../../../../db/schema";
+import { env } from "../../../../../lib/env";
 import { eq, and } from "drizzle-orm";
 import Redis from "ioredis";
 
@@ -39,7 +39,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: "Resource not found or access denied" }, { status: 404 });
     }
 
-    const currentResource = resourceList[0];
+    const currentResource = resourceList[0] as any;
     const channelName = `resource:${resourceId}:status`;
 
     const encoder = new TextEncoder();

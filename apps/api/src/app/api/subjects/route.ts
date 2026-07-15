@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { subjectSchema } from "@/lib/validators/profile";
+import { subjectSchema } from "../../../lib/validators/profile";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { subjects, academicProfiles } from "@/db/schema";
-import { env } from "@/lib/env";
+import { subjects, academicProfiles } from "../../../db/schema";
+import { env } from "../../../lib/env";
 import { eq } from "drizzle-orm";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
@@ -37,9 +37,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get the user's academic profile ID to link the subject
     const profiles = await db.select().from(academicProfiles).where(eq(academicProfiles.userId, userId)).limit(1);
-    if (profiles.length === 0) {
+    const profile = profiles[0];
+    if (!profile) {
       return NextResponse.json({ error: "Academic profile not found. Please complete onboarding first." }, { status: 400 });
     }
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
 
     const insertedSubjects = await db.insert(subjects).values({
       userId,
-      academicProfileId: profiles[0].id,
+      academicProfileId: (profile as any).id,
       name,
       examDate: examDate ? examDate : null,
     }).returning();

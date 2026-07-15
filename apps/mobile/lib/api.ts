@@ -1,11 +1,11 @@
-import { getToken } from "./secure-storage";
+import { getAccessToken } from "./secure-storage";
 
 // Default to localhost for web, 10.0.2.2 for android emulator, etc.
 // In a real device you need the local network IP.
 const API_BASE = process.env.EXPO_PUBLIC_API_URL || "http://10.0.2.2:3000/api";
 
 async function getHeaders() {
-  const token = await getToken();
+  const token = await getAccessToken();
   return {
     "Content-Type": "application/json",
     // Mock user for testing, in reality this comes from Clerk/Supabase auth token

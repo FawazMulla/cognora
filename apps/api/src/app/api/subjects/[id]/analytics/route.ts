@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { studentTopicProfiles, studySessions } from "@/db/schema";
-import { env } from "@/lib/env";
+import { studentTopicProfiles, studySessions } from "../../../../../db/schema";
+import { env } from "../../../../../lib/env";
 import { eq, and } from "drizzle-orm";
-import { verifyOwnership } from "@/lib/security";
+import { verifyOwnership } from "../../../../../lib/security";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -39,7 +39,7 @@ export async function GET(
         )
       );
 
-    const totalStudyTimeMinutes = sessions.reduce((acc, s) => acc + (s.durationMinutes || 0), 0);
+    const totalStudyTimeMinutes = sessions.reduce((acc, s) => acc + Math.floor((s.durationSecs || 0) / 60), 0);
 
     return NextResponse.json({
       subjectId,

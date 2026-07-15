@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { homeworkStyleProfiles } from "@/db/schema";
-import { env } from "@/lib/env";
+import { homeworkStyleProfiles } from "../../../../db/schema";
+import { env } from "../../../../lib/env";
 import { eq, and } from "drizzle-orm";
-import { homeworkGeneratorNode } from "@/lib/agents/homework-agent";
+import { homeworkGeneratorNode } from "../../../../lib/agents/homework-agent";
 import { z } from "zod";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     const { question, instructions, wordLimit, subjectId } = parseResult.data;
 
     // 1. Fetch style profile if any
-    let styleProfile = undefined;
+    let styleProfile: any = undefined;
     const profiles = await db.select().from(homeworkStyleProfiles)
       .where(and(
         eq(homeworkStyleProfiles.userId, userId),
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const limit = wordLimit || 300; // default
     const result = await homeworkGeneratorNode(
       question,
-      instructions,
+      instructions || "",
       limit,
       styleProfile
     );

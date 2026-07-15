@@ -1,10 +1,12 @@
-import { aiGateway } from "../ai-gateway";
+import { aiGateway, InvokeOptions } from "../ai-gateway";
 
 export interface AnswerGenerationParams {
   question: string;
   markValue: number;
   format: string; // 'Topper', 'University', 'Concise', 'Revision', 'Bullet', 'Definition-only'
   studentModelSnapshot?: any;
+  userId?: string;
+  subjectId?: string;
 }
 
 export async function answerGeneratorNode(params: AnswerGenerationParams) {
@@ -37,7 +39,14 @@ export async function answerGeneratorNode(params: AnswerGenerationParams) {
   const prompt = `Generate a ${params.format} style answer for: "${params.question}". 
   It is worth ${params.markValue} marks. Maximum ${maxWords} words. ${adaptiveInstructions}`;
 
-  const generation = await aiGateway.invoke("answer_gen", { text: prompt });
+  const invokeOptions: InvokeOptions = {
+    userId: params.userId ?? undefined,
+    subjectId: params.subjectId ?? undefined,
+    useHighContext: !!(params.userId),
+    useTools: !!(params.userId),
+  };
+
+  const generation = await aiGateway.invoke("answer_gen", { text: prompt, markValue: params.markValue }, invokeOptions);
   return { ...generation, targetMaxWords: maxWords };
 }
 

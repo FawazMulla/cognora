@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, Alert } from 'react-native';
 import * as Network from 'expo-network';
 import { offlineQueue } from '../../../lib/offline-queue';
-import { api } from '../../../lib/api';
+import { fetchApi } from '../../../lib/api';
 
 const mockFlashcards = [
   { id: '1', front: 'What is the time complexity of binary search?', back: 'O(log n)' },
@@ -22,7 +22,7 @@ export default function FlashcardReviewScreen() {
       setIsOffline(!netInfo.isConnected);
       
       if (netInfo.isConnected) {
-        offlineQueue.sync(api);
+        offlineQueue.sync(fetchApi);
       }
     };
     
@@ -48,7 +48,7 @@ export default function FlashcardReviewScreen() {
       offlineQueue.enqueue(currentCard.id, rating);
     } else {
       // API call (wrapped in try-catch in case it fails, where we would fall back to queue)
-      api.post(`/flashcards/${currentCard.id}/review`, { rating })
+      fetchApi(`/flashcards/${currentCard.id}/review`, { method: 'POST', body: JSON.stringify({ rating }) })
         .catch(() => offlineQueue.enqueue(currentCard.id, rating));
     }
 
@@ -57,7 +57,7 @@ export default function FlashcardReviewScreen() {
       setIsFlipped(false);
       flipAnim.setValue(0);
     } else {
-      alert("Deck finished!");
+      Alert.alert("Deck finished!");
     }
   };
 

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { profileSchema } from "@/lib/validators/profile";
+import { profileSchema } from "../../../lib/validators/profile";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { academicProfiles, subjects, studentModels } from "@/db/schema";
-import { env } from "@/lib/env";
+import { academicProfiles, subjects, studentModels } from "../../../db/schema";
+import { env } from "../../../lib/env";
 import { eq } from "drizzle-orm";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
@@ -51,12 +51,16 @@ export async function POST(request: Request) {
       semester,
     }).returning();
 
-    const profileId = insertedProfiles[0].id;
+    const profileRecord = insertedProfiles[0] as any;
+    if (!profileRecord) {
+      throw new Error("Failed to create academic profile");
+    }
+    const profileId = profileRecord.id;
 
     // Insert submitted subjects
     if (initialSubjects && initialSubjects.length > 0) {
       await db.insert(subjects).values(
-        initialSubjects.map(sub => ({
+        initialSubjects.map((sub: any) => ({
           userId,
           academicProfileId: profileId,
           name: sub.name,
@@ -100,7 +104,7 @@ export async function PATCH(request: Request) {
         branch,
         semester,
         updatedAt: new Date(),
-      })
+      } as any)
       .where(eq(academicProfiles.userId, userId))
       .returning();
 

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { homeworkStyleProfiles } from "@/db/schema";
-import { env } from "@/lib/env";
-import { extractStyleProfile } from "@/lib/agents/homework-agent";
+import { homeworkStyleProfiles } from "../../../../db/schema";
+import { env } from "../../../../lib/env";
+import { extractStyleProfile } from "../../../../lib/agents/homework-agent";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -26,19 +26,19 @@ export async function POST(request: Request) {
     const inserted = await db.insert(homeworkStyleProfiles).values({
       userId,
       subjectId,
-      avgSentenceLength: style.avgSentenceLength,
-      formalityLevel: style.formalityLevel,
-      vocabularyRange: style.vocabularyRange,
-      paragraphStructure: style.paragraphStructure,
-    }).onConflictDoUpdate({
+      avgSentenceLength: style.avgSentenceLength || null,
+      formalityLevel: style.formalityLevel || null,
+      vocabularyRange: style.vocabularyRange || null,
+      paragraphStructure: style.paragraphStructure || null,
+    } as any).onConflictDoUpdate({
       target: [homeworkStyleProfiles.userId, homeworkStyleProfiles.subjectId],
       set: {
-        avgSentenceLength: style.avgSentenceLength,
-        formalityLevel: style.formalityLevel,
-        vocabularyRange: style.vocabularyRange,
-        paragraphStructure: style.paragraphStructure,
+        avgSentenceLength: style.avgSentenceLength || null,
+        formalityLevel: style.formalityLevel || null,
+        vocabularyRange: style.vocabularyRange || null,
+        paragraphStructure: style.paragraphStructure || null,
         updatedAt: new Date()
-      }
+      } as any
     }).returning();
 
     return NextResponse.json({ styleProfile: inserted[0] }, { status: 200 });

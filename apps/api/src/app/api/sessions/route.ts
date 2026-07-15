@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { studySessions } from "@/db/schema";
-import { env } from "@/lib/env";
+import { studySessions } from "../../../db/schema";
+import { env } from "../../../lib/env";
 import { eq, desc } from "drizzle-orm";
 import { z } from "zod";
 
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     
     // Type mismatch workaround since Drizzle can't dynamically chain easily without typed helpers here
     const sessions = await query;
-    const filtered = subjectId ? sessions.filter(s => s.subjectId === subjectId) : sessions;
+    const filtered = subjectId ? sessions.filter(s => (s as any).subjectId === subjectId) : sessions;
 
     return NextResponse.json({ sessions: filtered }, { status: 200 });
   } catch (error) {

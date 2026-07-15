@@ -59,7 +59,7 @@ export default function OnboardingScreen() {
         throw new Error(data.error || 'Failed to complete onboarding');
       }
 
-      router.replace('/(app)/');
+      router.replace('/(app)');
     } catch (error: any) {
       Alert.alert('Onboarding Error', error.message);
     } finally {

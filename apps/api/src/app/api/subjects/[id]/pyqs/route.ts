@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { pyqQuestions } from "@/db/schema";
-import { env } from "@/lib/env";
+import { pyqQuestions } from "../../../../../db/schema";
+import { env } from "../../../../../lib/env";
 import { eq, desc } from "drizzle-orm";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });

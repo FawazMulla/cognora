@@ -55,6 +55,7 @@ export const resources = pgTable('resources', {
   sizeBytes: bigint('size_bytes', { mode: 'number' }),
   status: text('status').notNull().default('pending'),
   errorMessage: text('error_message'),
+  rawText: text('raw_text'),
   intelligenceData: jsonb('intelligence_data'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 }, (t) => ({

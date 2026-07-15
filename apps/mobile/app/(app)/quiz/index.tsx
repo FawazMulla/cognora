@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 
 const mockQuiz = [
   {
@@ -45,7 +45,7 @@ export default function QuizScreen() {
       setSelectedOption(null);
       setIsAnswered(false);
     } else {
-      alert(`Quiz Complete! Score: ${score + (selectedOption === currentQ.correctAnswer && !isAnswered ? 1 : 0)}/${mockQuiz.length}`);
+      Alert.alert(`Quiz Complete! Score: ${score + (selectedOption === currentQ.correctAnswer && !isAnswered ? 1 : 0)}/${mockQuiz.length}`);
     }
   };
 
@@ -70,29 +70,26 @@ export default function QuizScreen() {
 
       <View style={styles.optionsContainer}>
         {currentQ.options.map((opt, idx) => {
-          let style = [styles.optionCard];
-          let textStyle = [styles.optionText];
+          const isCorrect = idx === currentQ.correctAnswer;
+          const isSelected = idx === selectedOption;
           
-          if (isAnswered) {
-            if (idx === currentQ.correctAnswer) {
-              style.push(styles.optionCorrect);
-              textStyle.push(styles.optionTextCorrect);
-            } else if (idx === selectedOption) {
-              style.push(styles.optionIncorrect);
-              textStyle.push(styles.optionTextIncorrect);
-            }
-          } else if (idx === selectedOption) {
-            style.push(styles.optionSelected);
-          }
-
           return (
             <TouchableOpacity 
               key={idx} 
-              style={style} 
+              style={[
+                styles.optionCard,
+                !isAnswered && isSelected && styles.optionSelected,
+                isAnswered && isCorrect && styles.optionCorrect,
+                isAnswered && !isCorrect && isSelected && styles.optionIncorrect
+              ]} 
               onPress={() => handleSelect(idx)}
               activeOpacity={0.7}
             >
-              <Text style={textStyle}>{opt}</Text>
+              <Text style={[
+                styles.optionText,
+                isAnswered && isCorrect && styles.optionTextCorrect,
+                isAnswered && !isCorrect && isSelected && styles.optionTextIncorrect
+              ]}>{opt}</Text>
             </TouchableOpacity>
           );
         })}

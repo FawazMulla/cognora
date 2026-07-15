@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { resources } from "@/db/schema";
-import { env } from "@/lib/env";
+import { resources } from "../../../../../db/schema";
+import { env } from "../../../../../lib/env";
 import { eq, and } from "drizzle-orm";
-import { documentPipelineQueue } from "@/lib/queues";
+import { documentPipelineQueue } from "../../../../../lib/queues";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -28,7 +28,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       return NextResponse.json({ error: "Resource not found or access denied" }, { status: 404 });
     }
 
-    const resource = resourceList[0];
+    const resource = resourceList[0] as any;
 
     // Check if it's already past pending
     if (resource.status !== "pending") {

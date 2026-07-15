@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { flashcards } from "@/db/schema";
-import { env } from "@/lib/env";
+import { flashcards } from "../../../../db/schema";
+import { env } from "../../../../lib/env";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { calculateNextSM2 } from "@/lib/sm2";
+import { calculateSM2 } from "../../../../lib/sm2";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -24,6 +24,15 @@ const SyncPayloadSchema = z.object({
 // A simple in-memory cache to prevent processing the same client_uuid twice
 // In production, use Redis.
 const processedSyncEvents = new Set<string>();
+
+function ratingToNumber(rating: "again" | "hard" | "good" | "easy"): number {
+  switch (rating) {
+    case "again": return 0;
+    case "hard": return 1;
+    case "good": return 2;
+    case "easy": return 3;
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -48,26 +57,29 @@ export async function POST(request: Request) {
       }
 
       // Fetch current card state
-      const [card] = await db.select().from(flashcards).where(eq(flashcards.id, event.card_id));
-      if (!card) continue; // Skip if card deleted or not found
+      const [cardRaw] = await db.select().from(flashcards).where(eq(flashcards.id, event.card_id));
+      if (!cardRaw) continue; // Skip if card deleted or not found
+      
+      const card = cardRaw as any;
       if (card.userId !== userId) continue; // Skip if not owner
 
       const currentInterval = card.intervalDays || 0;
       const currentEase = card.easeFactor ? Number(card.easeFactor) : 2.5;
 
-      const { newInterval, newEase, newDueDate } = calculateNextSM2(
+      const ratingNum = ratingToNumber(event.rating);
+      const { intervalDays, easeFactor, dueDate } = calculateSM2(
+        ratingNum,
         currentInterval,
-        currentEase,
-        event.rating
+        currentEase
       );
 
       await db.update(flashcards)
         .set({
-          intervalDays: newInterval,
-          easeFactor: newEase.toString(),
-          nextReviewDate: newDueDate,
+          intervalDays: intervalDays,
+          easeFactor: easeFactor.toString(),
+          dueDate: dueDate.toISOString(),
           reviewCount: (card.reviewCount || 0) + 1,
-        })
+        } as any)
         .where(eq(flashcards.id, event.card_id));
 
       processedSyncEvents.add(event.client_uuid);

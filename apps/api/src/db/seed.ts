@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { env } from "@/lib/env";
+import { env } from "../lib/env";
 import { createClient } from "@supabase/supabase-js";
 import { 
   users, academicProfiles, subjects, resources, 
@@ -9,12 +9,12 @@ import {
 } from "./schema";
 
 const supabase = createClient(
-  process.env.SUPABASE_URL || "", 
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || "", 
+  env.SUPABASE_URL, 
+  env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY, 
   { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-const client = postgres(process.env.DATABASE_URL || "", { max: 1 });
+const client = postgres(env.DATABASE_URL, { max: 1 });
 const db = drizzle(client);
 
 async function seed() {
@@ -24,7 +24,7 @@ async function seed() {
   const password = "DemoPass123!";
 
   // 1. Create User in Supabase Auth
-  let authUserId;
+  let authUserId: string = "11111111-1111-1111-1111-111111111111";
   try {
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email,
@@ -36,35 +36,36 @@ async function seed() {
       if (authError.message.includes("already")) {
         console.log("User already exists in auth, fetching...");
         const { data: usersData } = await supabase.auth.admin.listUsers();
-        authUserId = usersData.users.find(u => u.email === email)?.id;
+        const foundUser = usersData.users.find(u => u.email === email);
+        if (foundUser) {
+          authUserId = foundUser.id;
+        }
       } else {
         throw authError;
       }
-    } else {
+    } else if (authData && authData.user) {
       authUserId = authData.user.id;
     }
   } catch (error) {
     console.error("⚠️ Could not create auth user. Ensure SUPABASE_SERVICE_ROLE_KEY is set.", error);
-    // Fallback dummy ID for local development without Supabase Admin privileges
-    authUserId = "11111111-1111-1111-1111-111111111111"; 
   }
 
   // 2. Create User Record in Database
-  const [user] = await db.insert(users).values({
+  const user = (await db.insert(users).values({
     email,
     authId: authUserId
   }).onConflictDoUpdate({
     target: users.email,
     set: { authId: authUserId }
-  }).returning();
+  }).returning())[0]!;
 
   // 3. Create Academic Profile (Mumbai Univ, IT, Sem VII)
-  const [profile] = await db.insert(academicProfiles).values({
+  const profile = (await db.insert(academicProfiles).values({
     userId: user.id,
     university: "Mumbai University",
     branch: "Information Technology",
     semester: 7
-  }).returning();
+  }).returning())[0]!;
 
   // 4. Create Subjects
   const subjectNames = [
@@ -76,12 +77,12 @@ async function seed() {
 
   const createdSubjects = [];
   for (const name of subjectNames) {
-    const [sub] = await db.insert(subjects).values({
+    const sub = (await db.insert(subjects).values({
       userId: user.id,
       academicProfileId: profile.id,
       name,
       examDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
-    }).returning();
+    }).returning())[0]!;
     createdSubjects.push(sub);
   }
 
@@ -99,7 +100,7 @@ async function seed() {
 
   if (aiSubject) {
     // 6.1 Resource
-    const [resource] = await db.insert(resources).values({
+    const resource = (await db.insert(resources).values({
       userId: user.id,
       subjectId: aiSubject.id,
       filename: "information-technology-engineering-syllabus-sem-vii-mumbai-university.pdf",
@@ -107,19 +108,19 @@ async function seed() {
       fileType: "pdf",
       sha256Hash: "dummysha256" + Date.now(),
       status: "ready"
-    }).returning();
+    }).returning())[0]!;
 
     // 6.2 Knowledge Graph Nodes
     const topics = ["Search Algorithms", "Neural Networks", "Expert Systems", "Fuzzy Logic"];
     const kgNodes = [];
     for (const topic of topics) {
-      const [node] = await db.insert(knowledgeGraphNodes).values({
+      const node = (await db.insert(knowledgeGraphNodes).values({
         userId: user.id,
         subjectId: aiSubject.id,
         nodeType: 'topic',
         label: topic,
         sourceResourceId: resource.id
-      }).returning();
+      }).returning())[0]!;
       kgNodes.push(node);
       
       // Student Topic Profile
@@ -144,7 +145,7 @@ async function seed() {
         unitHeader: "Search",
         priorityLabel: "High",
         repeatCount: 4,
-        knowledgeNodeId: kgNodes[0].id
+        knowledgeNodeId: kgNodes[0]!.id
       },
       {
         userId: user.id,
@@ -155,7 +156,7 @@ async function seed() {
         examYear: "2022",
         priorityLabel: "Medium",
         repeatCount: 2,
-        knowledgeNodeId: kgNodes[2].id
+        knowledgeNodeId: kgNodes[2]!.id
       }
     ]);
 

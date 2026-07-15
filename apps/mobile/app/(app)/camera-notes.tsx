@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image, Alert } from 'react-native';
 import { Camera, CameraView } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -77,7 +77,7 @@ export default function CameraNotesScreen() {
                   <TouchableOpacity style={styles.secondaryBtn} onPress={() => setCapturedImage(null)}>
                     <Text style={styles.secondaryBtnText}>Retake</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.primaryBtn} onPress={() => alert('Saved to resources!')}>
+                  <TouchableOpacity style={styles.primaryBtn} onPress={() => Alert.alert('Saved to resources!')}>
                     <Text style={styles.primaryBtnText}>Save Note</Text>
                   </TouchableOpacity>
                 </View>

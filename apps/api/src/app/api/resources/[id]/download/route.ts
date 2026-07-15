@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { resources } from "@/db/schema";
-import { env } from "@/lib/env";
+import { resources } from "../../../../../db/schema";
+import { env } from "../../../../../lib/env";
 import { eq } from "drizzle-orm";
-import { verifyOwnership } from "@/lib/security";
+import { verifyOwnership } from "../../../../../lib/security";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -27,13 +27,14 @@ export async function GET(
     }
 
     const resRecord = await db.select().from(resources).where(eq(resources.id, resourceId)).limit(1);
-    if (!resRecord.length) {
+    const resource = resRecord[0] as any;
+    if (!resource) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
     // 2. Generate Presigned URL
     // In a real S3 / Supabase setup, we call the SDK here. We mock it for now.
-    const storageUrl = resRecord[0].storageUrl;
+    const storageUrl = resource.storageUrl;
     const presignedUrl = `${storageUrl}?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Expires=3600&mockSignature=xyz123`;
 
     return NextResponse.json({ downloadUrl: presignedUrl }, { status: 200 });

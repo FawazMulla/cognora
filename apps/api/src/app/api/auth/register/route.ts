@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { registerSchema } from "@/lib/validators/auth";
-import { supabaseAdmin } from "@/lib/supabase";
+import { registerSchema } from "../../../../lib/validators/auth";
+import { supabaseAdmin } from "../../../../lib/supabase";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { users } from "@/db/schema";
-import { env } from "@/lib/env";
+import { users } from "../../../../db/schema";
+import { env } from "../../../../lib/env";
 import { eq } from "drizzle-orm";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
