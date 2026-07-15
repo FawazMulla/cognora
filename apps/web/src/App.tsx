@@ -34,15 +34,30 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [byokKey, setByokKey] = useState(localStorage.getItem('byok_gemini_key') || '');
+  const [byokCohereKey, setByokCohereKey] = useState(localStorage.getItem('byok_cohere_key') || '');
+  const [byokProvider, setByokProvider] = useState(localStorage.getItem('byok_provider') || 'gemini');
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Save Gemini key
     if (byokKey.trim()) {
       localStorage.setItem('byok_gemini_key', byokKey.trim());
     } else {
       localStorage.removeItem('byok_gemini_key');
     }
+
+    // Save Cohere key
+    if (byokCohereKey.trim()) {
+      localStorage.setItem('byok_cohere_key', byokCohereKey.trim());
+    } else {
+      localStorage.removeItem('byok_cohere_key');
+    }
+
+    // Save Provider
+    localStorage.setItem('byok_provider', byokProvider);
+
     setSaveSuccess(true);
     setTimeout(() => {
       setSaveSuccess(false);
@@ -165,9 +180,21 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </button>
             </header>
             
-            <form onSubmit={handleSaveSettings} className="p-6 space-y-6">
+             <form onSubmit={handleSaveSettings} className="p-6 space-y-5">
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide">Bring Your Own Key (Gemini API)</label>
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide">Preferred AI Provider</label>
+                <select
+                  value={byokProvider}
+                  onChange={e => setByokProvider(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 outline-none focus:border-indigo-500 cursor-pointer"
+                >
+                  <option value="gemini" className="bg-slate-950 text-slate-200">Google Gemini (2.5 Flash)</option>
+                  <option value="cohere" className="bg-slate-950 text-slate-200">Cohere AI (Command R+)</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide">Gemini API Key (BYOK)</label>
                 <input
                   type="password"
                   value={byokKey}
@@ -175,10 +202,22 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                   placeholder="Paste your Gemini API key here..."
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 outline-none focus:border-indigo-500 transition-colors"
                 />
-                <p className="text-[10px] text-slate-500 leading-normal">
-                  Your key is stored securely in your browser's local storage and used directly for requests. Leave empty to use system defaults (or Offline mode).
-                </p>
               </div>
+
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wide">Cohere API Key (BYOK)</label>
+                <input
+                  type="password"
+                  value={byokCohereKey}
+                  onChange={e => setByokCohereKey(e.target.value)}
+                  placeholder="Paste your Cohere API key here..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder-slate-600 outline-none focus:border-indigo-500 transition-colors"
+                />
+              </div>
+
+              <p className="text-[10px] text-slate-500 leading-normal">
+                Your keys are stored locally in your browser's memory and used directly for requests. Leave empty to use system defaults (or Offline mode).
+              </p>
 
               {saveSuccess && (
                 <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs py-2 px-3 rounded-lg text-center font-semibold animate-pulse">

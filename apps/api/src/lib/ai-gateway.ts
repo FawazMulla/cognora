@@ -147,29 +147,60 @@ export const aiGateway: AIGateway = {
       }
 
       // 3. Dispatch to provider
-      let clientApiKey: string | undefined;
+      let clientGeminiKey: string | undefined;
+      let clientCohereKey: string | undefined;
+      let preferredProvider = 'gemini';
+
       try {
         const headersList = headers();
-        clientApiKey = headersList.get('x-api-key') || undefined;
+        clientGeminiKey = headersList.get('x-api-key') || undefined;
+        clientCohereKey = headersList.get('x-cohere-key') || undefined;
+        preferredProvider = headersList.get('x-preferred-provider') || 'gemini';
       } catch (e) {
         // ignore
       }
 
-      const apiKey = clientApiKey || options.apiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'];
+      let activeProvider = routeConfig.provider;
+      let activeModel = routeConfig.modelName;
+      let apiKey = '';
 
-      if (apiKey && (routeConfig.provider === 'mock' || routeConfig.provider.includes('mock'))) {
-        routeConfig.provider = 'gemini';
-        routeConfig.modelName = 'gemini-2.5-flash';
-        actualModel = 'gemini-2.5-flash';
+      if (preferredProvider === 'cohere' && (clientCohereKey || env.COHERE_API_KEY)) {
+        activeProvider = 'cohere';
+        activeModel = 'command-r-plus';
+        apiKey = clientCohereKey || env.COHERE_API_KEY || '';
+      } else if (preferredProvider === 'gemini' && (clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'])) {
+        activeProvider = 'gemini';
+        activeModel = 'gemini-2.5-flash';
+        apiKey = clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'] || '';
+      } else {
+        // Fallback checks
+        if (clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY']) {
+          activeProvider = 'gemini';
+          activeModel = 'gemini-2.5-flash';
+          apiKey = clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'] || '';
+        } else if (clientCohereKey || env.COHERE_API_KEY) {
+          activeProvider = 'cohere';
+          activeModel = 'command-r-plus';
+          apiKey = clientCohereKey || env.COHERE_API_KEY || '';
+        }
       }
 
+      // Upgrade if was mock but key is available
+      if ((activeProvider === 'mock' || activeProvider.includes('mock')) && apiKey) {
+        activeProvider = preferredProvider === 'cohere' ? 'cohere' : 'gemini';
+        activeModel = activeProvider === 'cohere' ? 'command-r-plus' : 'gemini-2.5-flash';
+      }
+
+      actualModel = activeModel;
       let result: any;
 
-      if (apiKey && (routeConfig.provider === 'gemini' || !routeConfig.provider.includes('mock'))) {
+      if (apiKey && activeProvider === 'cohere') {
+        result = await callCohereAPI(apiKey, activeModel, taskType, input, enrichedContext);
+      } else if (apiKey && activeProvider === 'gemini') {
         if (options.useTools && ['answer_gen', 'quiz_gen', 'viva_gen', 'plan_gen'].includes(taskType)) {
-          result = await callGeminiWithTools(apiKey, routeConfig.modelName, taskType, input, enrichedContext, options);
+          result = await callGeminiWithTools(apiKey, activeModel, taskType, input, enrichedContext, options);
         } else {
-          result = await callGeminiAPI(apiKey, routeConfig.modelName, taskType, input, enrichedContext);
+          result = await callGeminiAPI(apiKey, activeModel, taskType, input, enrichedContext);
         }
       } else {
         result = await simulateWithTools(taskType, input, enrichedContext, options);
@@ -319,6 +350,71 @@ async function callGeminiAPI(apiKey: string, model: string, taskType: TaskType, 
       return JSON.parse(cleaned);
     } catch (e) {
       console.warn('[ai-gateway] Failed to parse JSON:', textResponse.slice(0, 200));
+      throw e;
+    }
+  }
+
+  return parseTaskOutput(taskType, textResponse);
+}
+
+// ==================== COHERE V2 API CALL ====================
+async function callCohereAPI(apiKey: string, model: string, taskType: TaskType, input: any, context: string): Promise<any> {
+  const cohereModel = model.includes('command') ? model : 'command-r-plus';
+  const url = `https://api.cohere.com/v2/chat`;
+
+  const prompt = buildPrompt(taskType, input, context);
+  const expectJson = ['classification', 'knowledge_extraction', 'flashcard_gen', 'quiz_gen', 'prediction_gen'].includes(taskType);
+
+  const messages: any[] = [];
+  
+  // Inject context as system message if present
+  if (context) {
+    messages.push({
+      role: 'system',
+      content: `System Context:\n${context}`
+    });
+  }
+
+  if (expectJson) {
+    messages.push({
+      role: 'system',
+      content: 'You are an academic parser. Respond ONLY with valid JSON. Do not include markdown code block syntax (like ```json), do not write conversational preambles or explanations.'
+    });
+  }
+
+  messages.push({
+    role: 'user',
+    content: prompt
+  });
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'X-Client-Name': 'cognora'
+    },
+    body: JSON.stringify({
+      model: cohereModel,
+      messages,
+      ...(expectJson ? { response_format: { type: 'json_object' } } : {})
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Cohere API ${response.status}: ${errorText}`);
+  }
+
+  const data = await response.json();
+  const textResponse = data.message?.content?.[0]?.text || '';
+
+  if (expectJson) {
+    try {
+      const cleaned = textResponse.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+      return JSON.parse(cleaned);
+    } catch (e) {
+      console.warn('[ai-gateway] Cohere failed to parse JSON:', textResponse.slice(0, 200));
       throw e;
     }
   }

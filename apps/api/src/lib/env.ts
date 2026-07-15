@@ -42,6 +42,7 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().min(1).optional(),
   GOOGLE_AI_API_KEY: z.string().min(1).optional(),
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  COHERE_API_KEY: z.string().min(1).optional(),
 });
 
 /**

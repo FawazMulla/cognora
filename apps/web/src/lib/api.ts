@@ -15,6 +15,14 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     headers.set('x-api-key', byokKey);
   }
   
+  const cohereKey = localStorage.getItem('byok_cohere_key');
+  if (cohereKey) {
+    headers.set('x-cohere-key', cohereKey);
+  }
+  
+  const preferredProvider = localStorage.getItem('byok_provider') || 'gemini';
+  headers.set('x-preferred-provider', preferredProvider);
+  
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,
