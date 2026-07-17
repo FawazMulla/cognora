@@ -100,10 +100,41 @@ export function createDocumentPipelineWorker(
             
             const text = resourceRecord.rawText || "";
 
-            // Stub chunking logic: split by 500 characters
-            const chunks = [];
-            for (let i = 0; i < text.length; i += 500) {
-              chunks.push(text.slice(i, i + 500));
+            // Intelligent sentence and paragraph-aware chunking algorithm (FR-006)
+            const paragraphs = text.split(/\n\s*\n/);
+            const chunks: string[] = [];
+            let currentChunk = "";
+            const TARGET_CHUNK_SIZE = 600; // Optimal token/char footprint for semantic embeddings
+
+            for (const paragraph of paragraphs) {
+              if (currentChunk.length + paragraph.length < TARGET_CHUNK_SIZE) {
+                currentChunk += (currentChunk ? "\n\n" : "") + paragraph;
+              } else {
+                if (currentChunk) {
+                  chunks.push(currentChunk.trim());
+                  currentChunk = "";
+                }
+                
+                // If single paragraph is oversized, split by sentence bounds
+                if (paragraph.length >= TARGET_CHUNK_SIZE) {
+                  const sentences = paragraph.match(/[^.!?]+[.!?]+(\s|$)/g) || [paragraph];
+                  for (const sentence of sentences) {
+                    if (currentChunk.length + sentence.length < TARGET_CHUNK_SIZE) {
+                      currentChunk += (currentChunk ? " " : "") + sentence.trim();
+                    } else {
+                      if (currentChunk) {
+                        chunks.push(currentChunk.trim());
+                      }
+                      currentChunk = sentence.trim();
+                    }
+                  }
+                } else {
+                  currentChunk = paragraph;
+                }
+              }
+            }
+            if (currentChunk) {
+              chunks.push(currentChunk.trim());
             }
             
             // Ensure we don't insert empty arrays which crashes Drizzle

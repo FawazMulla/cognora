@@ -1,51 +1,54 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Set custom sans-serif font families */
+  /* Set custom Cohere font families */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-mono: 'Space Mono', monospace;
   
-  /* Overwrite custom gemini color system for a premium Light Mode theme */
-  --color-gemini-bg: #f8fafc;
-  --color-gemini-surface: #ffffff;
-  --color-gemini-surface-hover: #f1f5f9;
-  --color-gemini-text: #0f172a;
-  --color-gemini-text-muted: #64748b;
-  --color-gemini-border: #e2e8f0;
-  --color-gemini-blue: #3b82f6;
-  --color-gemini-purple: #8b5cf6;
-  --color-gemini-red: #ef4444;
+  /* Cohere Color System */
+  --color-cohere-primary: #17171c;
+  --color-cohere-black: #000000;
+  --color-cohere-ink: #212121;
+  --color-cohere-deep-green: #003c33;
+  --color-cohere-dark-navy: #071829;
+  --color-cohere-canvas: #ffffff;
+  --color-cohere-stone: #eeece7;
+  --color-cohere-pale-green: #edfce9;
+  --color-cohere-pale-blue: #f1f5ff;
+  --color-cohere-hairline: #d9d9dd;
+  --color-cohere-border-light: #e5e7eb;
+  --color-cohere-card-border: #f2f2f2;
+  --color-cohere-muted: #93939f;
+  --color-cohere-slate: #75758a;
+  --color-cohere-body-muted: #616161;
+  --color-cohere-action-blue: #1863dc;
+  --color-cohere-coral: #ff7759;
+  --color-cohere-coral-soft: #ffad9b;
+  --color-cohere-focus-violet: #9b60aa;
 
-  /* Standard Slate color scale (not inverted) */
-  --color-slate-50: #f8fafc;
-  --color-slate-100: #f1f5f9;
-  --color-slate-200: #e2e8f0;
-  --color-slate-300: #cbd5e1;
-  --color-slate-400: #94a3b8;
-  --color-slate-500: #64748b;
-  --color-slate-600: #475569;
-  --color-slate-700: #334155;
-  --color-slate-800: #1e293b;
-  --color-slate-900: #0f172a;
-  --color-slate-950: #020617;
-
-  /* Premium rounded corners for cards and inputs in light mode */
-  --radius-3xl: 1rem;
-  --radius-2xl: 0.75rem;
-  --radius-xl: 0.5rem;
-  --radius-lg: 0.375rem;
-  --radius-md: 0.25rem;
+  /* Map old gemini colors to Cohere counterparts for safety */
+  --color-gemini-bg: #ffffff;
+  --color-gemini-surface: #eeece7;
+  --color-gemini-surface-hover: #e5e7eb;
+  --color-gemini-text: #212121;
+  --color-gemini-text-muted: #75758a;
+  --color-gemini-border: #d9d9dd;
+  --color-gemini-blue: #1863dc;
+  --color-gemini-purple: #9b60aa;
+  --color-gemini-red: #b30000;
 }
 
 @layer base {
   body {
-    background-color: var(--color-gemini-bg);
-    color: var(--color-gemini-text);
+    background-color: var(--color-cohere-canvas);
+    color: var(--color-cohere-ink);
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Custom minimal light scrollbars */
+  /* Custom editorial scrollbars */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -54,89 +57,44 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: var(--color-cohere-hairline);
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: var(--color-cohere-slate);
   }
 
   /* Selection colors */
   ::selection {
-    background-color: rgba(59, 130, 246, 0.1) !important;
-    color: #1e3a8a !important;
+    background-color: rgba(24, 99, 220, 0.08) !important;
+    color: var(--color-cohere-action-blue) !important;
+  }
+
+  /* Monospaced Display Headlines Split */
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display) !important;
+    letter-spacing: -0.03em !important;
+    line-height: 1.1 !important;
+  }
+
+  /* Numbers and Technical Labels Monospace Split */
+  .mono-label, .technical-label {
+    font-family: var(--font-mono) !important;
+    letter-spacing: 0.02em !important;
   }
 }
 
-/* --- Floating Animations for Background Blobs --- */
-@keyframes drift {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(60px, -40px) scale(1.15);
-  }
-  100% {
-    transform: translate(-30px, 50px) scale(0.9);
-  }
-}
+/* ==========================================================================
+   Cohere Global Overrides (Transforms standard layout elements dynamically)
+   ========================================================================== */
 
-@keyframes drift-reverse {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-50px, 60px) scale(0.9);
-  }
-  100% {
-    transform: translate(40px, -30px) scale(1.15);
-  }
-}
-
-.animate-drift-slow {
-  animation: drift 25s infinite ease-in-out alternate;
-}
-
-.animate-drift-medium {
-  animation: drift-reverse 20s infinite ease-in-out alternate;
-}
-
-/* Floating Particles (Upward Drift) */
-@keyframes floatUp {
-  0% {
-    transform: translateY(105vh) translateX(0);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.25;
-  }
-  90% {
-    opacity: 0.25;
-  }
-  100% {
-    transform: translateY(-5vh) translateX(40px);
-    opacity: 0;
-  }
-}
-
-.floating-particle {
-  position: absolute;
-  bottom: 0;
-  background-color: rgba(99, 102, 241, 0.15);
-  border-radius: 50%;
-  pointer-events: none;
-  animation: floatUp 15s infinite linear;
-}
-
-/* --- Light Mode CSS Class Overrides for Hardcoded Dark Theme Pages --- */
-
-/* Force light background in container areas */
+/* Main Container Base background */
 main, 
 .flex-1.max-h-\[calc\(100vh-57px\)\] {
-  background-color: #f8fafc !important;
+  background-color: var(--color-cohere-canvas) !important;
 }
 
-/* Force dark-slate cards and backgrounds to clean white containers */
+/* Force dark cards to Cohere's Clean White Card/Form layout */
 .bg-slate-900\/40, 
 .bg-slate-900\/30, 
 .bg-slate-900\/50, 
@@ -146,100 +104,233 @@ main,
 .bg-slate-950\/30,
 .bg-slate-950,
 .bg-slate-800\/40,
-.bg-slate-800\/80 {
-  background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.02), 0 2px 6px -2px rgba(0, 0, 0, 0.02) !important;
+.bg-slate-800\/80,
+.bg-gemini-surface\/30 {
+  background-color: var(--color-cohere-canvas) !important;
+  border-color: var(--color-cohere-hairline) !important;
+  border-width: 1px !important;
+  box-shadow: none !important; /* Flat elevation */
 }
 
-/* Overwrite borders to be light gray instead of dark border lines */
+/* Map specific containers to Soft Stone (mineral surface style) */
+.bg-slate-50,
+.bg-slate-50\/50,
+.bg-slate-100 {
+  background-color: var(--color-cohere-stone) !important;
+  border-color: var(--color-cohere-hairline) !important;
+}
+
+/* Borders mapping to hairline dividers */
 .border-slate-800, 
 .border-slate-800\/80, 
 .border-slate-800\/60, 
 .border-slate-850, 
 .border-slate-700, 
 .border-slate-700\/50, 
-.border-white\/5 {
-  border-color: #e2e8f0 !important; /* slate-200 */
+.border-white\/5,
+.border-gemini-border,
+.border-gemini-border\/60,
+.border-slate-200,
+.border-slate-200\/80,
+.border-slate-200\/60,
+.border-slate-100 {
+  border-color: var(--color-cohere-hairline) !important;
 }
 
-/* Overwrite text colors that were white/light-slate back to dark-slate */
+/* Text coloring mapping to Ink and Slate */
 .text-slate-100, 
 .text-slate-200, 
 .text-slate-300, 
 .text-slate-300\/80,
-.text-white {
-  color: #0f172a !important; /* slate-900 */
+.text-white,
+.text-gemini-text {
+  color: var(--color-cohere-ink) !important;
 }
 
-/* Overwrite secondary/muted text colors for readability */
 .text-slate-400,
-.text-slate-500 {
-  color: #64748b !important; /* slate-500 */
+.text-slate-500,
+.text-gemini-text-muted {
+  color: var(--color-cohere-slate) !important;
 }
 
-/* Accent texts in light mode */
-.text-rose-400 { color: #e11d48 !important; }
-.text-emerald-400 { color: #059669 !important; }
-.text-blue-400 { color: #2563eb !important; }
-.text-indigo-400 { color: #4f46e5 !important; }
-.text-purple-400 { color: #7c3aed !important; }
-.text-amber-400 { color: #d97706 !important; }
+/* Accent texts in editorial system */
+.text-rose-400, .text-rose-500 { color: var(--color-cohere-coral) !important; }
+.text-emerald-400, .text-emerald-500 { color: var(--color-cohere-deep-green) !important; }
+.text-blue-400, .text-blue-500 { color: var(--color-cohere-action-blue) !important; }
+.text-indigo-400, .text-indigo-500 { color: var(--color-cohere-action-blue) !important; }
+.text-purple-400, .text-purple-500 { color: var(--color-cohere-focus-violet) !important; }
 
-/* In-card visual tags */
-.bg-emerald-500\/10, .bg-emerald-500\/5 {
-  background-color: #ecfdf5 !important;
-  color: #047857 !important;
-  border: 1px solid #a7f3d0 !important;
+/* Status tags and Category chips using Cohere taxonomy accents */
+.bg-rose-500\/10, .bg-rose-500\/5, .bg-rose-50\/70, .bg-rose-50 {
+  background-color: var(--color-cohere-pale-green) !important; /* using mineral green */
+  color: var(--color-cohere-deep-green) !important;
+  border: 1px solid var(--color-cohere-deep-green) !important;
+  border-radius: 4px !important;
 }
-.bg-rose-500\/10, .bg-rose-500\/5 {
-  background-color: #fef2f2 !important;
-  color: #b91c1c !important;
-  border: 1px solid #fecaca !important;
-}
-.bg-amber-500\/10, .bg-amber-500\/5 {
-  background-color: #fffbeb !important;
-  color: #b45309 !important;
-  border: 1px solid #fde68a !important;
+.text-rose-600 {
+  color: var(--color-cohere-deep-green) !important;
 }
 
-/* Form inputs & options styling */
+.bg-emerald-500\/10, .bg-emerald-500\/5, .bg-emerald-50 {
+  background-color: var(--color-cohere-pale-green) !important;
+  color: var(--color-cohere-deep-green) !important;
+  border: 1px solid var(--color-cohere-deep-green) !important;
+  border-radius: 4px !important;
+}
+.text-emerald-600 {
+  color: var(--color-cohere-deep-green) !important;
+}
+
+.bg-amber-500\/10, .bg-amber-500\/5, .bg-amber-50 {
+  background-color: var(--color-cohere-stone) !important;
+  color: var(--color-cohere-primary) !important;
+  border: 1px solid var(--color-cohere-hairline) !important;
+  border-radius: 4px !important;
+}
+.text-amber-600 {
+  color: var(--color-cohere-ink) !important;
+}
+
+.bg-purple-500\/10, .bg-indigo-500\/10, .bg-blue-500\/10, .bg-indigo-50 {
+  background-color: var(--color-cohere-pale-blue) !important;
+  color: var(--color-cohere-action-blue) !important;
+  border: 1px solid var(--color-cohere-action-blue) !important;
+  border-radius: 4px !important;
+}
+
+/* Custom form inputs styled with hairline borders and form-focus violet */
 input, textarea, select, option {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  border-color: #e2e8f0 !important;
+  background-color: var(--color-cohere-canvas) !important;
+  color: var(--color-cohere-ink) !important;
+  border: 1px solid var(--color-cohere-hairline) !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--color-cohere-focus-violet) !important;
+  outline: none !important;
 }
 input::placeholder, textarea::placeholder {
-  color: #94a3b8 !important;
+  color: var(--color-cohere-muted) !important;
 }
 
-/* Header gradient texts */
+/* Cohere button-primary: Near-black pill CTA */
+button[class*="bg-gradient-to-"],
+button[class*="bg-blue-600"],
+button[class*="bg-indigo-600"],
+button[class*="bg-rose-600"],
+button[class*="bg-purple-600"],
+a[class*="bg-gradient-to-"],
+a[class*="bg-blue-600"],
+a[class*="bg-indigo-600"] {
+  background: var(--color-cohere-primary) !important;
+  color: var(--color-cohere-canvas) !important;
+  border-radius: 32px !important; /* Pill shape */
+  border: 1px solid var(--color-cohere-primary) !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  transition: background-color 0.15s ease-in-out !important;
+  cursor: pointer !important;
+}
+button[class*="bg-gradient-to-"]:hover,
+button[class*="bg-blue-600"]:hover,
+button[class*="bg-indigo-600"]:hover,
+button[class*="bg-rose-600"]:hover,
+button[class*="bg-purple-600"]:hover,
+a[class*="bg-gradient-to-"]:hover,
+a[class*="bg-blue-600"]:hover,
+a[class*="bg-indigo-600"]:hover {
+  background: var(--color-cohere-black) !important;
+  border-color: var(--color-cohere-black) !important;
+}
+
+/* Secondary Actions mapping to Underlined Links */
+button[class*="bg-slate-800"],
+button[class*="bg-slate-900"],
+a[class*="bg-slate-800"] {
+  background: transparent !important;
+  color: var(--color-cohere-primary) !important;
+  border: 1px solid var(--color-cohere-hairline) !important;
+  border-radius: 30px !important; /* Outlined Pill */
+  box-shadow: none !important;
+}
+button[class*="bg-slate-800"]:hover,
+a[class*="bg-slate-800"]:hover {
+  background: var(--color-cohere-stone) !important;
+  border-color: var(--color-cohere-hairline) !important;
+}
+
+/* Clean UI text formatting */
 .gemini-gradient-text {
-  background: linear-gradient(135deg, #1e40af 0%, #6d28d9 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  color: transparent !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  color: var(--color-cohere-ink) !important;
+  font-family: var(--font-display) !important;
 }
 
 .gemini-gradient-bg {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important;
+  background: var(--color-cohere-primary) !important;
+  color: var(--color-cohere-canvas) !important;
+}
+
+/* Radar Chart customization */
+svg path[fill*="rgba(99,102,241"] {
+  fill: rgba(24, 99, 220, 0.15) !important;
+  stroke: var(--color-cohere-action-blue) !important;
+}
+svg circle[fill*="rgb(99,102,241"] {
+  fill: var(--color-cohere-action-blue) !important;
+}
+svg text {
+  font-family: var(--font-mono) !important;
+  fill: var(--color-cohere-slate) !important;
+}
+
+/* Ensure white text is preserved on actual dark elements */
+.bg-black,
+.bg-black *,
+.bg-\[\#003c33\],
+.bg-\[\#003c33\] *,
+.bg-\[\#071829\],
+.bg-\[\#071829\] *,
+.bg-\[\#17171c\],
+.bg-\[\#17171c\] *,
+button.text-white,
+button.text-white *,
+.text-white.bg-black,
+.text-white.bg-\[\#003c33\] {
   color: #ffffff !important;
 }
 
-/* Standard gradient actions mapping */
-button[class*="bg-gradient-to-"],
-a[class*="bg-gradient-to-"] {
-  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%) !important;
-  color: #ffffff !important;
-  border: none !important;
-  box-shadow: 0 4px 12px 0 rgba(37, 99, 235, 0.2) !important;
+/* Disable all gradient text across the site and force solid black/ink colors */
+[class*="bg-gradient-to-"][class*="bg-clip-text"],
+[class*="bg-gradient-to-br"][class*="bg-clip-text"],
+[class*="bg-gradient-to-"][class*="text-transparent"],
+[class*="bg-gradient-to-br"][class*="text-transparent"],
+.bg-clip-text,
+.text-transparent {
+  background: none !important;
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: var(--color-cohere-ink) !important;
+  color: var(--color-cohere-ink) !important;
 }
-button[class*="bg-gradient-to-"]:hover,
-a[class*="bg-gradient-to-"]:hover {
-  opacity: 0.95 !important;
-  box-shadow: 0 6px 18px 0 rgba(37, 99, 235, 0.3) !important;
+
+/* Disable all speculative card gradients and force them to soft stone or stark white */
+div[class*="bg-gradient-to-"],
+div[class*="bg-gradient-to-br"],
+div[class*="from-indigo-950"],
+.bg-gradient-to-br {
+  background: var(--color-cohere-stone) !important;
+  border-color: var(--color-cohere-hairline) !important;
+  box-shadow: none !important;
 }
 
-
-
-
+/* Ensure progress bars do not use gradients but solid colors */
+div[class*="bg-gradient-to-"][class*="h-"],
+div[class*="bg-gradient-to-"][class*="h-1"] {
+  background: var(--color-cohere-ink) !important;
+}

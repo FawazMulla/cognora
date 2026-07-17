@@ -7,6 +7,7 @@ export default function Login() {
   const { session } = useAuth();
   const [email, setEmail] = useState('demo@aisemos.com');
   const [password, setPassword] = useState('DemoPass123!');
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -14,59 +15,85 @@ export default function Login() {
     return <Navigate to="/" replace />;
   }
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError(error.message);
-    setLoading(false);
+    if (isSignUp) {
+      try {
+        const response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(data.error || 'Registration failed');
+        }
+        
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) throw signInError;
+      } catch (err: any) {
+        setError(err.message || 'An error occurred during registration.');
+        setLoading(false);
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gemini-bg flex font-sans">
+    <div className="min-h-screen bg-[#eeece7] flex font-sans">
       <div className="flex-1 flex flex-col justify-center items-center p-8 z-10">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm bg-white border border-[#d9d9dd] p-8 rounded-lg shadow-none">
           {/* Logo Section */}
           <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 rounded bg-white flex items-center justify-center border border-gemini-border">
-              <Sparkles className="text-black w-6 h-6" />
+            <div className="w-12 h-12 rounded bg-black flex items-center justify-center">
+              <Sparkles className="text-white w-6 h-6" />
             </div>
           </div>
           
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gemini-text mb-1 tracking-tight">AI Academic OS</h1>
-            <p className="text-xs text-gemini-text-muted">Sign in to your intelligent workspace.</p>
+            <h1 className="text-2xl font-bold text-black font-display uppercase tracking-tight">ArchAdemia</h1>
+            <p className="text-xs text-[#75758a] font-mono uppercase tracking-wider mt-1.5">
+              {isSignUp ? 'Create your academic account' : 'Sign in to your intelligent workspace'}
+            </p>
           </div>
 
           {/* Login Form */}
-          <div className="bg-gemini-surface/30 border border-gemini-border p-6 rounded-lg">
-            <form onSubmit={handleLogin} className="space-y-4">
+          <div className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="bg-gemini-red/10 border border-gemini-red/20 text-gemini-red p-3 rounded-lg text-xs text-center font-semibold">
+                <div className="bg-[#b30000]/10 border border-[#b30000]/20 text-[#b30000] p-3 rounded text-xs text-center font-semibold">
                   {error}
                 </div>
               )}
               
               <div>
-                <label className="block text-xs font-bold text-gemini-text-muted uppercase tracking-wider mb-2">Email Address</label>
+                <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Email Address</label>
                 <input 
                   type="email" 
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full bg-gemini-bg border border-gemini-border rounded-lg px-4 py-2.5 text-xs text-gemini-text placeholder-gemini-text-muted focus:border-white outline-none transition-all" 
+                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-black placeholder-[#93939f] focus:border-[#9b60aa] outline-none transition-all" 
                   placeholder="name@university.edu"
                 />
               </div>
               
               <div>
-                <label className="block text-xs font-bold text-gemini-text-muted uppercase tracking-wider mb-2">Password</label>
+                <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Password</label>
                 <input 
                   type="password" 
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  className="w-full bg-gemini-bg border border-gemini-border rounded-lg px-4 py-2.5 text-xs text-gemini-text placeholder-gemini-text-muted focus:border-white outline-none transition-all" 
+                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-black placeholder-[#93939f] focus:border-[#9b60aa] outline-none transition-all" 
                   placeholder="••••••••"
                 />
               </div>
@@ -74,37 +101,54 @@ export default function Login() {
               <button 
                 type="submit" 
                 disabled={loading}
-                className="w-full bg-white hover:bg-zinc-200 text-black font-semibold py-2.5 rounded-lg transition-colors flex justify-center items-center gap-1.5 group mt-6 text-xs uppercase tracking-wider cursor-pointer"
+                className="w-full bg-black hover:bg-zinc-800 text-white font-semibold py-2.5 rounded-full transition-colors flex justify-center items-center gap-1.5 group mt-6 text-xs uppercase tracking-wider cursor-pointer"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-gemini-bg border-t-transparent rounded-full animate-spin" />
-                    Signing in...
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    {isSignUp ? 'Creating account...' : 'Signing in...'}
                   </span>
                 ) : (
                   <>
-                    Sign In
+                    {isSignUp ? 'Register' : 'Sign In'}
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </button>
             </form>
+
+            <div className="text-center mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setError('');
+                  if (!isSignUp) {
+                    setEmail('');
+                    setPassword('');
+                  } else {
+                    setEmail('demo@aisemos.com');
+                    setPassword('DemoPass123!');
+                  }
+                }}
+                className="text-xs text-[#1863dc] hover:underline bg-transparent border-none cursor-pointer p-0 uppercase font-mono tracking-wider"
+              >
+                {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Create one"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
       
       {/* Decorative Side Panel */}
-      <div className="hidden lg:flex flex-1 bg-gemini-surface relative overflow-hidden items-center justify-center p-12 border-l border-gemini-border">
-        {/* Subtle grid pattern background */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f293710_1px,transparent_1px),linear-gradient(to_bottom,#1f293710_1px,transparent_1px)] bg-[size:4rem_4rem]" />
-        
-        <div className="relative max-w-md z-10 space-y-6">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-gemini-bg text-gemini-text text-[10px] font-bold tracking-wider uppercase border border-gemini-border">
-            <Sparkles className="w-3.5 h-3.5 text-white" />
+      <div className="hidden lg:flex flex-1 bg-[#003c33] relative overflow-hidden items-center justify-center p-12 border-l border-[#d9d9dd]">
+        <div className="relative max-w-md z-10 space-y-6 text-white">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#ff7759]/20 text-[#ff7759] text-[10px] font-mono font-bold tracking-wider uppercase border border-[#ff7759]/30">
+            <Sparkles className="w-3.5 h-3.5" />
             The Academic Operating System
           </div>
-          <h2 className="text-3xl font-extrabold text-white leading-tight tracking-tight">Master your subjects with a unified intelligence.</h2>
-          <p className="text-sm text-gemini-text-muted leading-relaxed">Your entire academic journey powered by a dedicated Digital Twin, automatically predicting PYQs, generating practicals, and conducting live vivas.</p>
+          <h2 className="text-4xl font-display font-light text-white leading-tight tracking-tight uppercase">Master your subjects with a unified intelligence.</h2>
+          <p className="text-sm text-gray-300 leading-relaxed font-sans">Your entire academic journey powered by a dedicated Digital Twin, automatically predicting PYQs, generating practicals, and conducting live vivas.</p>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { supabase } from '../context/AuthContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const { data: { session } } = await supabase.auth.getSession();

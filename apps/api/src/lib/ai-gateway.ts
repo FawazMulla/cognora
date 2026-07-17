@@ -346,8 +346,7 @@ async function callGeminiAPI(apiKey: string, model: string, taskType: TaskType, 
 
   if (expectJson) {
     try {
-      const cleaned = textResponse.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
-      return JSON.parse(cleaned);
+      return cleanAndParseJSON(textResponse);
     } catch (e) {
       console.warn('[ai-gateway] Failed to parse JSON:', textResponse.slice(0, 200));
       throw e;
@@ -411,8 +410,7 @@ async function callCohereAPI(apiKey: string, model: string, taskType: TaskType, 
 
   if (expectJson) {
     try {
-      const cleaned = textResponse.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
-      return JSON.parse(cleaned);
+      return cleanAndParseJSON(textResponse);
     } catch (e) {
       console.warn('[ai-gateway] Cohere failed to parse JSON:', textResponse.slice(0, 200));
       throw e;
@@ -453,6 +451,27 @@ function buildPrompt(taskType: TaskType, input: any, context: string): string {
   return `${contextSection}${promptText}`;
 }
 
+// ==================== JSON ROBUST EXTRACTOR ====================
+function cleanAndParseJSON(text: string): any {
+  const startIdx = text.indexOf('{');
+  const endIdx = text.lastIndexOf('}');
+  
+  if (startIdx === -1 || endIdx === -1) {
+    const startArrIdx = text.indexOf('[');
+    const endArrIdx = text.lastIndexOf(']');
+    if (startArrIdx !== -1 && endArrIdx !== -1) {
+      const arrText = text.substring(startArrIdx, endArrIdx + 1);
+      return JSON.parse(arrText);
+    }
+    // Fallback regex clean
+    const cleaned = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+    return JSON.parse(cleaned);
+  }
+  
+  const jsonText = text.substring(startIdx, endIdx + 1);
+  return JSON.parse(jsonText);
+}
+
 // ==================== OUTPUT PARSER ====================
 function parseTaskOutput(taskType: TaskType, text: string): any {
   switch (taskType) {
@@ -469,8 +488,7 @@ function parseTaskOutput(taskType: TaskType, text: string): any {
     case 'viva_gen':
       // Try to parse JSON first, fall back to plain text
       try {
-        const cleaned = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
-        return JSON.parse(cleaned);
+        return cleanAndParseJSON(text);
       } catch {
         return { question: text, topic: 'General' };
       }

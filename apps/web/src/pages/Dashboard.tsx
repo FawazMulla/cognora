@@ -164,67 +164,66 @@ export default function Dashboard() {
   const healthScore = health?.healthScore ?? 72;
 
   const quickActions = [
-    { label: 'PYQ Intelligence', icon: BookOpen, href: '/pyq', color: 'text-blue-500', bg: 'bg-blue-50/40 border-blue-100/30 hover:bg-blue-50 hover:border-blue-300' },
-    { label: 'Smart Revision', icon: BrainCircuit, href: '/revision', color: 'text-purple-500', bg: 'bg-purple-50/40 border-purple-100/30 hover:bg-purple-50 hover:border-purple-300' },
-    { label: 'Viva Engine', icon: Zap, href: '/viva', color: 'text-amber-500', bg: 'bg-amber-50/40 border-amber-100/30 hover:bg-amber-50 hover:border-amber-300' },
-    { label: 'Knowledge Graph', icon: Activity, href: '/knowledge', color: 'text-teal-500', bg: 'bg-teal-50/40 border-teal-100/30 hover:bg-teal-50 hover:border-teal-300' },
-    { label: 'Practicals', icon: Sparkles, href: '/practicals', color: 'text-rose-500', bg: 'bg-rose-50/40 border-rose-100/30 hover:bg-rose-50 hover:border-rose-300' },
-    { label: 'Digital Twin', icon: Target, href: '/twin', color: 'text-indigo-500', bg: 'bg-indigo-50/40 border-indigo-100/30 hover:bg-indigo-50 hover:border-indigo-300' },
+    { label: 'PYQ Intelligence', icon: BookOpen, href: '/pyq', color: 'text-[#1863dc]', bg: 'bg-[#f1f5ff] border-[#d0dcf5] hover:border-[#1863dc]' },
+    { label: 'Smart Revision', icon: BrainCircuit, href: '/revision', color: 'text-[#9b60aa]', bg: 'bg-[#fcf0ff] border-[#f2d5fc] hover:border-[#9b60aa]' },
+    { label: 'Viva Engine', icon: Zap, href: '/viva', color: 'text-[#ff7759]', bg: 'bg-[#fff1ed] border-[#ffdad0] hover:border-[#ff7759]' },
+    { label: 'Knowledge Graph', icon: Activity, href: '/knowledge', color: 'text-[#003c33]', bg: 'bg-[#edfce9] border-[#ccebc5] hover:border-[#003c33]' },
+    { label: 'Practicals', icon: Sparkles, href: '/practicals', color: 'text-[#967d22]', bg: 'bg-[#faf6e8] border-[#eadeb5] hover:border-[#967d22]' },
+    { label: 'Digital Twin', icon: Target, href: '/twin', color: 'text-[#2b8a78]', bg: 'bg-[#eefaf7] border-[#d3ede7] hover:border-[#2b8a78]' },
   ];
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 font-sans text-slate-800 min-h-screen">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 font-sans text-[#212121] min-h-screen bg-white">
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-[#d9d9dd] pb-6">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md border border-rose-100 bg-rose-50/70 text-rose-600 text-[10px] font-bold tracking-wider uppercase mb-3 shadow-sm shadow-rose-50/30">
-            <Flame className="w-3 h-3 text-rose-500 fill-rose-500" /> Academic OS — Active
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 border border-[#ffad9b] bg-[#edfce9] text-[#003c33] text-[9px] font-mono font-bold tracking-wider uppercase mb-3">
+            <Flame className="w-3 h-3 text-[#ff7759] fill-[#ff7759]" /> ArchAdemia — Active
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-slate-800">Dashboard</h2>
-          <p className="text-slate-500 mt-1 text-xs">AI-powered overview of your academic performance.</p>
+          <h2 className="text-3xl font-display tracking-tight text-black uppercase">Dashboard</h2>
+          <p className="text-[#75758a] mt-1 text-xs font-sans">AI-powered overview of your academic performance.</p>
         </div>
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#75758a] absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search subjects..."
-            className="w-full md:w-80 bg-white/70 border border-slate-200/80 rounded-lg pl-10 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 outline-none focus:border-blue-500/50 focus:bg-white focus:ring-4 focus:ring-blue-100/30 transition-all shadow-sm"
+            className="w-full md:w-80 bg-white border border-[#d9d9dd] rounded pl-10 pr-4 py-2 text-xs text-[#212121] placeholder-[#93939f] outline-none focus:border-[#9b60aa] transition-colors"
           />
         </div>
       </header>
 
       {/* AI Tip Banner */}
       {aiTip && (
-        <div className="bg-white/70 backdrop-blur-sm border border-indigo-100/80 rounded-xl px-5 py-4 flex items-start gap-3 shadow-sm shadow-indigo-50/20 relative z-10">
-          <Sparkles className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5 animate-pulse" />
-          <p className="text-sm text-slate-600 leading-relaxed">{aiTip}</p>
+        <div className="bg-[#f1f5ff] border border-[#d9d9dd] rounded px-5 py-4 flex items-start gap-3 relative z-10">
+          <Sparkles className="w-4 h-4 text-[#1863dc] shrink-0 mt-0.5 animate-pulse" />
+          <p className="text-xs text-[#212121] leading-relaxed font-sans">{aiTip}</p>
         </div>
       )}
 
       {/* Health + Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="md:col-span-1 bg-white/70 backdrop-blur-sm border border-slate-200/60 rounded-xl p-6 flex flex-col items-center justify-center text-center relative overflow-hidden shadow-sm">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent pointer-events-none" />
-          <div className="w-10 h-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-3 relative z-10">
-            <Activity className="w-5 h-5 text-emerald-600" />
+        <div className="md:col-span-1 bg-white border border-[#d9d9dd] rounded p-6 flex flex-col items-center justify-center text-center relative shadow-none">
+          <div className="w-9 h-9 rounded bg-[#edfce9] border border-[#003c33]/30 flex items-center justify-center mb-3">
+            <Activity className="w-4 h-4 text-[#003c33]" />
           </div>
-          <div className="text-4xl font-extrabold text-slate-800 relative z-10">{Math.round(healthScore)}</div>
-          <div className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-wider relative z-10">Academic Health Score</div>
-          <div className="w-full mt-4 h-1.5 bg-slate-100 rounded-full overflow-hidden relative z-10">
-            <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-1000 rounded-full" style={{ width: `${healthScore}%` }} />
+          <div className="text-3xl font-mono font-bold text-black">{Math.round(healthScore)}</div>
+          <div className="text-[9px] font-mono text-[#75758a] mt-1 uppercase tracking-wider">Academic Health Score</div>
+          <div className="w-full mt-4 h-1 bg-[#eeece7] rounded overflow-hidden">
+            <div className="h-full bg-black transition-all duration-1000" style={{ width: `${healthScore}%` }} />
           </div>
         </div>
 
         <div className="md:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-3">
           {quickActions.map((action, i) => (
             <Link key={i} to={action.href}
-              className={`flex items-center gap-3 p-4 rounded-xl border bg-white/70 backdrop-blur-sm transition-all cursor-pointer group shadow-sm ${action.bg}`}
+              className={`flex items-center gap-3 p-4 rounded border transition-all cursor-pointer group shadow-none ${action.bg}`}
             >
-              <action.icon className={`w-5 h-5 ${action.color} group-hover:scale-110 transition-transform`} />
-              <span className="text-sm font-semibold text-slate-700">{action.label}</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400 ml-auto group-hover:translate-x-0.5 transition-transform" />
+              <action.icon className={`w-4 h-4 ${action.color} group-hover:scale-110 transition-transform`} />
+              <span className="text-xs font-mono uppercase tracking-wider font-bold">{action.label}</span>
+              <ChevronRight className="w-3.5 h-3.5 text-[#75758a] ml-auto group-hover:translate-x-0.5 transition-transform" />
             </Link>
           ))}
         </div>
@@ -233,50 +232,60 @@ export default function Dashboard() {
       {/* Active Subjects */}
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Subjects</h3>
-          {loading && <Loader2 className="w-4 h-4 text-slate-400 animate-spin" />}
+          <h3 className="text-xs font-mono font-bold text-[#75758a] uppercase tracking-wider">Active Subjects</h3>
+          {loading && <Loader2 className="w-4 h-4 text-[#75758a] animate-spin" />}
         </div>
 
         {filteredSubjects.length === 0 && !loading ? (
-          <div className="text-center py-16 bg-white/70 backdrop-blur-sm rounded-xl border border-slate-200/80 border-dashed shadow-sm">
-            <BookOpen className="w-10 h-10 text-slate-300 mx-auto mb-4" />
-            <h4 className="text-slate-700 font-bold text-sm">No subjects found</h4>
-            <p className="text-slate-400 text-xs mt-1">Add subjects or upload resources to get started.</p>
+          <div className="text-center py-16 bg-[#eeece7]/40 rounded border border-[#d9d9dd] border-dashed shadow-none">
+            <BookOpen className="w-10 h-10 text-[#75758a] mx-auto mb-4" />
+            <h4 className="text-black font-bold text-sm font-display">No subjects found</h4>
+            <p className="text-[#75758a] text-xs mt-1">Add subjects or upload resources to get started.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredSubjects.map(subj => {
+            {filteredSubjects.map((subj, idx) => {
               const progress = getSubjectProgress(subj);
               const examDays = getExamDays(subj.examDate);
               const { bar, label, text } = statusColor(progress);
+              
+              const cardColors = [
+                { bg: 'bg-[#edfce9] hover:bg-white', border: 'border-[#ccebc5] hover:border-black', bar: 'bg-[#003c33]' },
+                { bg: 'bg-[#f1f5ff] hover:bg-white', border: 'border-[#d0dcf5] hover:border-black', bar: 'bg-[#1863dc]' },
+                { bg: 'bg-[#fff1ed] hover:bg-white', border: 'border-[#ffdad0] hover:border-black', bar: 'bg-[#ff7759]' },
+                { bg: 'bg-[#fcf0ff] hover:bg-white', border: 'border-[#f2d5fc] hover:border-black', bar: 'bg-[#9b60aa]' },
+                { bg: 'bg-[#faf6e8] hover:bg-white', border: 'border-[#eadeb5] hover:border-black', bar: 'bg-[#967d22]' },
+              ];
+              const colorCfg = cardColors[idx % cardColors.length];
+
               return (
                 <Link to={`/subject/${subj.id}`} key={subj.id}
-                  className="bg-white/70 backdrop-blur-sm border border-slate-200/60 hover:bg-white hover:border-slate-300 hover:shadow-md p-6 rounded-xl transition-all duration-200 group cursor-pointer flex flex-col justify-between min-h-[165px]"
+                  className={`${colorCfg.bg} border ${colorCfg.border} p-6 rounded transition-all duration-200 group cursor-pointer flex flex-col justify-between min-h-[165px] shadow-none`}
                 >
                   <div className="flex justify-between items-start mb-5">
                     <div>
-                      <div className="text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-1">{subj.code || 'SUBJ'}</div>
-                      <h4 className="font-bold text-base text-slate-800 group-hover:text-blue-600 transition-colors leading-snug">{subj.name}</h4>
+                      <div className="text-[9px] font-mono font-bold text-[#75758a] tracking-wider uppercase mb-1">{subj.code || 'SUBJ'}</div>
+                      <h4 className="font-display font-medium text-lg text-black group-hover:text-[#1863dc] transition-colors leading-snug">{subj.name}</h4>
                     </div>
                     {examDays !== null && (
-                      <div className={`text-right shrink-0 ml-3 ${examDays <= 7 ? 'text-rose-500' : 'text-slate-400'}`}>
-                        <div className="text-2xl font-black">{examDays}</div>
-                        <div className="text-[10px] font-bold uppercase">days</div>
+                      <div className={`text-right shrink-0 ml-3 ${examDays <= 7 ? 'text-[#ff7759]' : 'text-[#75758a]'}`}>
+                        <div className="text-2xl font-mono font-bold">{examDays}</div>
+                        <div className="text-[9px] font-mono font-bold uppercase tracking-wider">days</div>
                       </div>
                     )}
                   </div>
 
                   <div>
-                    <div className="flex justify-between text-xs mb-1.5">
-                      <span className="text-slate-400 font-medium text-[11px]">Syllabus Coverage</span>
-                      <span className="font-bold text-slate-700 text-[11px]">{progress}%</span>
+                    <div className="flex justify-between text-xs mb-1.5 font-mono text-[10px] uppercase tracking-wider">
+                      <span className="text-[#75758a]">Syllabus Coverage</span>
+                      <span className="font-bold text-black">{progress}%</span>
                     </div>
-                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full bg-gradient-to-r ${bar} transition-all duration-700`} style={{ width: `${progress}%` }} />
+                    <div className="h-1 bg-white/60 rounded overflow-hidden">
+                      <div className={`h-full ${colorCfg.bar} transition-all duration-700`} style={{ width: `${progress}%` }} />
                     </div>
                     <div className="mt-4 flex justify-between items-center">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${label}`}>{text}</span>
-                      <span className="text-xs text-blue-500 group-hover:translate-x-1 transition-transform">→</span>
+                      <span className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${label}`}>{text}</span>
+                      <span className="text-xs text-[#1863dc] group-hover:translate-x-1 transition-transform">→</span>
                     </div>
                   </div>
                 </Link>
@@ -289,27 +298,27 @@ export default function Dashboard() {
       {/* Recent Sessions */}
       {sessions.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Recent Study Sessions</h3>
+          <h3 className="text-xs font-mono font-bold text-[#75758a] uppercase tracking-wider">Recent Study Sessions</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {sessions.map(session => (
               <Link
                 key={session.id}
                 to={`/session/${session.id}`}
-                className="bg-white/70 backdrop-blur-sm border border-slate-200/60 hover:bg-white hover:border-indigo-200 hover:shadow-md p-5 rounded-xl transition-all group cursor-pointer flex items-center gap-4"
+                className="bg-[#eeece7] border border-[#d9d9dd] hover:bg-white hover:border-black p-5 rounded transition-all group cursor-pointer flex items-center gap-4 shadow-none"
               >
-                <div className="w-10 h-10 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
-                  <PlayCircle className="w-5 h-5 text-indigo-500" />
+                <div className="w-9 h-9 rounded bg-white border border-[#d9d9dd] flex items-center justify-center shrink-0">
+                  <PlayCircle className="w-4 h-4 text-black" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-slate-700 truncate group-hover:text-indigo-600 transition-colors">
+                  <div className="text-xs font-mono font-bold text-black truncate group-hover:text-[#1863dc] transition-colors uppercase tracking-wider">
                     {session.goalMode || 'Study Session'}
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
+                  <div className="text-[10px] text-[#75758a] mt-0.5 flex items-center gap-1 font-mono">
                     <Clock className="w-3 h-3" />
                     {new Date(session.startedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                <ChevronRight className="w-4 h-4 text-[#75758a] group-hover:text-black group-hover:translate-x-0.5 transition-all shrink-0" />
               </Link>
             ))}
           </div>
@@ -318,9 +327,9 @@ export default function Dashboard() {
 
       {/* Offline CS & Math Solvers */}
       <div className="space-y-4 pt-4">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Offline Study Solvers (No AI)</h3>
-        <div className="bg-white/70 backdrop-blur-sm border border-slate-200/60 rounded-xl p-6 md:p-8 shadow-sm">
-          <div className="flex gap-2 border-b border-slate-100 pb-3 mb-6">
+        <h3 className="text-xs font-mono font-bold text-[#75758a] uppercase tracking-wider">Offline Study Solvers (No AI)</h3>
+        <div className="bg-white border border-[#d9d9dd] rounded p-6 md:p-8 shadow-none">
+          <div className="flex gap-2 border-b border-[#d9d9dd] pb-3 mb-6">
             {[
               { id: 'complexity', label: 'Big-O Complexity' },
               { id: 'bayes', label: 'Bayes Probability' },
@@ -329,10 +338,10 @@ export default function Dashboard() {
               <button
                 key={tab.id}
                 onClick={() => setSolverType(tab.id as any)}
-                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
                   solverType === tab.id
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+                    ? 'bg-black text-white border border-black rounded-full'
+                    : 'text-[#75758a] hover:bg-[#eeece7] hover:text-black border border-transparent rounded-full'
                 }`}
               >
                 {tab.label}
@@ -344,31 +353,31 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Algorithm Expression</label>
+                  <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Algorithm Expression</label>
                   <input
                     type="text"
                     value={complexityExpr}
                     onChange={e => setComplexityExpr(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-4 py-2.5 text-xs text-slate-800 outline-none focus:border-blue-500 transition-colors"
+                    className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-[#212121] outline-none focus:border-[#9b60aa] transition-colors"
                   />
                 </div>
                 <button
                   onClick={solveComplexity}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                  className="bg-black hover:bg-zinc-800 text-white px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Calculate Big-O
                 </button>
               </div>
 
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 min-h-[140px] flex flex-col justify-center">
+              <div className="bg-[#eeece7] border border-[#d9d9dd] rounded p-5 min-h-[140px] flex flex-col justify-center shadow-none">
                 {complexityResult ? (
                   <div className="space-y-2">
-                    <div className="text-xs text-slate-400 font-semibold uppercase">Resulting Complexity</div>
-                    <div className="text-3xl font-black text-blue-600">{complexityResult.dominant}</div>
-                    <p className="text-xs text-slate-600 leading-relaxed font-medium">{complexityResult.explanation}</p>
+                    <div className="text-[10px] font-mono text-[#75758a] font-semibold uppercase tracking-wider">Resulting Complexity</div>
+                    <div className="text-3xl font-mono font-bold text-black">{complexityResult.dominant}</div>
+                    <p className="text-xs text-[#212121] leading-relaxed font-medium font-sans">{complexityResult.explanation}</p>
                   </div>
                 ) : (
-                  <div className="text-slate-400 text-center py-4 text-xs font-medium">Input expression and calculate to inspect Big-O execution class.</div>
+                  <div className="text-[#75758a] text-center py-4 text-xs font-mono uppercase tracking-wider">Input expression and calculate to inspect Big-O execution class.</div>
                 )}
               </div>
             </div>
@@ -379,51 +388,51 @@ export default function Dashboard() {
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Prior P(H)</label>
+                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Prior P(H)</label>
                     <input
                       type="text"
                       value={bayesPrior}
                       onChange={e => setBayesPrior(e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 outline-none focus:border-blue-500"
+                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Sensitivity P(E|H)</label>
+                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Sensitivity P(E|H)</label>
                     <input
                       type="text"
                       value={bayesSensitivity}
                       onChange={e => setBayesSensitivity(e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 outline-none focus:border-blue-500"
+                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">False Alarm P(E|~H)</label>
+                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">False Alarm P(E|~H)</label>
                     <input
                       type="text"
                       value={bayesFalseAlarm}
                       onChange={e => setBayesFalseAlarm(e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 outline-none focus:border-blue-500"
+                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
                     />
                   </div>
                 </div>
                 <button
                   onClick={solveBayes}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                  className="bg-black hover:bg-zinc-800 text-white px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Solve Posterior
                 </button>
               </div>
 
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 min-h-[140px] flex flex-col justify-center">
+              <div className="bg-[#eeece7] border border-[#d9d9dd] rounded p-5 min-h-[140px] flex flex-col justify-center shadow-none">
                 {bayesResult ? (
                   <div className="space-y-2">
-                    <div className="text-xs text-slate-400 font-semibold uppercase">Posterior P(H|E)</div>
-                    <div className="text-3xl font-black text-blue-600">{bayesResult.posterior}</div>
-                    <code className="block text-[10px] bg-white border border-slate-100 p-2 rounded text-indigo-600 font-mono">{bayesResult.formula}</code>
-                    <p className="text-xs text-slate-600 leading-relaxed font-medium">{bayesResult.explanation}</p>
+                    <div className="text-[10px] font-mono text-[#75758a] font-semibold uppercase tracking-wider">Posterior P(H|E)</div>
+                    <div className="text-3xl font-mono font-bold text-black">{bayesResult.posterior}</div>
+                    <code className="block text-[10px] bg-white border border-[#d9d9dd] p-2 rounded text-[#1863dc] font-mono">{bayesResult.formula}</code>
+                    <p className="text-xs text-[#212121] leading-relaxed font-medium font-sans">{bayesResult.explanation}</p>
                   </div>
                 ) : (
-                  <div className="text-slate-400 text-center py-4 text-xs font-medium">Configure probabilities to compute Bayes theorem posterior weight.</div>
+                  <div className="text-[#75758a] text-center py-4 text-xs font-mono uppercase tracking-wider">Configure probabilities to compute Bayes theorem posterior weight.</div>
                 )}
               </div>
             </div>
@@ -434,29 +443,29 @@ export default function Dashboard() {
               <div className="space-y-4">
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Interval (days)</label>
+                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Interval (days)</label>
                     <input
                       type="number"
                       value={spacedInterval}
                       onChange={e => setSpacedInterval(e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 outline-none focus:border-blue-500"
+                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Ease Factor</label>
+                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Ease Factor</label>
                     <input
                       type="text"
                       value={spacedEase}
                       onChange={e => setSpacedEase(e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 outline-none focus:border-blue-500"
+                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-slate-400 uppercase mb-2">Recall Quality</label>
+                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Recall Quality</label>
                     <select
                       value={spacedRating}
                       onChange={e => setSpacedRating(e.target.value)}
-                      className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-800 outline-none focus:border-blue-500 cursor-pointer"
+                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa] cursor-pointer font-sans"
                     >
                       <option value="0">0 - Again (Forgot)</option>
                       <option value="1">1 - Hard</option>
@@ -469,22 +478,22 @@ export default function Dashboard() {
                 </div>
                 <button
                   onClick={solveSpaced}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                  className="bg-black hover:bg-zinc-800 text-white px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Schedule Next Review
                 </button>
               </div>
 
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 min-h-[140px] flex flex-col justify-center">
+              <div className="bg-[#eeece7] border border-[#d9d9dd] rounded p-5 min-h-[140px] flex flex-col justify-center shadow-none">
                 {spacedResult ? (
                   <div className="space-y-2">
-                    <div className="text-xs text-slate-400 font-semibold uppercase">Schedule Interval</div>
-                    <div className="text-3xl font-black text-blue-600">{spacedResult.nextInterval}</div>
-                    <div className="text-[10px] text-slate-500 font-bold">New Ease Factor: {spacedResult.newEase}</div>
-                    <p className="text-xs text-slate-600 leading-relaxed font-medium">{spacedResult.explanation}</p>
+                    <div className="text-[10px] font-mono text-[#75758a] font-semibold uppercase tracking-wider">Schedule Interval</div>
+                    <div className="text-3xl font-mono font-bold text-black">{spacedResult.nextInterval}</div>
+                    <div className="text-[10px] font-mono text-[#75758a] font-bold uppercase tracking-wider">New Ease Factor: {spacedResult.newEase}</div>
+                    <p className="text-xs text-[#212121] leading-relaxed font-medium font-sans">{spacedResult.explanation}</p>
                   </div>
                 ) : (
-                  <div className="text-slate-400 text-center py-4 text-xs font-medium">Calculate to schedule flashcard intervals offline using SM-2 rules.</div>
+                  <div className="text-[#75758a] text-center py-4 text-xs font-mono uppercase tracking-wider">Calculate to schedule flashcard intervals offline using SM-2 rules.</div>
                 )}
               </div>
             </div>
