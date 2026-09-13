@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   };
 
   // Skip auth routes and public routes
-  if (pathname.startsWith('/api/auth')) {
+  if (pathname.startsWith('/api/auth') || pathname === '/api/health') {
     return wrapResponse(NextResponse.next());
   }
 
