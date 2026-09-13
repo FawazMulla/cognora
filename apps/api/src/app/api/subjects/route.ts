@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { subjectSchema } from "../../../lib/validators/profile";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { subjects, academicProfiles } from "../../../db/schema";
+import { subjects, academicProfiles, studentTopicProfiles } from "../../../db/schema";
 import { env } from "../../../lib/env";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -15,7 +15,21 @@ export async function GET(request: Request) {
     if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const userSubjects = await db.select().from(subjects).where(eq(subjects.userId, userId));
-    return NextResponse.json({ subjects: userSubjects }, { status: 200 });
+    
+    // Fetch all student topic profiles for this user to calculate actual progress
+    const topicProfiles = await db.select().from(studentTopicProfiles).where(eq(studentTopicProfiles.userId, userId));
+
+    const subjectsWithProgress = userSubjects.map(subj => {
+      const subjectProfiles = topicProfiles.filter(p => p.subjectId === subj.id);
+      // Actual progress is calculated by the number of topic profiles (e.g. 15% per covered topic, capped at 100%)
+      const progress = Math.min(100, subjectProfiles.length * 15);
+      return {
+        ...subj,
+        progress,
+      };
+    });
+
+    return NextResponse.json({ subjects: subjectsWithProgress }, { status: 200 });
   } catch (error) {
     console.error("Subjects GET error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
@@ -49,6 +63,7 @@ export async function POST(request: Request) {
       userId,
       academicProfileId: (profile as any).id,
       name,
+      code: (parsed.data as any).code || null,
       examDate: examDate ? examDate : null,
     }).returning();
 

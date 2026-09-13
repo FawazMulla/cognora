@@ -142,9 +142,15 @@ main,
 .text-slate-200, 
 .text-slate-300, 
 .text-slate-300\/80,
-.text-white,
 .text-gemini-text {
   color: var(--color-cohere-ink) !important;
+}
+
+.text-white,
+.text-white *,
+[class*="text-white"],
+[class*="text-white"] * {
+  color: #ffffff !important;
 }
 
 .text-slate-400,
@@ -292,12 +298,22 @@ svg text {
 /* Ensure white text is preserved on actual dark elements */
 .bg-black,
 .bg-black *,
+[class*="bg-black"],
+[class*="bg-black"] *,
+[class*="bg-[#212121]"],
+[class*="bg-[#212121]"] *,
+.bg-\[\#212121\],
+.bg-\[\#212121\] *,
 .bg-\[\#003c33\],
 .bg-\[\#003c33\] *,
 .bg-\[\#071829\],
 .bg-\[\#071829\] *,
 .bg-\[\#17171c\],
 .bg-\[\#17171c\] *,
+.bg-zinc-800,
+.bg-zinc-800 *,
+.bg-zinc-900,
+.bg-zinc-900 *,
 button.text-white,
 button.text-white *,
 .text-white.bg-black,

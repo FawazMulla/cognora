@@ -19,10 +19,18 @@ export async function POST(
 
     const cardId = params.id;
     const body = await request.json();
-    const { rating } = body; // 0, 1, 2, 3
+    let { rating } = body; // 0, 1, 2, 3 or 'again', 'hard', 'good', 'easy'
 
-    if (rating === undefined || rating < 0 || rating > 3) {
-      return NextResponse.json({ error: "rating must be 0, 1, 2, or 3" }, { status: 400 });
+    if (typeof rating === "string") {
+      const lower = rating.toLowerCase();
+      if (lower === "again") rating = 0;
+      else if (lower === "hard") rating = 1;
+      else if (lower === "good") rating = 2;
+      else if (lower === "easy") rating = 3;
+    }
+
+    if (rating === undefined || typeof rating !== "number" || rating < 0 || rating > 3) {
+      return NextResponse.json({ error: "rating must be 0, 1, 2, or 3, or a valid rating string" }, { status: 400 });
     }
 
     const cards = await db.select().from(flashcards).where(eq(flashcards.id, cardId)).limit(1);

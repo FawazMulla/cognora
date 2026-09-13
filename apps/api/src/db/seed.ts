@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { env } from "../lib/env";
 import { createClient } from "@supabase/supabase-js";
+import { eq } from "drizzle-orm";
 import { 
   users, academicProfiles, subjects, resources, 
   knowledgeGraphNodes, pyqQuestions, flashcards, studySessions,
@@ -59,31 +60,45 @@ async function seed() {
     set: { authId: authUserId }
   }).returning())[0]!;
 
-  // 3. Create Academic Profile (Mumbai Univ, IT, Sem VII)
+  // 3. Create Academic Profile (Mumbai Univ, IT/AIML, Sem VII)
   const profile = (await db.insert(academicProfiles).values({
     userId: user.id,
     university: "Mumbai University",
-    branch: "Information Technology",
+    branch: "Artificial Intelligence & Machine Learning",
     semester: 7
   }).returning())[0]!;
 
-  // 4. Create Subjects
-  const subjectNames = [
-    "Enterprise Network Design",
-    "IT Service Management",
-    "Artificial Intelligence",
-    "Cyber Security and Laws"
+  // 4. Create Subjects — Mumbai University Sem 7 (AI & ML / IT branch)
+  // Clean up any existing data for this user in reverse FK-dependency order
+  await db.delete(flashcards).where(eq(flashcards.userId, user.id));
+  await db.delete(pyqQuestions).where(eq(pyqQuestions.userId, user.id));
+  await db.delete(studentTopicProfiles).where(eq(studentTopicProfiles.userId, user.id));
+  await db.delete(studySessions).where(eq(studySessions.userId, user.id));
+  await db.delete(knowledgeGraphNodes).where(eq(knowledgeGraphNodes.userId, user.id));
+  await db.delete(resources).where(eq(resources.userId, user.id));
+  await db.delete(subjects).where(eq(subjects.userId, user.id));
+
+  const subjectData = [
+    { name: "AI and DS – II",                     code: "AIDS-701" },
+    { name: "Internet of Everything",              code: "IOE-702"  },
+    { name: "Secure Application Development",      code: "SAD-703"  },
+    { name: "Elective I: Deep Learning",           code: "DL-704"   },
+    { name: "Mini Project / Seminar",              code: "MP-705"   },
   ];
 
-  const createdSubjects = [];
-  for (const name of subjectNames) {
-    const sub = (await db.insert(subjects).values({
+  const examBase = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const createdSubjects: any[] = [];
+  for (const subj of subjectData) {
+    const inserted = await db.insert(subjects).values({
       userId: user.id,
       academicProfileId: profile.id,
-      name,
-      examDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
-    }).returning())[0]!;
-    createdSubjects.push(sub);
+      name: subj.name,
+      code: subj.code,
+      examDate: new Date(examBase.getTime() + createdSubjects.length * 2 * 24 * 60 * 60 * 1000).toISOString()
+    }).returning();
+    if (inserted[0]) {
+      createdSubjects.push(inserted[0]);
+    }
   }
 
   // 5. Create Student Model
@@ -95,8 +110,8 @@ async function seed() {
     preferredAnswerLength: 'medium'
   }).onConflictDoNothing();
 
-  // 6. Populate a Subject fully (Artificial Intelligence)
-  const aiSubject = createdSubjects.find(s => s.name === "Artificial Intelligence");
+  // 6. Populate a Subject fully (AI and DS – II)
+  const aiSubject = createdSubjects.find(s => s.name === "AI and DS – II");
 
   if (aiSubject) {
     // 6.1 Resource

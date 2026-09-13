@@ -67,27 +67,27 @@ Each prediction must have:
       const fallbackPredictions = [
         {
           id: "pred-1",
-          questionText: `Explain the core concepts of ${weakTopics[0]?.topic || "Artificial Intelligence Search"} and how it is applied in university examinations.`,
+          questionText: `Explain the core concepts of ${weakTopics[0]?.topic || `Introduction to ${subject.name}`} and describe how it is applied in university examinations.`,
           probability: 0.88,
-          reason: "This topic has been flagged as a key weakness in your quiz assessments and historically represents 15% of marks.",
+          reason: "This topic is a key foundational module and historically represents 15% of marks.",
           marks: 10,
           unit: "Unit 1"
         },
         {
           id: "pred-2",
-          questionText: "Differentiate between state space representation and heuristic evaluation functions in informed search strategies.",
+          questionText: `Differentiate between different implementation models and frameworks used to support ${subject.name} strategies.`,
           probability: 0.79,
           reason: "Based on 3 repetitions across the 2021, 2022, and 2023 papers.",
           marks: 5,
-          unit: "Unit 1"
+          unit: "Unit 2"
         },
         {
           id: "pred-3",
-          questionText: "Discuss the limitations of simple hill climbing and describe how Simulated Annealing resolves local maxima issues.",
+          questionText: `Discuss the key design methodologies, limitations, and security considerations when configuring ${subject.name} solutions.`,
           probability: 0.72,
           reason: "Syllabus core topic that has not appeared in the last two terms.",
           marks: 10,
-          unit: "Unit 2"
+          unit: "Unit 3"
         }
       ];
       return NextResponse.json({ predictions: fallbackPredictions });

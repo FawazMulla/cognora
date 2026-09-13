@@ -37,3 +37,8 @@ export const fetchStudentModel = () => fetchApi<any>("/student-model");
 export const fetchSubjects = () => fetchApi<any>("/subjects");
 export const fetchSubjectAnalytics = (id: string) => fetchApi<any>(`/subjects/${id}/analytics`);
 export const generateHomework = (data: any) => fetchApi<any>("/homework/generate", { method: "POST", body: JSON.stringify(data) });
+export const generateAnswer = (data: any) => fetchApi<any>("/answers/generate", { method: "POST", body: JSON.stringify(data) });
+export const optimizeAnswer = (data: any) => fetchApi<any>("/answers/optimize", { method: "POST", body: JSON.stringify(data) });
+export const generatePractical = (data: any) => fetchApi<any>("/practicals/generate", { method: "POST", body: JSON.stringify(data) });
+export const generateVivaQuestion = (data: any) => fetchApi<any>("/viva/generate", { method: "POST", body: JSON.stringify(data) });
+export const evaluateVivaAnswer = (data: any) => fetchApi<any>("/viva/evaluate", { method: "POST", body: JSON.stringify(data) });

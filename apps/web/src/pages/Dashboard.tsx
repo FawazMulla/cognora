@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Activity, Search, Flame, Target, Clock, Sparkles, BrainCircuit, Loader2, ChevronRight, Zap, PlayCircle } from 'lucide-react';
+import { BookOpen, Activity, Search, Flame, Target, Clock, Sparkles, BrainCircuit, Loader2, ChevronRight, Zap, PlayCircle, X, Layers, FileText, HelpCircle, Award, Edit3 } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 
-type Subject = { id: string; name: string; code?: string; examDate?: string };
+type Subject = { id: string; name: string; code?: string; examDate?: string; progress?: number };
 type HealthData = { healthScore: number; updatedAt: string };
 type Session = { id: string; goalMode?: string; startedAt: string; subjectId?: string };
 
@@ -14,6 +14,15 @@ export default function Dashboard() {
   const [aiTip, setAiTip] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+
+
+
+  // Add Subject Modal State
+  const [showAddSubject, setShowAddSubject] = useState(false);
+  const [newSubjectName, setNewSubjectName] = useState('');
+  const [newSubjectDate, setNewSubjectDate] = useState('');
+  const [addSubjectLoading, setAddSubjectLoading] = useState(false);
+  const [addSubjectError, setAddSubjectError] = useState('');
 
   // Offline Solvers State
   const [solverType, setSolverType] = useState<'complexity' | 'bayes' | 'spaced'>('complexity');
@@ -108,6 +117,40 @@ export default function Dashboard() {
     });
   };
 
+
+
+  const handleAddSubjectSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSubjectName.trim()) {
+      setAddSubjectError('Subject name is required.');
+      return;
+    }
+    setAddSubjectLoading(true);
+    setAddSubjectError('');
+    try {
+      await fetchApi('/api/subjects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newSubjectName.trim(),
+          examDate: newSubjectDate || undefined
+        })
+      });
+      setShowAddSubject(false);
+      setNewSubjectName('');
+      setNewSubjectDate('');
+      
+      // Reload subjects
+      const subjectsRes = await fetchApi('/api/subjects');
+      setSubjects(subjectsRes.subjects || []);
+    } catch (err: any) {
+      console.error('Add subject error:', err);
+      setAddSubjectError(err.message || 'Failed to add subject.');
+    } finally {
+      setAddSubjectLoading(false);
+    }
+  };
+
   useEffect(() => {
     async function loadDashboard() {
       setLoading(true);
@@ -118,9 +161,37 @@ export default function Dashboard() {
           fetchApi('/api/sessions')
         ]);
 
-        if (subjectsRes.status === 'fulfilled') setSubjects(subjectsRes.value.subjects || []);
+        let loadedSubjs: Subject[] = [];
+        if (subjectsRes.status === 'fulfilled' && subjectsRes.value?.subjects?.length > 0) {
+          loadedSubjs = subjectsRes.value.subjects;
+        } else {
+          // Check local profile fallback
+          const localProfileStr = localStorage.getItem('user_profile');
+          if (localProfileStr) {
+            try {
+              const parsed = JSON.parse(localProfileStr);
+              if (parsed.subjects && Array.isArray(parsed.subjects)) {
+                loadedSubjs = parsed.subjects.map((s: any, idx: number) => ({
+                  id: `sub-loc-${idx}`,
+                  name: typeof s === 'string' ? s : s.name,
+                  code: typeof s === 'string' ? 'SUBJ' : (s.code || 'CS'),
+                  progress: 65
+                }));
+              }
+            } catch (e) { /* ignore */ }
+          }
+          if (loadedSubjs.length === 0) {
+            loadedSubjs = [
+              { id: 'sub-1', name: 'AI and DS – II', code: 'AIDS-701', progress: 75 },
+              { id: 'sub-2', name: 'Internet of Everything', code: 'IOE-702', progress: 60 },
+              { id: 'sub-3', name: 'Secure Application Development', code: 'SAD-703', progress: 45 }
+            ];
+          }
+        }
+
+        setSubjects(loadedSubjs);
         if (healthRes.status === 'fulfilled') setHealth(healthRes.value);
-        if (sessionsRes.status === 'fulfilled') setSessions((sessionsRes.value.sessions || []).slice(0, 3));
+        if (sessionsRes.status === 'fulfilled') setSessions((sessionsRes.value?.sessions || []).slice(0, 3));
       } catch (err) {
         console.error('Dashboard load error:', err);
       } finally {
@@ -139,10 +210,20 @@ export default function Dashboard() {
     setAiTip(tips[Math.floor(Math.random() * tips.length)]);
   }, []);
 
-  const getSubjectProgress = (subj: Subject): number => {
-    const seed = subj.id.charCodeAt(0) + subj.name.length;
-    return 20 + (seed % 60);
-  };
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowAddSubject(false);
+        setAddSubjectError('');
+        setNewSubjectName('');
+        setNewSubjectDate('');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+
 
   const getExamDays = (examDate?: string): number | null => {
     if (!examDate) return null;
@@ -163,14 +244,25 @@ export default function Dashboard() {
 
   const healthScore = health?.healthScore ?? 72;
 
-  const quickActions = [
-    { label: 'PYQ Intelligence', icon: BookOpen, href: '/pyq', color: 'text-[#1863dc]', bg: 'bg-[#f1f5ff] border-[#d0dcf5] hover:border-[#1863dc]' },
-    { label: 'Smart Revision', icon: BrainCircuit, href: '/revision', color: 'text-[#9b60aa]', bg: 'bg-[#fcf0ff] border-[#f2d5fc] hover:border-[#9b60aa]' },
-    { label: 'Viva Engine', icon: Zap, href: '/viva', color: 'text-[#ff7759]', bg: 'bg-[#fff1ed] border-[#ffdad0] hover:border-[#ff7759]' },
-    { label: 'Knowledge Graph', icon: Activity, href: '/knowledge', color: 'text-[#003c33]', bg: 'bg-[#edfce9] border-[#ccebc5] hover:border-[#003c33]' },
-    { label: 'Practicals', icon: Sparkles, href: '/practicals', color: 'text-[#967d22]', bg: 'bg-[#faf6e8] border-[#eadeb5] hover:border-[#967d22]' },
-    { label: 'Digital Twin', icon: Target, href: '/twin', color: 'text-[#2b8a78]', bg: 'bg-[#eefaf7] border-[#d3ede7] hover:border-[#2b8a78]' },
+  const [activeGoalMode, setActiveGoalMode] = useState<string>('IAE Mode');
+
+  const goalModes = [
+    { mode: 'Study Mode', desc: 'Concept learning & syllabus mastery' },
+    { mode: 'IAE Mode', desc: 'Internal Assessment Exam (2M/5M/10M notes)' },
+    { mode: 'Exam Mode', desc: 'Topper answers & predicted PYQs' },
+    { mode: 'Crash Course Mode', desc: 'Last-night emergency cramming' },
   ];
+
+  const quickActions = [
+    { label: 'Syllabus & Units', icon: Layers, href: '/syllabus', color: 'text-[#1863dc]', bg: 'bg-[#f1f5ff] border-[#d0dcf5] hover:border-[#1863dc]' },
+    { label: 'IAE & Exam Notes', icon: FileText, href: '/exam-notes', color: 'text-[#9b60aa]', bg: 'bg-[#fcf0ff] border-[#f2d5fc] hover:border-[#9b60aa]' },
+    { label: 'Question Bank (QB)', icon: HelpCircle, href: '/question-bank', color: 'text-[#003c33]', bg: 'bg-[#edfce9] border-[#ccebc5] hover:border-[#003c33]' },
+    { label: 'Structured Answers', icon: Award, href: '/answers', color: 'text-[#ff7759]', bg: 'bg-[#fff1ed] border-[#ffdad0] hover:border-[#ff7759]' },
+    { label: 'Answer Optimizer', icon: Edit3, href: '/answer-optimizer', color: 'text-[#2b8a78]', bg: 'bg-[#eefaf7] border-[#d3ede7] hover:border-[#2b8a78]' },
+    { label: 'PYQ Intelligence', icon: BookOpen, href: '/pyq', color: 'text-[#1863dc]', bg: 'bg-[#f1f5ff] border-[#d0dcf5] hover:border-[#1863dc]' },
+  ];
+
+
 
   return (
     <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 font-sans text-[#212121] min-h-screen bg-white">
@@ -203,6 +295,37 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Goal & Mode Selector Bar */}
+      <div className="bg-[#eeece7]/50 border border-[#d9d9dd] rounded-xl p-4 space-y-3">
+        <div className="flex justify-between items-center">
+          <div className="text-[10px] font-mono text-[#75758a] uppercase tracking-widest font-bold flex items-center gap-1.5">
+            <Target className="w-3.5 h-3.5 text-black" /> Select Academic Objective / Mode
+          </div>
+          <span className="text-[10px] font-mono text-black font-bold uppercase bg-white border border-[#d9d9dd] px-2.5 py-0.5 rounded-full">
+            Active: {activeGoalMode}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {goalModes.map((item) => (
+            <button
+              key={item.mode}
+              onClick={() => setActiveGoalMode(item.mode)}
+              className={`p-3 rounded-lg border text-left transition-all cursor-pointer ${
+                activeGoalMode === item.mode
+                  ? 'bg-black text-white border-black shadow-sm'
+                  : 'bg-white text-[#212121] border-[#d9d9dd] hover:border-black'
+              }`}
+            >
+              <div className="text-xs font-mono font-bold uppercase tracking-wider">{item.mode}</div>
+              <div className={`text-[10px] mt-0.5 ${activeGoalMode === item.mode ? 'text-slate-300' : 'text-[#75758a]'}`}>
+                {item.desc}
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Health + Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="md:col-span-1 bg-white border border-[#d9d9dd] rounded p-6 flex flex-col items-center justify-center text-center relative shadow-none">
@@ -233,7 +356,15 @@ export default function Dashboard() {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h3 className="text-xs font-mono font-bold text-[#75758a] uppercase tracking-wider">Active Subjects</h3>
-          {loading && <Loader2 className="w-4 h-4 text-[#75758a] animate-spin" />}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowAddSubject(true)}
+              className="text-xs font-semibold text-black hover:bg-[#eeece7] border border-[#d9d9dd] px-3.5 py-1.5 rounded-full transition-colors cursor-pointer bg-white"
+            >
+              + Add Subject
+            </button>
+            {loading && <Loader2 className="w-4 h-4 text-[#75758a] animate-spin" />}
+          </div>
         </div>
 
         {filteredSubjects.length === 0 && !loading ? (
@@ -245,7 +376,7 @@ export default function Dashboard() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredSubjects.map((subj, idx) => {
-              const progress = getSubjectProgress(subj);
+              const progress = subj.progress ?? 0;
               const examDays = getExamDays(subj.examDate);
               const { bar, label, text } = statusColor(progress);
               
@@ -325,181 +456,91 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Offline CS & Math Solvers */}
-      <div className="space-y-4 pt-4">
-        <h3 className="text-xs font-mono font-bold text-[#75758a] uppercase tracking-wider">Offline Study Solvers (No AI)</h3>
-        <div className="bg-white border border-[#d9d9dd] rounded p-6 md:p-8 shadow-none">
-          <div className="flex gap-2 border-b border-[#d9d9dd] pb-3 mb-6">
-            {[
-              { id: 'complexity', label: 'Big-O Complexity' },
-              { id: 'bayes', label: 'Bayes Probability' },
-              { id: 'spaced', label: 'Spaced Repetition (SM-2)' }
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setSolverType(tab.id as any)}
-                className={`px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
-                  solverType === tab.id
-                    ? 'bg-black text-white border border-black rounded-full'
-                    : 'text-[#75758a] hover:bg-[#eeece7] hover:text-black border border-transparent rounded-full'
-                }`}
+
+
+      {/* Add Subject Modal */}
+      {showAddSubject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white border border-[#d9d9dd] w-full max-w-md rounded-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in duration-200">
+            <header className="p-6 border-b border-[#d9d9dd] flex justify-between items-center bg-white">
+              <h3 className="text-sm font-bold text-black uppercase tracking-wider flex items-center gap-2 font-display">
+                <BookOpen className="w-4 h-4 text-black" />
+                Add New Subject
+              </h3>
+              <button 
+                onClick={() => {
+                  setShowAddSubject(false);
+                  setAddSubjectError('');
+                  setNewSubjectName('');
+                  setNewSubjectDate('');
+                }}
+                className="text-[#75758a] hover:text-black p-1.5 rounded-full hover:bg-[#eeece7] transition-colors cursor-pointer"
               >
-                {tab.label}
+                <X className="w-4 h-4" />
               </button>
-            ))}
+            </header>
+            
+            <form onSubmit={handleAddSubjectSubmit} className="p-6 space-y-5 bg-white">
+              {addSubjectError && (
+                <div className="bg-[#b30000]/10 border border-[#b30000]/20 text-[#b30000] p-3 rounded text-xs text-center font-semibold">
+                  {addSubjectError}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <label className="block text-[11px] font-mono text-[#75758a] uppercase tracking-wide">Subject Name</label>
+                <input
+                  type="text"
+                  value={newSubjectName}
+                  onChange={e => setNewSubjectName(e.target.value)}
+                  placeholder="e.g. Distributed Systems"
+                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-[#212121] placeholder-[#93939f] outline-none focus:border-[#9b60aa] transition-colors"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-[11px] font-mono text-[#75758a] uppercase tracking-wide">Exam Date (Optional)</label>
+                <input
+                  type="date"
+                  value={newSubjectDate}
+                  onChange={e => setNewSubjectDate(e.target.value)}
+                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-[#212121] outline-none focus:border-[#9b60aa] transition-colors"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setShowAddSubject(false);
+                    setAddSubjectError('');
+                    setNewSubjectName('');
+                    setNewSubjectDate('');
+                  }}
+                  className="bg-transparent hover:bg-[#eeece7] border border-[#d9d9dd] text-[#212121] px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  disabled={addSubjectLoading}
+                  className="bg-black hover:bg-zinc-800 text-white px-6 py-2.5 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  {addSubjectLoading ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Adding...</span>
+                    </>
+                  ) : (
+                    <span>Add Subject</span>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
-
-          {solverType === 'complexity' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Algorithm Expression</label>
-                  <input
-                    type="text"
-                    value={complexityExpr}
-                    onChange={e => setComplexityExpr(e.target.value)}
-                    className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-[#212121] outline-none focus:border-[#9b60aa] transition-colors"
-                  />
-                </div>
-                <button
-                  onClick={solveComplexity}
-                  className="bg-black hover:bg-zinc-800 text-white px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  Calculate Big-O
-                </button>
-              </div>
-
-              <div className="bg-[#eeece7] border border-[#d9d9dd] rounded p-5 min-h-[140px] flex flex-col justify-center shadow-none">
-                {complexityResult ? (
-                  <div className="space-y-2">
-                    <div className="text-[10px] font-mono text-[#75758a] font-semibold uppercase tracking-wider">Resulting Complexity</div>
-                    <div className="text-3xl font-mono font-bold text-black">{complexityResult.dominant}</div>
-                    <p className="text-xs text-[#212121] leading-relaxed font-medium font-sans">{complexityResult.explanation}</p>
-                  </div>
-                ) : (
-                  <div className="text-[#75758a] text-center py-4 text-xs font-mono uppercase tracking-wider">Input expression and calculate to inspect Big-O execution class.</div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {solverType === 'bayes' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Prior P(H)</label>
-                    <input
-                      type="text"
-                      value={bayesPrior}
-                      onChange={e => setBayesPrior(e.target.value)}
-                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Sensitivity P(E|H)</label>
-                    <input
-                      type="text"
-                      value={bayesSensitivity}
-                      onChange={e => setBayesSensitivity(e.target.value)}
-                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">False Alarm P(E|~H)</label>
-                    <input
-                      type="text"
-                      value={bayesFalseAlarm}
-                      onChange={e => setBayesFalseAlarm(e.target.value)}
-                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
-                    />
-                  </div>
-                </div>
-                <button
-                  onClick={solveBayes}
-                  className="bg-black hover:bg-zinc-800 text-white px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  Solve Posterior
-                </button>
-              </div>
-
-              <div className="bg-[#eeece7] border border-[#d9d9dd] rounded p-5 min-h-[140px] flex flex-col justify-center shadow-none">
-                {bayesResult ? (
-                  <div className="space-y-2">
-                    <div className="text-[10px] font-mono text-[#75758a] font-semibold uppercase tracking-wider">Posterior P(H|E)</div>
-                    <div className="text-3xl font-mono font-bold text-black">{bayesResult.posterior}</div>
-                    <code className="block text-[10px] bg-white border border-[#d9d9dd] p-2 rounded text-[#1863dc] font-mono">{bayesResult.formula}</code>
-                    <p className="text-xs text-[#212121] leading-relaxed font-medium font-sans">{bayesResult.explanation}</p>
-                  </div>
-                ) : (
-                  <div className="text-[#75758a] text-center py-4 text-xs font-mono uppercase tracking-wider">Configure probabilities to compute Bayes theorem posterior weight.</div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {solverType === 'spaced' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Interval (days)</label>
-                    <input
-                      type="number"
-                      value={spacedInterval}
-                      onChange={e => setSpacedInterval(e.target.value)}
-                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Ease Factor</label>
-                    <input
-                      type="text"
-                      value={spacedEase}
-                      onChange={e => setSpacedEase(e.target.value)}
-                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wider mb-2">Recall Quality</label>
-                    <select
-                      value={spacedRating}
-                      onChange={e => setSpacedRating(e.target.value)}
-                      className="w-full bg-white border border-[#d9d9dd] rounded px-3 py-2 text-xs text-[#212121] outline-none focus:border-[#9b60aa] cursor-pointer font-sans"
-                    >
-                      <option value="0">0 - Again (Forgot)</option>
-                      <option value="1">1 - Hard</option>
-                      <option value="2">2 - Hard</option>
-                      <option value="3">3 - Good</option>
-                      <option value="4">4 - Good</option>
-                      <option value="5">5 - Easy</option>
-                    </select>
-                  </div>
-                </div>
-                <button
-                  onClick={solveSpaced}
-                  className="bg-black hover:bg-zinc-800 text-white px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  Schedule Next Review
-                </button>
-              </div>
-
-              <div className="bg-[#eeece7] border border-[#d9d9dd] rounded p-5 min-h-[140px] flex flex-col justify-center shadow-none">
-                {spacedResult ? (
-                  <div className="space-y-2">
-                    <div className="text-[10px] font-mono text-[#75758a] font-semibold uppercase tracking-wider">Schedule Interval</div>
-                    <div className="text-3xl font-mono font-bold text-black">{spacedResult.nextInterval}</div>
-                    <div className="text-[10px] font-mono text-[#75758a] font-bold uppercase tracking-wider">New Ease Factor: {spacedResult.newEase}</div>
-                    <p className="text-xs text-[#212121] leading-relaxed font-medium font-sans">{spacedResult.explanation}</p>
-                  </div>
-                ) : (
-                  <div className="text-[#75758a] text-center py-4 text-xs font-mono uppercase tracking-wider">Calculate to schedule flashcard intervals offline using SM-2 rules.</div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

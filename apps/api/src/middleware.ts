@@ -2,23 +2,43 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+function addCorsHeaders(request: NextRequest, response: NextResponse) {
+  const origin = request.headers.get('origin') || '*';
+  response.headers.set('Access-Control-Allow-Origin', origin);
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-user-id, x-auth-id, x-api-key, x-cohere-key, x-preferred-provider, sb-access-token');
+  response.headers.set('Access-Control-Allow-Credentials', 'true');
+  return response;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // 1. Handle CORS preflight options requests
+  if (request.method === 'OPTIONS') {
+    const response = new NextResponse(null, { status: 204 });
+    return addCorsHeaders(request, response);
+  }
+
+  const wrapResponse = (response: NextResponse) => {
+    return addCorsHeaders(request, response);
+  };
+
   // Skip auth routes and public routes
   if (pathname.startsWith('/api/auth')) {
-    return NextResponse.next();
+    return wrapResponse(NextResponse.next());
   }
 
   // Only protect /api routes for now
   if (!pathname.startsWith('/api')) {
-    return NextResponse.next();
+    return wrapResponse(NextResponse.next());
   }
 
   const accessToken = request.cookies.get('sb-access-token')?.value || request.headers.get('authorization')?.replace('Bearer ', '');
 
   if (!accessToken) {
-    return NextResponse.json({ error: 'Unauthorized: Missing token' }, { status: 401 });
+    console.log("Middleware auth check failed: Missing token");
+    return wrapResponse(NextResponse.json({ error: 'Unauthorized: Missing token' }, { status: 401 }));
   }
 
   // Use Supabase client to validate token
@@ -37,20 +57,33 @@ export async function middleware(request: NextRequest) {
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    return NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 });
+    console.log("Middleware auth check failed: Invalid token error:", authError);
+    return wrapResponse(NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 }));
   }
 
   const authId = user.id;
 
-  // Fetch the public.users id mapping via Supabase REST API (since we are on Edge runtime)
-  const { data: userData, error: dbError } = await supabase
+  // Fetch the public.users id mapping using the admin client to bypass RLS
+  const supabaseAdmin = createClient(
+    process.env['SUPABASE_URL'] || '',
+    process.env['SUPABASE_SERVICE_ROLE_KEY'] || '',
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    }
+  );
+
+  const { data: userData, error: dbError } = await supabaseAdmin
     .from('users')
     .select('id')
     .eq('auth_id', authId)
     .single();
 
   if (dbError || !userData) {
-    return NextResponse.json({ error: 'Unauthorized: User not found in database' }, { status: 401 });
+    console.log("Middleware auth check failed: User not found in database error:", dbError, "userData:", userData);
+    return wrapResponse(NextResponse.json({ error: 'Unauthorized: User not found in database' }, { status: 401 }));
   }
 
   const userId = userData.id;
@@ -59,13 +92,16 @@ export async function middleware(request: NextRequest) {
   requestHeaders.set('x-user-id', userId);
   requestHeaders.set('x-auth-id', authId);
 
-  return NextResponse.next({
+  const nextResponse = NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
+  
+  return wrapResponse(nextResponse);
 }
 
 export const config = {
   matcher: ['/api/:path*'],
 };
+

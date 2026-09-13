@@ -4,7 +4,7 @@ import { Sparkles, ArrowRight } from 'lucide-react';
 import { useAuth, supabase } from '../context/AuthContext';
 
 export default function Login() {
-  const { session } = useAuth();
+  const { session, loginAsDemo } = useAuth();
   const [email, setEmail] = useState('demo@aisemos.com');
   const [password, setPassword] = useState('DemoPass123!');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -117,7 +117,7 @@ export default function Login() {
               </button>
             </form>
 
-            <div className="text-center mt-4">
+            <div className="text-center mt-3">
               <button
                 type="button"
                 onClick={() => {
@@ -136,19 +136,37 @@ export default function Login() {
                 {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Create one"}
               </button>
             </div>
+
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#d9d9dd]" />
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase font-mono">
+                <span className="bg-white px-2 text-[#75758a]">Or</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => loginAsDemo()}
+              className="w-full bg-[#eeece7] hover:bg-[#e2e0d8] border border-[#d9d9dd] text-[#212121] font-semibold py-2.5 rounded-full transition-colors flex justify-center items-center gap-2 text-xs uppercase font-mono tracking-wider cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#ff7759]" />
+              <span>Explore as Demo Student</span>
+            </button>
           </div>
         </div>
       </div>
       
       {/* Decorative Side Panel */}
-      <div className="hidden lg:flex flex-1 bg-[#003c33] relative overflow-hidden items-center justify-center p-12 border-l border-[#d9d9dd]">
-        <div className="relative max-w-md z-10 space-y-6 text-white">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#ff7759]/20 text-[#ff7759] text-[10px] font-mono font-bold tracking-wider uppercase border border-[#ff7759]/30">
-            <Sparkles className="w-3.5 h-3.5" />
+      <div className="hidden lg:flex flex-1 bg-[#eeece7] relative overflow-hidden items-center justify-center p-12 border-l border-[#d9d9dd]">
+        <div className="relative max-w-md z-10 space-y-6 text-black">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-white text-[#ff7759] text-[10px] font-mono font-bold tracking-wider uppercase border border-[#d9d9dd]">
+            <Sparkles className="w-3.5 h-3.5 text-[#ff7759]" />
             The Academic Operating System
           </div>
-          <h2 className="text-4xl font-display font-light text-white leading-tight tracking-tight uppercase">Master your subjects with a unified intelligence.</h2>
-          <p className="text-sm text-gray-300 leading-relaxed font-sans">Your entire academic journey powered by a dedicated Digital Twin, automatically predicting PYQs, generating practicals, and conducting live vivas.</p>
+          <h2 className="text-4xl font-display font-light text-black leading-tight tracking-tight uppercase">Master your subjects with a unified intelligence.</h2>
+          <p className="text-sm text-[#5f6368] leading-relaxed font-sans">Your entire academic journey powered by a dedicated Digital Twin, automatically predicting PYQs, generating practicals, and conducting live vivas.</p>
         </div>
       </div>
     </div>

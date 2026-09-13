@@ -28,7 +28,15 @@ module.exports = [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: true,
+        project: [
+          './tsconfig.json',
+          './apps/api/tsconfig.json',
+          './apps/mobile/tsconfig.json',
+          './apps/web/tsconfig.json',
+          './apps/web/tsconfig.app.json',
+          './apps/web/tsconfig.node.json',
+          './packages/*/tsconfig.json',
+        ],
       },
     },
     plugins: {

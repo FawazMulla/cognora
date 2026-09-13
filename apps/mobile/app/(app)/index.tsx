@@ -1,9 +1,11 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { fetchStudentModel } from '../../lib/api';
 
 export default function SemesterWorkspaceScreen() {
+  const router = useRouter();
   const { data, isLoading, error } = useQuery({
     queryKey: ['student-model'],
     queryFn: fetchStudentModel,
@@ -42,21 +44,21 @@ export default function SemesterWorkspaceScreen() {
 
       <Text style={styles.sectionTitle}>Quick Actions</Text>
       <View style={styles.actionGrid}>
-        <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionButtonIcon}>📚</Text>
-          <Text style={styles.actionButtonText}>Study</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionButtonIcon}>⚡</Text>
-          <Text style={styles.actionButtonText}>Revise</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/(app)/homework')}>
           <Text style={styles.actionButtonIcon}>📝</Text>
-          <Text style={styles.actionButtonText}>PYQs</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <Text style={styles.actionButtonIcon}>🤖</Text>
           <Text style={styles.actionButtonText}>Homework AI</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/(app)/tools/viva')}>
+          <Text style={styles.actionButtonIcon}>🎓</Text>
+          <Text style={styles.actionButtonText}>Viva Practice</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/(app)/tools/practical-generator')}>
+          <Text style={styles.actionButtonIcon}>🔬</Text>
+          <Text style={styles.actionButtonText}>Practical</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/(app)/tools/answer-generator')}>
+          <Text style={styles.actionButtonIcon}>⚡</Text>
+          <Text style={styles.actionButtonText}>Answer Gen</Text>
         </TouchableOpacity>
       </View>
 

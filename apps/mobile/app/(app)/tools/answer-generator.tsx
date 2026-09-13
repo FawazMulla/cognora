@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { generateAnswer } from '../../../lib/api';
 
 export default function AnswerGeneratorScreen() {
   const [question, setQuestion] = useState('');
@@ -7,26 +8,41 @@ export default function AnswerGeneratorScreen() {
   const [format, setFormat] = useState('Detailed');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedAnswer, setGeneratedAnswer] = useState('');
+  const [wordCount, setWordCount] = useState<number | null>(null);
+  const [qualityWarning, setQualityWarning] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!question) return;
     setIsGenerating(true);
     setGeneratedAnswer('');
-    
-    // Simulate generation delay
-    setTimeout(() => {
-      setGeneratedAnswer("This is a highly structured, generated answer incorporating the specific student model constraints and mark ceilings. It includes step-by-step reasoning and highlights key terms.");
+    setWordCount(null);
+    setQualityWarning(null);
+    setError(null);
+
+    try {
+      const data = await generateAnswer({
+        question,
+        markValue: parseInt(marks, 10) || 5,
+        format,
+      });
+      setGeneratedAnswer(data.answer || '');
+      setWordCount(data.wordCount ?? null);
+      setQualityWarning(data.qualityWarning ?? null);
+    } catch (err: any) {
+      setError(err.message || 'Failed to generate answer. Please try again.');
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Answer Generator</Text>
-      
+
       <View style={styles.card}>
         <Text style={styles.label}>Question</Text>
-        <TextInput 
+        <TextInput
           style={styles.textInput}
           placeholder="Paste or type your question here..."
           multiline
@@ -37,7 +53,7 @@ export default function AnswerGeneratorScreen() {
         <View style={styles.row}>
           <View style={styles.flex1}>
             <Text style={styles.label}>Marks</Text>
-            <TextInput 
+            <TextInput
               style={styles.inputSmall}
               keyboardType="number-pad"
               value={marks}
@@ -49,8 +65,8 @@ export default function AnswerGeneratorScreen() {
             <Text style={styles.label}>Format</Text>
             <View style={styles.formatRow}>
               {['Concise', 'Detailed'].map(f => (
-                <TouchableOpacity 
-                  key={f} 
+                <TouchableOpacity
+                  key={f}
                   style={[styles.formatChip, format === f && styles.formatChipActive]}
                   onPress={() => setFormat(f)}
                 >
@@ -61,7 +77,11 @@ export default function AnswerGeneratorScreen() {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.generateBtn} onPress={handleGenerate} disabled={isGenerating}>
+        <TouchableOpacity
+          style={[styles.generateBtn, (!question || isGenerating) && styles.generateBtnDisabled]}
+          onPress={handleGenerate}
+          disabled={!question || isGenerating}
+        >
           {isGenerating ? (
             <ActivityIndicator color="#FFF" />
           ) : (
@@ -70,9 +90,25 @@ export default function AnswerGeneratorScreen() {
         </TouchableOpacity>
       </View>
 
+      {error && (
+        <View style={styles.errorCard}>
+          <Text style={styles.errorText}>⚠️ {error}</Text>
+        </View>
+      )}
+
       {generatedAnswer ? (
         <View style={styles.resultCard}>
-          <Text style={styles.resultTitle}>Generated Output</Text>
+          <View style={styles.resultHeader}>
+            <Text style={styles.resultTitle}>Generated Output</Text>
+            {wordCount != null && (
+              <View style={styles.wordBadge}>
+                <Text style={styles.wordBadgeText}>{wordCount} words</Text>
+              </View>
+            )}
+          </View>
+          {qualityWarning && (
+            <Text style={styles.warningText}>⚠️ {qualityWarning}</Text>
+          )}
           <Text style={styles.resultBody}>{generatedAnswer}</Text>
         </View>
       ) : null}
@@ -156,10 +192,26 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
   },
+  generateBtnDisabled: {
+    backgroundColor: '#A5B4FC',
+  },
   generateBtnText: {
     color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
+  },
+  errorCard: {
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#DC2626',
+    fontSize: 14,
+    fontWeight: '500',
   },
   resultCard: {
     backgroundColor: '#FFFFFF',
@@ -168,17 +220,39 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
-  resultTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#3B82F6',
+  resultHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
+  },
+  resultTitle: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#64748B',
     textTransform: 'uppercase',
     letterSpacing: 1,
+  },
+  wordBadge: {
+    backgroundColor: '#EFF6FF',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  wordBadgeText: {
+    color: '#2563EB',
+    fontWeight: '600',
+    fontSize: 12,
+  },
+  warningText: {
+    color: '#D97706',
+    fontSize: 13,
+    marginBottom: 12,
+    fontStyle: 'italic',
   },
   resultBody: {
     fontSize: 16,
     lineHeight: 24,
     color: '#334155',
-  }
+  },
 });

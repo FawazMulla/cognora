@@ -1,36 +1,38 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { optimizeAnswer } from '../../../lib/api';
 
 export default function AnswerOptimizerScreen() {
   const [question, setQuestion] = useState('');
   const [studentAnswer, setStudentAnswer] = useState('');
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizedResult, setOptimizedResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleOptimize = () => {
+  const handleOptimize = async () => {
     if (!question || !studentAnswer) return;
     setIsOptimizing(true);
     setOptimizedResult(null);
-    
-    // Simulate generation delay
-    setTimeout(() => {
-      setOptimizedResult({
-        score: 7.5,
-        feedback: "Good attempt. You captured the main idea but missed some technical vocabulary.",
-        improvedAnswer: "This is the improved, optimized version of the student's answer, rewritten for better readability and completeness while maintaining the student's original stylistic profile."
-      });
+    setError(null);
+
+    try {
+      const data = await optimizeAnswer({ question, studentAnswer });
+      setOptimizedResult(data);
+    } catch (err: any) {
+      setError(err.message || 'Failed to optimize answer. Please try again.');
+    } finally {
       setIsOptimizing(false);
-    }, 2500);
+    }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Answer Optimizer</Text>
       <Text style={styles.subtitle}>Paste your draft and we'll polish it.</Text>
-      
+
       <View style={styles.card}>
         <Text style={styles.label}>Question Context</Text>
-        <TextInput 
+        <TextInput
           style={styles.textInputSmall}
           placeholder="What is the question?"
           multiline
@@ -39,7 +41,7 @@ export default function AnswerOptimizerScreen() {
         />
 
         <Text style={styles.label}>Your Draft Answer</Text>
-        <TextInput 
+        <TextInput
           style={styles.textInputLarge}
           placeholder="Paste your draft here..."
           multiline
@@ -47,7 +49,11 @@ export default function AnswerOptimizerScreen() {
           onChangeText={setStudentAnswer}
         />
 
-        <TouchableOpacity style={styles.optimizeBtn} onPress={handleOptimize} disabled={isOptimizing}>
+        <TouchableOpacity
+          style={[styles.optimizeBtn, (!question || !studentAnswer || isOptimizing) && styles.optimizeBtnDisabled]}
+          onPress={handleOptimize}
+          disabled={!question || !studentAnswer || isOptimizing}
+        >
           {isOptimizing ? (
             <ActivityIndicator color="#FFF" />
           ) : (
@@ -56,21 +62,43 @@ export default function AnswerOptimizerScreen() {
         </TouchableOpacity>
       </View>
 
+      {error && (
+        <View style={styles.errorCard}>
+          <Text style={styles.errorText}>⚠️ {error}</Text>
+        </View>
+      )}
+
       {optimizedResult && (
         <View style={styles.resultCard}>
           <View style={styles.scoreRow}>
-            <Text style={styles.resultTitle}>Analysis</Text>
-            <View style={styles.scoreBadge}>
-              <Text style={styles.scoreText}>{optimizedResult.score}/10</Text>
-            </View>
+            <Text style={styles.sectionLabel}>Analysis</Text>
+            {optimizedResult.score != null && (
+              <View style={styles.scoreBadge}>
+                <Text style={styles.scoreText}>{optimizedResult.score}/10</Text>
+              </View>
+            )}
           </View>
-          
-          <Text style={styles.feedbackText}>{optimizedResult.feedback}</Text>
-          
-          <View style={styles.divider} />
-          
-          <Text style={styles.resultTitle}>Improved Version</Text>
-          <Text style={styles.improvedBody}>{optimizedResult.improvedAnswer}</Text>
+
+          {optimizedResult.feedback && (
+            <Text style={styles.feedbackText}>{optimizedResult.feedback}</Text>
+          )}
+
+          {optimizedResult.missingConcepts?.length > 0 && (
+            <View style={styles.missingBox}>
+              <Text style={styles.missingTitle}>Missing Concepts</Text>
+              {optimizedResult.missingConcepts.map((c: string, i: number) => (
+                <Text key={i} style={styles.missingItem}>• {c}</Text>
+              ))}
+            </View>
+          )}
+
+          {optimizedResult.improvedAnswer && (
+            <>
+              <View style={styles.divider} />
+              <Text style={styles.sectionLabel}>Improved Version</Text>
+              <Text style={styles.improvedBody}>{optimizedResult.improvedAnswer}</Text>
+            </>
+          )}
         </View>
       )}
     </ScrollView>
@@ -134,10 +162,26 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
   },
+  optimizeBtnDisabled: {
+    backgroundColor: '#6EE7B7',
+  },
   optimizeBtnText: {
     color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 16,
+  },
+  errorCard: {
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#DC2626',
+    fontSize: 14,
+    fontWeight: '500',
   },
   resultCard: {
     backgroundColor: '#FFFFFF',
@@ -152,7 +196,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  resultTitle: {
+  sectionLabel: {
     fontSize: 13,
     fontWeight: '700',
     color: '#64748B',
@@ -168,12 +212,33 @@ const styles = StyleSheet.create({
   scoreText: {
     color: '#D97706',
     fontWeight: '800',
+    fontSize: 14,
   },
   feedbackText: {
     fontSize: 15,
     color: '#334155',
     marginBottom: 16,
     fontStyle: 'italic',
+    lineHeight: 22,
+  },
+  missingBox: {
+    backgroundColor: '#FFF7ED',
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 4,
+  },
+  missingTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#C2410C',
+    marginBottom: 6,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  missingItem: {
+    fontSize: 14,
+    color: '#9A3412',
+    marginBottom: 2,
   },
   divider: {
     height: 1,
@@ -185,5 +250,5 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: '#0F172A',
     marginTop: 8,
-  }
+  },
 });

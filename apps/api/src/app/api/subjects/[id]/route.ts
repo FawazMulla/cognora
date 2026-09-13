@@ -9,6 +9,25 @@ import { eq, and } from "drizzle-orm";
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
 
+export async function GET(request: Request, { params }: { params: { id: string } }) {
+  try {
+    const userId = request.headers.get("x-user-id");
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const [subject] = await db.select().from(subjects)
+      .where(and(eq(subjects.id, params.id), eq(subjects.userId, userId)));
+
+    if (!subject) {
+      return NextResponse.json({ error: "Subject not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ subject }, { status: 200 });
+  } catch (error) {
+    console.error("Subject GET error:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   try {
     const userId = request.headers.get("x-user-id");
@@ -26,10 +45,10 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     const { name, examDate } = parsed.data;
     
-    // Create update object dynamically based on provided fields
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
     if (examDate !== undefined) updateData.examDate = examDate;
+    if ((parsed.data as any).code !== undefined) updateData.code = (parsed.data as any).code;
 
     const updated = await db.update(subjects)
       .set(updateData)

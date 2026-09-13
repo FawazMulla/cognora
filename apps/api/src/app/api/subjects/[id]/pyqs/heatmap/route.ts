@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { pyqQuestions } from "../../../../../../db/schema";
+import { pyqQuestions, subjects } from "../../../../../../db/schema";
 import { env } from "../../../../../../lib/env";
 import { eq } from "drizzle-orm";
 import { verifyOwnership } from "../../../../../../lib/security";
@@ -25,13 +25,18 @@ export async function GET(
     const pyqs = await db.select().from(pyqQuestions).where(eq(pyqQuestions.subjectId, subjectId));
 
     if (pyqs.length === 0) {
+      // Fetch subject name for fallback context
+      const subjectList = await db.select().from(subjects).where(eq(subjects.id, subjectId)).limit(1);
+      const subject = subjectList[0] as any;
+      const subjectName = subject ? subject.name : "Syllabus Core";
+
       // Return simulated mock heatmap data if no questions have been loaded yet
       const fallbackHeatmap = [
-        { topic: "Search Algorithms", count: 4, totalMarks: 35, percentage: 38.0, priority: "High" },
-        { topic: "Neural Networks", count: 3, totalMarks: 25, percentage: 27.0, priority: "High" },
-        { topic: "Expert Systems", count: 2, totalMarks: 15, percentage: 16.0, priority: "Medium" },
-        { topic: "Fuzzy Logic", count: 2, totalMarks: 10, percentage: 11.0, priority: "Medium" },
-        { topic: "Natural Language Processing", count: 1, totalMarks: 7, percentage: 8.0, priority: "Low" }
+        { topic: `Introduction to ${subjectName}`, count: 4, totalMarks: 35, percentage: 38.0, priority: "High" },
+        { topic: `${subjectName} Architectures`, count: 3, totalMarks: 25, percentage: 27.0, priority: "High" },
+        { topic: `${subjectName} Frameworks`, count: 2, totalMarks: 15, percentage: 16.0, priority: "Medium" },
+        { topic: `${subjectName} Security & Controls`, count: 2, totalMarks: 10, percentage: 11.0, priority: "Medium" },
+        { topic: `Advanced Applications of ${subjectName}`, count: 1, totalMarks: 7, percentage: 8.0, priority: "Low" }
       ];
       return NextResponse.json({ heatmap: fallbackHeatmap });
     }

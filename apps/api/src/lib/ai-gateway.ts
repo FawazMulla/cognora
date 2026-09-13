@@ -116,11 +116,22 @@ export const aiGateway: AIGateway = {
     const startTime = Date.now();
     let fallbackUsed = false;
     let actualModel = '';
+    let clientGeminiKey: string | undefined;
+    let clientCohereKey: string | undefined;
+    let preferredProvider = 'gemini';
 
     try {
-      // 1. Get routing config (Redis-cached)
+      // 1. Get routing config (Redis-cached if connected)
       const cacheKey = `routing:${taskType}`;
-      let routeConfigStr = await redis.get(cacheKey);
+      let routeConfigStr: string | null = null;
+      try {
+        if (redis && (redis.status === 'ready' || redis.status === 'connect')) {
+          routeConfigStr = await redis.get(cacheKey);
+        }
+      } catch (e) {
+        console.warn('[ai-gateway] Redis connection failed, bypassing cache read:', e);
+      }
+
       let routeConfig: any;
 
       if (routeConfigStr) {
@@ -129,7 +140,13 @@ export const aiGateway: AIGateway = {
         const routes = await db.select().from(modelRouting).where(eq(modelRouting.taskType, taskType)).limit(1);
         if (routes.length > 0) {
           routeConfig = routes[0];
-          await redis.setex(cacheKey, 60, JSON.stringify(routeConfig));
+          try {
+            if (redis && (redis.status === 'ready' || redis.status === 'connect')) {
+              await redis.setex(cacheKey, 60, JSON.stringify(routeConfig));
+            }
+          } catch (e) {
+            // ignore
+          }
         } else {
           routeConfig = { provider: env.GOOGLE_AI_API_KEY ? 'gemini' : 'mock', modelName: env.GOOGLE_AI_API_KEY ? 'gemini-2.5-flash' : 'mock-model' };
         }
@@ -147,10 +164,6 @@ export const aiGateway: AIGateway = {
       }
 
       // 3. Dispatch to provider
-      let clientGeminiKey: string | undefined;
-      let clientCohereKey: string | undefined;
-      let preferredProvider = 'gemini';
-
       try {
         const headersList = headers();
         clientGeminiKey = headersList.get('x-api-key') || undefined;
@@ -219,8 +232,13 @@ export const aiGateway: AIGateway = {
       });
 
       return result;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`[ai-gateway] Invocation failed for ${taskType}:`, error);
+      // If the user explicitly provided their own key, do NOT fall back to simulation.
+      // Throw the error so it bubbles up to the controller and prompts them.
+      if (clientGeminiKey || clientCohereKey) {
+        throw new Error(`AI Gateway error: ${error.message || error}`);
+      }
       return simulateWithTools(taskType, input, '', options);
     }
   }
@@ -358,7 +376,7 @@ async function callGeminiAPI(apiKey: string, model: string, taskType: TaskType, 
 
 // ==================== COHERE V2 API CALL ====================
 async function callCohereAPI(apiKey: string, model: string, taskType: TaskType, input: any, context: string): Promise<any> {
-  const cohereModel = model.includes('command') ? model : 'command-r-plus';
+  const cohereModel = model && model.includes('command') && !model.includes('2026') ? model : 'command-r-plus';
   const url = `https://api.cohere.com/v2/chat`;
 
   const prompt = buildPrompt(taskType, input, context);
@@ -395,8 +413,7 @@ async function callCohereAPI(apiKey: string, model: string, taskType: TaskType, 
     },
     body: JSON.stringify({
       model: cohereModel,
-      messages,
-      ...(expectJson ? { response_format: { type: 'json_object' } } : {})
+      messages
     })
   });
 
@@ -406,7 +423,20 @@ async function callCohereAPI(apiKey: string, model: string, taskType: TaskType, 
   }
 
   const data = await response.json();
-  const textResponse = data.message?.content?.[0]?.text || '';
+  console.log("[ai-gateway] Cohere API raw response:", JSON.stringify(data));
+  
+  let textResponse = '';
+  if (typeof data.message?.content === 'string') {
+    textResponse = data.message.content;
+  } else if (Array.isArray(data.message?.content)) {
+    textResponse = data.message.content.map((c: any) => c.text || c.textResponse || '').join('');
+  } else if (data.text) {
+    textResponse = data.text;
+  } else if (typeof data.message === 'string') {
+    textResponse = data.message;
+  } else if (data.message?.content?.[0]?.text) {
+    textResponse = data.message.content[0].text;
+  }
 
   if (expectJson) {
     try {

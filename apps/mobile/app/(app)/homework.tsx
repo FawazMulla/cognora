@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Switch, ActivityIndicator, Alert } from 'react-native';
+import { generateHomework } from '../../lib/api';
 
 export default function HomeworkScreen() {
   const [question, setQuestion] = useState('');
@@ -8,21 +9,36 @@ export default function HomeworkScreen() {
   const [useHandwritingStyle, setUseHandwritingStyle] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!question) return;
     setIsGenerating(true);
     setResult(null);
+    setError(null);
 
-    // Simulate API call
-    setTimeout(() => {
-      setResult({
-        answer: "This is a meticulously crafted homework response. It incorporates the teacher's instructions regarding formatting and adheres strictly to the word limit requested. Furthermore, it avoids highly complex vocabulary to maintain the student's natural stylistic footprint.",
-        wordCount: 42,
-        readability: "Grade 9"
+    try {
+      const data = await generateHomework({
+        question,
+        instructions: instructions || undefined,
+        wordLimit: wordLimit ? parseInt(wordLimit, 10) : undefined,
+        // subjectId is optional; omit if not in a subject context
       });
+
+      const answer = useHandwritingStyle
+        ? (data.handwritingFriendlyVersion || data.answer)
+        : data.answer;
+
+      setResult({
+        answer,
+        wordCount: data.wordCount,
+        readabilityScore: data.readabilityScore,
+      });
+    } catch (err: any) {
+      setError(err.message || 'Failed to generate homework. Please try again.');
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -93,15 +109,23 @@ export default function HomeworkScreen() {
         </TouchableOpacity>
       </View>
 
+      {error && (
+        <View style={styles.errorCard}>
+          <Text style={styles.errorText}>⚠️ {error}</Text>
+        </View>
+      )}
+
       {result && (
         <View style={styles.resultCard}>
           <View style={styles.resultMetaRow}>
             <View style={styles.metaBadge}>
               <Text style={styles.metaBadgeText}>{result.wordCount} words</Text>
             </View>
-            <View style={[styles.metaBadge, styles.metaBadgeAlt]}>
-              <Text style={styles.metaBadgeAltText}>{result.readability}</Text>
-            </View>
+            {result.readabilityScore != null && (
+              <View style={[styles.metaBadge, styles.metaBadgeAlt]}>
+                <Text style={styles.metaBadgeAltText}>Readability: {result.readabilityScore}</Text>
+              </View>
+            )}
           </View>
           <Text style={styles.resultText}>{result.answer}</Text>
         </View>
@@ -254,5 +278,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 26,
     color: '#1E293B',
-  }
+  },
+  errorCard: {
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FECACA',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#DC2626',
+    fontSize: 14,
+    fontWeight: '500',
+  },
 });

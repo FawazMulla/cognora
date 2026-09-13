@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, Navigate, Link } from 'react-router-dom';
-import { Sparkles, LogOut, Menu, X, Settings } from 'lucide-react';
+import { Sparkles, LogOut, Menu, X, Settings, Loader2 } from 'lucide-react';
 import { useAuth, supabase } from './context/AuthContext';
 import Sidebar from './components/Sidebar';
 
@@ -15,55 +15,59 @@ import AssignmentEngine from './pages/AssignmentEngine';
 import StudentTwin from './pages/StudentTwin';
 import SmartRevision from './pages/SmartRevision';
 import KnowledgeGraph from './pages/KnowledgeGraph';
+import Onboarding from './pages/Onboarding';
+import SyllabusManager from './pages/SyllabusManager';
+import ExamNotes from './pages/ExamNotes';
+import QuestionBank from './pages/QuestionBank';
+import StructuredAnswer from './pages/StructuredAnswer';
+import AnswerOptimizer from './pages/AnswerOptimizer';
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { session, loading } = useAuth();
+function ProtectedRoute({ children, requireProfile = true }: { children: React.ReactNode; requireProfile?: boolean }) {
+  const { session, loading, hasProfile } = useAuth();
   
   if (loading) {
-    return <div className="min-h-screen bg-gemini-bg flex items-center justify-center text-gemini-text-muted">Loading OS...</div>;
+    return (
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center text-xs font-mono text-[#75758a] uppercase tracking-wider gap-3">
+        <Loader2 className="w-5 h-5 animate-spin text-black" />
+        <span>Loading OS...</span>
+      </div>
+    );
   }
   
   if (!session) {
     return <Navigate to="/login" replace />;
   }
+
+  if (requireProfile && hasProfile === false) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  if (!requireProfile && hasProfile === true) {
+    return <Navigate to="/" replace />;
+  }
   
-  return children;
+  return children as React.JSX.Element;
 }
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [byokKey, setByokKey] = useState(localStorage.getItem('byok_gemini_key') || '');
-  const [byokCohereKey, setByokCohereKey] = useState(localStorage.getItem('byok_cohere_key') || '');
-  const [byokProvider, setByokProvider] = useState(localStorage.getItem('byok_provider') || 'gemini');
-  const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const handleSaveSettings = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Save Gemini key
-    if (byokKey.trim()) {
-      localStorage.setItem('byok_gemini_key', byokKey.trim());
-    } else {
-      localStorage.removeItem('byok_gemini_key');
-    }
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSidebarOpen(false);
+        setSettingsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
-    // Save Cohere key
-    if (byokCohereKey.trim()) {
-      localStorage.setItem('byok_cohere_key', byokCohereKey.trim());
-    } else {
-      localStorage.removeItem('byok_cohere_key');
-    }
-
-    // Save Provider
-    localStorage.setItem('byok_provider', byokProvider);
-
-    setSaveSuccess(true);
-    setTimeout(() => {
-      setSaveSuccess(false);
-      setSettingsOpen(false);
-    }, 1500);
-  };
+  const { signOut } = useAuth();
+  const apiProvider = import.meta.env.VITE_AI_PROVIDER || 'gemini';
+  const hasGeminiKey = Boolean(import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_GOOGLE_AI_API_KEY);
+  const hasCohereKey = Boolean(import.meta.env.VITE_COHERE_API_KEY);
 
   return (
     <div className="min-h-screen bg-white text-[#212121] font-sans flex flex-col relative overflow-hidden">
@@ -92,10 +96,10 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               className="flex items-center gap-1.5 text-xs font-semibold text-[#212121] hover:bg-[#eeece7] border border-[#d9d9dd] px-3.5 py-1.5 rounded-full transition-colors cursor-pointer"
             >
               <Settings className="w-3.5 h-3.5" />
-              <span>Settings</span>
+              <span>Environment</span>
             </button>
             <button 
-              onClick={() => supabase.auth.signOut()}
+              onClick={() => signOut()}
               className="flex items-center gap-1.5 text-xs font-semibold text-[#212121] hover:bg-[#eeece7] border border-[#d9d9dd] px-3.5 py-1.5 rounded-full transition-colors cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -137,14 +141,14 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* Settings Modal */}
+      {/* Environment Info Modal */}
       {settingsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
           <div className="bg-white border border-[#d9d9dd] w-full max-w-md rounded-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in duration-200">
             <header className="p-6 border-b border-[#d9d9dd] flex justify-between items-center bg-white">
               <h3 className="text-sm font-bold text-black uppercase tracking-wider flex items-center gap-2 font-display">
                 <Settings className="w-4 h-4 text-black" />
-                Twin Settings
+                AI Environment Status
               </h3>
               <button 
                 onClick={() => setSettingsOpen(false)}
@@ -154,67 +158,44 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               </button>
             </header>
             
-            <form onSubmit={handleSaveSettings} className="p-6 space-y-5 bg-white">
-              <div className="space-y-2">
-                <label className="block text-[11px] font-mono text-[#75758a] uppercase tracking-wide">Preferred AI Provider</label>
-                <select
-                  value={byokProvider}
-                  onChange={e => setByokProvider(e.target.value)}
-                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-[#212121] outline-none focus:border-[#9b60aa] cursor-pointer"
-                >
-                  <option value="gemini">Google Gemini (2.5 Flash)</option>
-                  <option value="cohere">Cohere AI (Command R+)</option>
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-[11px] font-mono text-[#75758a] uppercase tracking-wide">Gemini API Key (BYOK)</label>
-                <input
-                  type="password"
-                  value={byokKey}
-                  onChange={e => setByokKey(e.target.value)}
-                  placeholder="Paste your Gemini API key here..."
-                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-[#212121] placeholder-[#93939f] outline-none focus:border-[#9b60aa] transition-colors"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-[11px] font-mono text-[#75758a] uppercase tracking-wide">Cohere API Key (BYOK)</label>
-                <input
-                  type="password"
-                  value={byokCohereKey}
-                  onChange={e => setByokCohereKey(e.target.value)}
-                  placeholder="Paste your Cohere API key here..."
-                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-[#212121] placeholder-[#93939f] outline-none focus:border-[#9b60aa] transition-colors"
-                />
-              </div>
-
-              <p className="text-[10px] text-[#75758a] leading-normal font-sans">
-                Your keys are stored locally in your browser's memory and used directly for requests. Leave empty to use system defaults (or Offline mode).
-              </p>
-
-              {saveSuccess && (
-                <div className="bg-[#edfce9] border border-[#003c33]/30 text-[#003c33] text-[10px] font-mono py-2 px-3 rounded text-center animate-pulse">
-                  Settings Saved Successfully!
+            <div className="p-6 space-y-4 bg-white">
+              <div className="bg-[#fafafb] border border-[#d9d9dd] rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-mono text-[#75758a] uppercase">Primary Model:</span>
+                  <span className="font-bold text-black">Google Gemini 2.5 Flash</span>
                 </div>
-              )}
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-mono text-[#75758a] uppercase">Secondary Model:</span>
+                  <span className="font-bold text-black">Cohere Command R+</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-mono text-[#75758a] uppercase">Backend Gateway:</span>
+                  <span className="font-mono text-[#1863dc]">apps/api/src/lib/ai-gateway.ts</span>
+                </div>
+              </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-black uppercase font-display">Environment Setup:</h4>
+                <p className="text-xs text-[#5f6368] leading-relaxed">
+                  Keys are configured via your <code className="font-mono text-black font-semibold">.env</code> files:
+                </p>
+                <ul className="text-xs text-[#5f6368] space-y-1.5 font-mono list-disc list-inside bg-[#fafafb] p-3 rounded border border-[#d9d9dd]">
+                  <li><span className="text-black font-semibold">GOOGLE_AI_API_KEY</span> in <code className="text-[#1863dc]">apps/api/.env</code></li>
+                  <li><span className="text-black font-semibold">COHERE_API_KEY</span> in <code className="text-[#1863dc]">apps/api/.env</code></li>
+                  <li><span className="text-black font-semibold">VITE_GEMINI_API_KEY</span> in <code className="text-[#1863dc]">apps/web/.env</code></li>
+                </ul>
+              </div>
+
+              <div className="flex justify-end pt-2">
                 <button 
                   type="button"
                   onClick={() => setSettingsOpen(false)}
-                  className="bg-transparent hover:bg-[#eeece7] border border-[#d9d9dd] text-[#212121] px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
                   className="bg-black hover:bg-zinc-800 text-white px-6 py-2.5 rounded-full text-xs font-semibold transition-all cursor-pointer"
                 >
-                  Save Configuration
+                  Got It
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
@@ -226,11 +207,17 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/onboarding" element={<ProtectedRoute requireProfile={false}><Onboarding /></ProtectedRoute>} />
       <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
       <Route path="/subject/:id" element={<ProtectedRoute><AppLayout><SubjectDetail /></AppLayout></ProtectedRoute>} />
       <Route path="/session/:id" element={<ProtectedRoute><AppLayout><StudySession /></AppLayout></ProtectedRoute>} />
       
       <Route path="/twin" element={<ProtectedRoute><AppLayout><StudentTwin /></AppLayout></ProtectedRoute>} />
+      <Route path="/syllabus" element={<ProtectedRoute><AppLayout><SyllabusManager /></AppLayout></ProtectedRoute>} />
+      <Route path="/exam-notes" element={<ProtectedRoute><AppLayout><ExamNotes /></AppLayout></ProtectedRoute>} />
+      <Route path="/question-bank" element={<ProtectedRoute><AppLayout><QuestionBank /></AppLayout></ProtectedRoute>} />
+      <Route path="/answers" element={<ProtectedRoute><AppLayout><StructuredAnswer /></AppLayout></ProtectedRoute>} />
+      <Route path="/answer-optimizer" element={<ProtectedRoute><AppLayout><AnswerOptimizer /></AppLayout></ProtectedRoute>} />
       <Route path="/pyq" element={<ProtectedRoute><AppLayout><PYQIntelligence /></AppLayout></ProtectedRoute>} />
       <Route path="/practicals" element={<ProtectedRoute><AppLayout><PracticalGenerator /></AppLayout></ProtectedRoute>} />
       <Route path="/viva" element={<ProtectedRoute><AppLayout><VivaEngine /></AppLayout></ProtectedRoute>} />

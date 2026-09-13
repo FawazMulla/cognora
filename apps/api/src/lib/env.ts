@@ -39,10 +39,10 @@ const envSchema = z.object({
     .default("development"),
 
   // ── Optional AI provider keys ─────────────────────────────────────────────
-  OPENAI_API_KEY: z.string().min(1).optional(),
-  GOOGLE_AI_API_KEY: z.string().min(1).optional(),
-  ANTHROPIC_API_KEY: z.string().min(1).optional(),
-  COHERE_API_KEY: z.string().min(1).optional(),
+  OPENAI_API_KEY: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : undefined)),
+  GOOGLE_AI_API_KEY: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : undefined)),
+  ANTHROPIC_API_KEY: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : undefined)),
+  COHERE_API_KEY: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : undefined)),
 });
 
 /**

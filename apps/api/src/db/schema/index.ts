@@ -40,6 +40,7 @@ export const subjects = pgTable('subjects', {
   userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
   academicProfileId: uuid('academic_profile_id').references(() => academicProfiles.id),
   name: text('name').notNull(),
+  code: text('code'),
   examDate: date('exam_date'),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 });

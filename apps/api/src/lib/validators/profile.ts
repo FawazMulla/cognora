@@ -14,5 +14,6 @@ export const profileSchema = z.object({
 
 export const subjectSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  code: z.string().optional(),
   examDate: z.string().optional(),
 });
