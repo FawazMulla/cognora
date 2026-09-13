@@ -1,12 +1,15 @@
+import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 function addCorsHeaders(request: NextRequest, response: NextResponse) {
   const origin = request.headers.get('origin') || '*';
   response.headers.set('Access-Control-Allow-Origin', origin);
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-user-id, x-auth-id, x-api-key, x-cohere-key, x-preferred-provider, sb-access-token');
+  response.headers.set(
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, x-user-id, x-auth-id, x-api-key, x-cohere-key, x-preferred-provider, sb-access-token',
+  );
   response.headers.set('Access-Control-Allow-Credentials', 'true');
   return response;
 }
@@ -29,16 +32,20 @@ export async function middleware(request: NextRequest) {
     return wrapResponse(NextResponse.next());
   }
 
-  // Only protect /api routes for now
+  // Serve the SPA frontend for non-API routes at runtime
   if (!pathname.startsWith('/api')) {
-    return wrapResponse(NextResponse.next());
+    return wrapResponse(NextResponse.rewrite(new URL('/index.html', request.url)));
   }
 
-  const accessToken = request.cookies.get('sb-access-token')?.value || request.headers.get('authorization')?.replace('Bearer ', '');
+  const accessToken =
+    request.cookies.get('sb-access-token')?.value ||
+    request.headers.get('authorization')?.replace('Bearer ', '');
 
   if (!accessToken) {
-    console.log("Middleware auth check failed: Missing token");
-    return wrapResponse(NextResponse.json({ error: 'Unauthorized: Missing token' }, { status: 401 }));
+    console.warn('Middleware auth check failed: Missing token');
+    return wrapResponse(
+      NextResponse.json({ error: 'Unauthorized: Missing token' }, { status: 401 }),
+    );
   }
 
   // Use Supabase client to validate token
@@ -51,14 +58,19 @@ export async function middleware(request: NextRequest) {
           Authorization: `Bearer ${accessToken}`,
         },
       },
-    }
+    },
   );
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    console.log("Middleware auth check failed: Invalid token error:", authError);
-    return wrapResponse(NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 }));
+    console.warn('Middleware auth check failed: Invalid token error:', authError);
+    return wrapResponse(
+      NextResponse.json({ error: 'Unauthorized: Invalid token' }, { status: 401 }),
+    );
   }
 
   const authId = user.id;
@@ -72,7 +84,7 @@ export async function middleware(request: NextRequest) {
         autoRefreshToken: false,
         persistSession: false,
       },
-    }
+    },
   );
 
   const { data: userData, error: dbError } = await supabaseAdmin
@@ -82,8 +94,15 @@ export async function middleware(request: NextRequest) {
     .single();
 
   if (dbError || !userData) {
-    console.log("Middleware auth check failed: User not found in database error:", dbError, "userData:", userData);
-    return wrapResponse(NextResponse.json({ error: 'Unauthorized: User not found in database' }, { status: 401 }));
+    console.warn(
+      'Middleware auth check failed: User not found in database error:',
+      dbError,
+      'userData:',
+      userData,
+    );
+    return wrapResponse(
+      NextResponse.json({ error: 'Unauthorized: User not found in database' }, { status: 401 }),
+    );
   }
 
   const userId = userData.id;
@@ -97,11 +116,10 @@ export async function middleware(request: NextRequest) {
       headers: requestHeaders,
     },
   });
-  
+
   return wrapResponse(nextResponse);
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: ['/api/:path*', '/((?!_next/static|_next/image|assets|favicon.ico|.*\\..*).*)'],
 };
-

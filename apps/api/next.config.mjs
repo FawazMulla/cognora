@@ -8,20 +8,6 @@ const nextConfig = {
     tsconfigPath: './tsconfig.json',
   },
 
-  // Fallback rewrite so that any non-API/non-internal route serves the Vite SPA frontend (index.html in public/)
-  async rewrites() {
-    return {
-      beforeFiles: [],
-      afterFiles: [],
-      fallback: [
-        {
-          source: '/((?!api|_next|_error|404|500|favicon\\.ico).*)',
-          destination: '/index.html',
-        },
-      ],
-    };
-  },
-
   // Security headers
   async headers() {
     return [
