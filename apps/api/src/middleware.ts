@@ -32,9 +32,9 @@ export async function middleware(request: NextRequest) {
     return wrapResponse(NextResponse.next());
   }
 
-  // Skip non-API routes entirely (this is a pure API server)
+  // Serve the SPA frontend for non-API routes at runtime
   if (!pathname.startsWith('/api')) {
-    return wrapResponse(NextResponse.next());
+    return wrapResponse(NextResponse.rewrite(new URL('/_spa.html', request.url)));
   }
 
   const accessToken =
@@ -121,5 +121,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: [
+    '/api/:path*',
+    '/((?!_next/static|_next/image|assets|favicon\\.ico|_spa\\.html|.*\\..*).*)',
+  ],
 };

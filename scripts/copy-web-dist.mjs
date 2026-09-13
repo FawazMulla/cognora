@@ -28,9 +28,19 @@ const webDistDir = path.resolve(__dirname, '../apps/web/dist');
 const apiPublicDir = path.resolve(__dirname, '../apps/api/public');
 
 if (fs.existsSync(webDistDir)) {
-  console.log(`[monolith-build] Copying ${webDistDir} -> ${apiPublicDir}`);
+  console.warn(`[monolith-build] Copying ${webDistDir} -> ${apiPublicDir}`);
   copyDirSync(webDistDir, apiPublicDir);
-  console.log(`[monolith-build] Successfully synced static frontend to API public directory.`);
+
+  // Rename index.html to _spa.html to prevent Next.js from treating it as a
+  // special page during build (which causes <Html> document import errors).
+  const srcHtml = path.join(apiPublicDir, 'index.html');
+  const destHtml = path.join(apiPublicDir, '_spa.html');
+  if (fs.existsSync(srcHtml)) {
+    fs.renameSync(srcHtml, destHtml);
+    console.warn(`[monolith-build] Renamed index.html -> _spa.html to avoid Next.js conflicts.`);
+  }
+
+  console.warn(`[monolith-build] Successfully synced static frontend to API public directory.`);
 } else {
   console.warn(`[monolith-build] Warning: ${webDistDir} does not exist yet. Run web build first.`);
 }
