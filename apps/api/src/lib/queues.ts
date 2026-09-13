@@ -1,4 +1,4 @@
-import { Queue, type ConnectionOptions } from "bullmq";
+import { Queue, type ConnectionOptions, type QueueOptions } from "bullmq";
 import { redis } from "./redis";
 
 /**
@@ -19,19 +19,32 @@ export type QueueName = (typeof QUEUE_NAMES)[keyof typeof QUEUE_NAMES];
 // Shared connection
 // The ioredis client exported from redis.ts already has the BullMQ-compatible
 // options set (maxRetriesPerRequest: null, enableReadyCheck: false).
-//
-// Cast is necessary because pnpm may resolve two different patch versions of
-// ioredis (one for this package, one for bullmq), making the types structurally
-// incompatible despite being runtime-compatible.
 // ---------------------------------------------------------------------------
 const connection = redis as unknown as ConnectionOptions;
+
+/**
+ * Lazy queue proxy helper so BullMQ does not attempt to open Redis
+ * connections at module evaluation time during Next.js static build.
+ */
+function createLazyQueue(name: QueueName, options: QueueOptions): Queue {
+  let instance: Queue | null = null;
+  return new Proxy({} as Queue, {
+    get(_target, prop, receiver) {
+      if (!instance) {
+        instance = new Queue(name, options);
+      }
+      const value = Reflect.get(instance, prop, receiver);
+      return typeof value === "function" ? value.bind(instance) : value;
+    },
+  });
+}
 
 /**
  * document-pipeline queue — HIGH priority
  * Jobs: classify-document, ocr-extract, chunk-text, embed-chunks,
  *       update-knowledge-graph, trigger-resource-intelligence
  */
-export const documentPipelineQueue = new Queue(QUEUE_NAMES.DOCUMENT_PIPELINE, {
+export const documentPipelineQueue = createLazyQueue(QUEUE_NAMES.DOCUMENT_PIPELINE, {
   connection,
   defaultJobOptions: {
     priority: 1, // 1 = HIGH (lower number = higher priority in BullMQ)
@@ -50,7 +63,7 @@ export const documentPipelineQueue = new Queue(QUEUE_NAMES.DOCUMENT_PIPELINE, {
  * Jobs: generate-summary, generate-key-topics, generate-flashcards,
  *       generate-definitions, generate-viva-questions, generate-exam-questions
  */
-export const resourceIntelligenceQueue = new Queue(
+export const resourceIntelligenceQueue = createLazyQueue(
   QUEUE_NAMES.RESOURCE_INTELLIGENCE,
   {
     connection,
@@ -71,7 +84,7 @@ export const resourceIntelligenceQueue = new Queue(
  * pyq-processing queue — HIGH priority
  * Jobs: pyq-extract, pyq-dedup, pyq-frequency
  */
-export const pyqProcessingQueue = new Queue(QUEUE_NAMES.PYQ_PROCESSING, {
+export const pyqProcessingQueue = createLazyQueue(QUEUE_NAMES.PYQ_PROCESSING, {
   connection,
   defaultJobOptions: {
     priority: 1, // 1 = HIGH
@@ -90,7 +103,7 @@ export const pyqProcessingQueue = new Queue(QUEUE_NAMES.PYQ_PROCESSING, {
  * Jobs: exam-reminder, flashcard-due, homework-due, processing-complete,
  *       processing-failed
  */
-export const notificationsQueue = new Queue(QUEUE_NAMES.NOTIFICATIONS, {
+export const notificationsQueue = createLazyQueue(QUEUE_NAMES.NOTIFICATIONS, {
   connection,
   defaultJobOptions: {
     priority: 10, // 10 = LOW
@@ -108,7 +121,7 @@ export const notificationsQueue = new Queue(QUEUE_NAMES.NOTIFICATIONS, {
  * analytics queue — LOW priority
  * Jobs: health-score-update, readiness-score
  */
-export const analyticsQueue = new Queue(QUEUE_NAMES.ANALYTICS, {
+export const analyticsQueue = createLazyQueue(QUEUE_NAMES.ANALYTICS, {
   connection,
   defaultJobOptions: {
     priority: 10, // 10 = LOW

@@ -8,7 +8,21 @@ const nextConfig = {
     tsconfigPath: "./tsconfig.json",
   },
 
-  // Enforce HTTPS by redirecting all HTTP requests
+  // Fallback rewrite so that any non-API route serves the Vite SPA frontend (index.html in public/)
+  async rewrites() {
+    return {
+      beforeFiles: [],
+      afterFiles: [],
+      fallback: [
+        {
+          source: "/:path*",
+          destination: "/index.html",
+        },
+      ],
+    };
+  },
+
+  // Security headers
   async headers() {
     return [
       {

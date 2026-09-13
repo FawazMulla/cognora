@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getStudentModelSnapshot } from "../../../lib/student-model";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const userId = request.headers.get("x-user-id");

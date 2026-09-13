@@ -9,6 +9,8 @@ import { predictExamScore, getForgettingCurveData, recomputeAcademicHealth } fro
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const userId = request.headers.get("x-user-id");
