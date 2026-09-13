@@ -6,7 +6,7 @@ services:
     runtime: node
     plan: starter
     region: oregon
-    buildCommand: pnpm install --no-frozen-lockfile && pnpm run build
+    buildCommand: pnpm install --no-frozen-lockfile --prod=false && pnpm run build
     startCommand: pnpm start
     envVars:
       - key: NODE_ENV
