@@ -4,7 +4,11 @@
   "private": true,
   "description": "AI Academic Workspace — mobile-first academic platform",
   "scripts": {
-    "build": "turbo run build",
+    "build:web": "pnpm --filter web run build",
+    "copy:web": "node scripts/copy-web-dist.mjs",
+    "build:api": "pnpm --filter @workspace/api run build",
+    "build": "pnpm run build:web && pnpm run copy:web && pnpm run build:api",
+    "start": "pnpm --filter @workspace/api run start",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",

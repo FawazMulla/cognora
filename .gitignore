@@ -10,6 +10,7 @@ build/
 out/
 .expo/
 *.tsbuildinfo
+apps/api/public/
 
 # Environment files
 .env

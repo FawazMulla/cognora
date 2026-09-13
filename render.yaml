@@ -1,12 +1,13 @@
 services:
-  # ── Backend API (Next.js) ───────────────────────────────────────────────────
+  # ── Unified Monolith Service (Next.js API + Vite React SPA) ─────────────────
+  # Serves both backend API routes (/api/*) and the frontend SPA from a single port/domain.
   - type: web
-    name: cognora-api
+    name: cognora
     runtime: node
     plan: starter
     region: oregon
-    buildCommand: pnpm install --no-frozen-lockfile && pnpm --filter @workspace/api run build
-    startCommand: pnpm --filter @workspace/api run start
+    buildCommand: pnpm install --no-frozen-lockfile && pnpm run build
+    startCommand: pnpm start
     envVars:
       - key: NODE_ENV
         value: production
@@ -26,23 +27,6 @@ services:
         sync: false
       - key: GOOGLE_AI_API_KEY
         sync: false
-
-  # ── Frontend Web App (Vite React SPA) ──────────────────────────────────────
-  - type: web
-    name: cognora-web
-    runtime: static
-    buildCommand: pnpm install --no-frozen-lockfile && pnpm --filter web run build
-    staticPublishPath: ./apps/web/dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        fromService:
-          type: web
-          name: cognora-api
-          property: host
       - key: VITE_SUPABASE_URL
         sync: false
       - key: VITE_SUPABASE_ANON_KEY

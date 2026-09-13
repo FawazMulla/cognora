@@ -1,8 +1,8 @@
-# Deploying Cognora on Render
+# Deploying Cognora on Render (Unified Monolith Service)
 
-This project is configured as a monorepo containing:
-1. **Frontend**: Vite + React 19 SPA (`apps/web`) &rarr; Deployed as a **Static Site** on Render.
-2. **Backend API**: Next.js 14 API (`apps/api`) &rarr; Deployed as a **Web Service** on Render.
+Cognora is configured to deploy as a **single unified monolith service** on Render:
+- **1 Web Service**: Next.js API server handles all backend routes (`/api/*`) and serves the Vite React frontend SPA (`apps/web/dist`) for all pages (`/`, `/viva`, `/smart-revision`, etc.).
+- **1 Port & 1 URL**: Zero CORS issues, instant same-origin routing, simplified environment variable management, and cost-effective single-service hosting.
 
 ---
 
@@ -20,29 +20,33 @@ This project is configured as a monorepo containing:
    - `REDIS_URL`: Your Upstash / Redis connection string
    - `COHERE_API_KEY`: Your Cohere API key
    - `GOOGLE_AI_API_KEY`: (Optional) Your Google Gemini API key
-6. Click **Apply**. Render will build and deploy both the backend API and frontend static site.
+   - `VITE_SUPABASE_URL`: Your Supabase Project URL
+   - `VITE_SUPABASE_ANON_KEY`: Your Supabase Anon Key
+   - `VITE_COHERE_API_KEY`: (Optional) Your Cohere API key
+   - `VITE_GEMINI_API_KEY`: (Optional) Your Google Gemini API key
+6. Click **Apply**. Render will build the Vite SPA, bundle it into the Next.js static directory, and launch the unified monolith service.
 
 ---
 
 ## Option 2: Manual Deployment via Render Dashboard
 
-If you prefer to configure the services manually in the Render dashboard:
+If you prefer to configure the service manually in the Render dashboard:
 
-### Service 1: Backend API (`cognora-api`)
+### Unified Monolith Web Service (`cognora`)
 
 1. In Render Dashboard, click **New +** &rarr; **Web Service**.
 2. Connect your Git repository.
 3. Configure the following settings:
-   - **Name**: `cognora-api`
+   - **Name**: `cognora`
    - **Language / Runtime**: `Node`
    - **Root Directory**: leave blank (monorepo root)
    - **Build Command**:
      ```bash
-     pnpm install --no-frozen-lockfile && pnpm --filter @workspace/api run build
+     pnpm install --no-frozen-lockfile && pnpm run build
      ```
    - **Start Command**:
      ```bash
-     pnpm --filter @workspace/api run start
+     pnpm start
      ```
 4. Add the following **Environment Variables**:
    - `NODE_ENV` = `production`
@@ -54,38 +58,16 @@ If you prefer to configure the services manually in the Render dashboard:
    - `NEXTAUTH_SECRET` = `<32+ character random string>`
    - `COHERE_API_KEY` = `<your-cohere-api-key>`
    - `GOOGLE_AI_API_KEY` = `<your-gemini-api-key>` (optional)
-5. Click **Create Web Service**. Note your API service URL (e.g. `https://cognora-api.onrender.com`).
-
----
-
-### Service 2: Frontend Web App (`cognora-web`)
-
-1. In Render Dashboard, click **New +** &rarr; **Static Site**.
-2. Connect your Git repository.
-3. Configure the following settings:
-   - **Name**: `cognora-web`
-   - **Root Directory**: leave blank (monorepo root)
-   - **Build Command**:
-     ```bash
-     pnpm install --no-frozen-lockfile && pnpm --filter web run build
-     ```
-   - **Publish Directory**:
-     ```bash
-     apps/web/dist
-     ```
-4. **SPA Redirects / Rewrites** (under **Redirects/Rewrites** tab):
-   - **Type**: `Rewrite`
-   - **Source**: `/*`
-   - **Destination**: `/index.html`
-5. Add the following **Environment Variables**:
-   - `VITE_API_URL` = `https://cognora-api.onrender.com` (your backend URL from step 1)
    - `VITE_SUPABASE_URL` = `https://<your-project>.supabase.co`
    - `VITE_SUPABASE_ANON_KEY` = `<your-supabase-anon-key>`
-   - `VITE_AI_PROVIDER` = `cohere`
    - `VITE_COHERE_API_KEY` = `<your-cohere-api-key>`
-6. Click **Create Static Site**.
+   - `VITE_GEMINI_API_KEY` = `<your-gemini-api-key>` (optional)
+5. Click **Create Web Service**. Your unified app will be live at `https://cognora.onrender.com`.
 
 ---
 
 ## Verification
-Both `apps/api` (Next.js) and `apps/web` (Vite) build cleanly with **0 errors**.
+Running `pnpm run build` runs:
+1. `pnpm --filter web run build` (Builds Vite React frontend into `apps/web/dist`)
+2. `node scripts/copy-web-dist.mjs` (Copies frontend build into Next.js `apps/api/public`)
+3. `pnpm --filter @workspace/api run build` (Builds Next.js API & catch-all static server)
