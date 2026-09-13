@@ -1,22 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Transpile the shared workspace package so Next.js can process its TypeScript
-  transpilePackages: ["@workspace/shared"],
+  transpilePackages: ['@workspace/shared'],
 
   // TypeScript strict mode (build will fail on type errors)
   typescript: {
-    tsconfigPath: "./tsconfig.json",
+    tsconfigPath: './tsconfig.json',
   },
 
-  // Fallback rewrite so that any non-API route serves the Vite SPA frontend (index.html in public/)
+  // Fallback rewrite so that any non-API/non-internal route serves the Vite SPA frontend (index.html in public/)
   async rewrites() {
     return {
       beforeFiles: [],
       afterFiles: [],
       fallback: [
         {
-          source: "/:path*",
-          destination: "/index.html",
+          source: '/((?!api|_next|_error|404|500|favicon\\.ico).*)',
+          destination: '/index.html',
         },
       ],
     };
@@ -26,23 +26,23 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: '/(.*)',
         headers: [
           {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
           },
           {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
           },
           {
-            key: "X-Frame-Options",
-            value: "DENY",
+            key: 'X-Frame-Options',
+            value: 'DENY',
           },
           {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
           },
         ],
       },
