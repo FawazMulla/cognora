@@ -483,26 +483,42 @@ EDA Pairplot successfully saved to 'iris_eda_pairplot.png'.`,
 }
 
 export function getDefaultSubjects() {
+  const coreSubjects = [
+    { id: 'sub-aids2', name: 'AI and DS – II', code: 'ITC701', progress: 82, type: 'Theory' },
+    { id: 'sub-ioe', name: 'Internet of Everything (IOE)', code: 'ITC702', progress: 75, type: 'Theory' },
+    { id: 'sub-stqa', name: 'Software Testing and Quality Assurance (STQA)', code: 'ITDO7014', progress: 68, type: 'Theory' },
+    { id: 'sub-irs', name: 'Information Retrieval System (IRS)', code: 'ITDO7024', progress: 70, type: 'Theory' },
+    { id: 'sub-csl', name: 'Cyber Security and Laws (CSL)', code: 'ILO7016', progress: 60, type: 'Theory' },
+    { id: 'lab-dsl', name: 'Data Science Lab', code: 'ITL701', progress: 85, type: 'Lab' },
+    { id: 'lab-ioe', name: 'IOE Lab (Sensors & Cooja)', code: 'ITL702', progress: 80, type: 'Lab' },
+    { id: 'lab-sad', name: 'Secure Application Development (SAD) Lab', code: 'ITL703', progress: 65, type: 'Lab' },
+    { id: 'lab-ossp', name: 'Recent Open Source Project Lab', code: 'ITL704', progress: 55, type: 'Lab' }
+  ];
+
   const profileStr = localStorage.getItem('user_profile');
   if (profileStr) {
     try {
       const parsed = JSON.parse(profileStr);
       if (parsed.subjects && Array.isArray(parsed.subjects) && parsed.subjects.length > 0) {
-        return parsed.subjects.map((s: any, i: number) => ({
+        const customSubs = parsed.subjects.map((s: any, i: number) => ({
           id: s.id || `sub-${i + 1}`,
           name: typeof s === 'string' ? s : s.name,
-          code: typeof s === 'string' ? 'SUBJ' : (s.code || `CS-70${i + 1}`),
-          progress: 60 + (i * 10) % 35
+          code: typeof s === 'string' ? 'SUBJ' : (s.code || `ITC-70${i + 1}`),
+          progress: s.progress ?? (60 + (i * 10) % 35),
+          type: (typeof s === 'string' ? s : s.name).toLowerCase().includes('lab') ? 'Lab' : (s.type || 'Theory')
         }));
+        
+        // Merge so core subjects are never missing
+        const map = new Map<string, any>();
+        coreSubjects.forEach(c => map.set(c.id, c));
+        customSubs.forEach((cs: any) => map.set(cs.id, cs));
+        return Array.from(map.values());
       }
     } catch { /* ignore */ }
   }
-  return [
-    { id: 'sub-1', name: 'AI and DS – II', code: 'AIDS-701', progress: 78 },
-    { id: 'sub-2', name: 'Internet of Everything', code: 'IOE-702', progress: 65 },
-    { id: 'sub-3', name: 'Secure Application Development', code: 'SAD-703', progress: 52 },
-    { id: 'sub-4', name: 'Software Testing and QA', code: 'STQA-704', progress: 70 }
-  ];
+
+  // University of Mumbai - B.E. Information Technology (Rev-2019 'C' Scheme, Semester VII)
+  return coreSubjects;
 }
 
 // ---------------- STRUCTURED TOPPER ANSWERS ----------------

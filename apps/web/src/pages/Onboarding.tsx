@@ -233,7 +233,7 @@ export default function Onboarding() {
         <div className="w-9 h-9 rounded bg-black flex items-center justify-center shadow-md">
           <Sparkles className="w-5 h-5 text-white" />
         </div>
-        <h1 className="text-lg font-bold tracking-tight text-black font-display uppercase font-sans">ArchAdemia</h1>
+        <h1 className="text-lg font-bold tracking-tight text-black font-display uppercase font-sans">Cognora</h1>
       </div>
 
       <div className="bg-white border border-[#d9d9dd] w-full max-w-md p-8 rounded-2xl shadow-sm space-y-6 animate-in fade-in zoom-in duration-300">

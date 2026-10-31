@@ -70,37 +70,37 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   const hasCohereKey = Boolean(import.meta.env.VITE_COHERE_API_KEY);
 
   return (
-    <div className="min-h-screen bg-white text-[#212121] font-sans flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-[#f8f9fc] text-[#2d2d34] font-sans flex flex-col relative overflow-hidden">
 
       <div className="flex flex-col flex-1 relative z-10">
-        {/* Cohere Stark White Navbar */}
-        <nav className="bg-white px-6 py-3 flex justify-between items-center sticky top-0 z-50 border-b border-[#d9d9dd]">
+        {/* Sleek Minimal Pastel Navbar */}
+        <nav className="bg-[#ffffff]/90 backdrop-blur-md px-6 py-3.5 flex justify-between items-center sticky top-0 z-50 border-b border-[#e3e6ed]">
           <div className="flex items-center gap-3">
             {/* Mobile hamburger */}
             <button
-              className="lg:hidden p-2 rounded hover:bg-[#eeece7] text-[#75758a] transition-colors border border-transparent"
+              className="lg:hidden p-2 rounded-xl hover:bg-[#edf3fc] text-[#6b6f82] transition-colors border border-transparent"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="w-5 h-5" />
             </button>
-            <Link to="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded bg-black flex items-center justify-center">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#4f75f2] to-[#713fb8] flex items-center justify-center shadow-xs text-white">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <h1 className="text-sm font-bold tracking-tight text-black font-display uppercase">ArchAdemia</h1>
+              <h1 className="text-sm font-extrabold tracking-tight text-[#121217] uppercase font-mono">Cognora</h1>
             </Link>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => setSettingsOpen(true)}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#212121] hover:bg-[#eeece7] border border-[#d9d9dd] px-3.5 py-1.5 rounded-full transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-xs font-bold text-[#4f5367] hover:text-[#121217] bg-white hover:bg-[#edf3fc] border border-[#e3e6ed] hover:border-[#d0dcf5] px-3.5 py-1.5 rounded-xl transition-all cursor-pointer shadow-xs"
             >
-              <Settings className="w-3.5 h-3.5" />
+              <Settings className="w-3.5 h-3.5 text-[#4f75f2]" />
               <span>Environment</span>
             </button>
             <button 
               onClick={() => signOut()}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#212121] hover:bg-[#eeece7] border border-[#d9d9dd] px-3.5 py-1.5 rounded-full transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 text-xs font-bold text-[#4f5367] hover:text-[#e03137] bg-white hover:bg-[#fee2e2]/40 border border-[#e3e6ed] hover:border-[#fca5a5] px-3.5 py-1.5 rounded-xl transition-all cursor-pointer shadow-xs"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Sign Out</span>
@@ -116,7 +116,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <div className="flex justify-between items-center px-6 py-4 border-b border-gemini-border">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-gemini-blue" />
-                  <span className="font-bold text-xs text-gemini-text">ArchAdemia</span>
+                  <span className="font-bold text-xs text-gemini-text">Cognora</span>
                 </div>
                 <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-lg hover:bg-gemini-bg text-gemini-text-muted border border-transparent hover:border-gemini-border">
                   <X className="w-4 h-4" />

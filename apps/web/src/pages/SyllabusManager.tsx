@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BookOpen, CheckSquare, Square, Plus, Sparkles, Loader2, Filter, Layers, FileText, ArrowRight, Award, Check } from 'lucide-react';
+import { BookOpen, CheckSquare, Square, Plus, Sparkles, Loader2, Filter } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { getDefaultSubjects } from '../lib/ai-service';
 
@@ -178,29 +178,32 @@ export default function SyllabusManager() {
   const selectedSubject = subjects.find(s => s.id === selectedSubjectId);
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10 bg-white text-[#212121] min-h-screen font-display">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] text-[#2d2d34] min-h-screen font-sans">
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-[#d9d9dd]">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#666666] uppercase mb-2">
-            <BookOpen className="w-3.5 h-3.5 text-[#212121]" /> Curriculum & Coverage
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
+            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] uppercase font-bold">
+              Curriculum &amp; Coverage
+            </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#212121] flex items-center gap-3">
-            Syllabus & Units Manager
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] flex items-center gap-3">
+            Syllabus &amp; Units Manager
           </h1>
-          <p className="text-[#666666] mt-2 text-sm md:text-base max-w-2xl">
+          <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans max-w-2xl">
             Structured unit breakdowns, exam weightage distribution, and interactive topic completion tracking.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {subjects.length > 0 && (
-            <div className="flex items-center gap-2 bg-white border border-[#d9d9dd] rounded-2xl p-2 shadow-sm">
-              <Filter className="w-4 h-4 text-[#666666] ml-2" />
+            <div className="flex items-center gap-2 bg-white border border-[#e3e6ed] rounded-2xl p-1.5 shadow-xs">
+              <Filter className="w-3.5 h-3.5 text-[#8c8fa1] ml-2" />
               <select
                 value={selectedSubjectId}
                 onChange={e => setSelectedSubjectId(e.target.value)}
-                className="bg-transparent text-[#212121] outline-none text-xs font-bold pr-4 cursor-pointer"
+                className="bg-transparent text-[#121217] outline-none text-xs font-bold pr-4 cursor-pointer"
               >
                 {subjects.map(s => (
                   <option key={s.id} value={s.id}>
@@ -213,15 +216,15 @@ export default function SyllabusManager() {
 
           <button
             onClick={() => setShowExtractModal(true)}
-            className="flex items-center gap-2 bg-[#fafafb] hover:bg-[#f4f4f4] text-[#212121] border border-[#d9d9dd] px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+            className="flex items-center gap-2 bg-white hover:bg-[#edf3fc] text-[#4f75f2] border border-[#d0dcf5] px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
           >
-            <Sparkles className="w-4 h-4 text-[#212121]" />
+            <Sparkles className="w-4 h-4 text-[#4f75f2]" />
             AI Auto-Extract
           </button>
 
           <button
             onClick={() => setShowAddUnitModal(true)}
-            className="flex items-center gap-2 bg-[#212121] hover:bg-black text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+            className="flex items-center gap-2 bg-[#4f75f2] hover:bg-[#385dd8] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
           >
             <Plus className="w-4 h-4" />
             Add Unit
@@ -230,26 +233,26 @@ export default function SyllabusManager() {
       </header>
 
       {/* Progress & Overview Card */}
-      <div className="bg-[#fafafb] border border-[#d9d9dd] rounded-3xl p-6 md:p-8 shadow-sm">
+      <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 shadow-xs">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#212121] bg-white px-3 py-1 rounded-full border border-[#d9d9dd] mb-3 inline-block font-bold">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-[#3b52c4] bg-[#e4e7fd] px-3 py-1 rounded-full border border-[#d0d8fb] mb-3 inline-block font-bold">
               {selectedSubject?.code || 'SUBJECT'} SYLLABUS STATUS
             </span>
-            <h2 className="text-2xl font-black text-[#212121]">{selectedSubject?.name || 'Subject Syllabus'}</h2>
-            <p className="text-[#666666] text-xs mt-1 font-medium">
+            <h2 className="text-2xl font-extrabold text-[#121217]">{selectedSubject?.name || 'Subject Syllabus'}</h2>
+            <p className="text-[#6b6f82] text-xs mt-1 font-medium font-sans">
               {units.length} Units • {allTopics.length} Total Topics • {completedTopics.length} Completed
             </p>
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="text-right">
-              <div className="text-3xl font-black text-[#212121]">{completionPercentage}%</div>
-              <div className="text-[10px] font-mono uppercase text-[#666666] font-bold">Coverage</div>
+              <div className="text-3xl font-extrabold text-[#121217]">{completionPercentage}%</div>
+              <div className="text-[10px] font-mono uppercase text-[#6b6f82] font-bold">Coverage</div>
             </div>
-            <div className="w-32 bg-white border border-[#d9d9dd] h-3 rounded-full overflow-hidden p-0.5">
+            <div className="w-36 bg-[#f0f2f7] h-3 rounded-full overflow-hidden p-0.5">
               <div
-                className="bg-[#212121] h-full rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-[#4f75f2] to-[#713fb8] h-full rounded-full transition-all duration-500"
                 style={{ width: `${completionPercentage}%` }}
               />
             </div>
@@ -259,15 +262,15 @@ export default function SyllabusManager() {
 
       {/* Units List */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-[#666666] gap-3">
-          <Loader2 className="w-8 h-8 text-[#212121] animate-spin" />
+        <div className="flex flex-col items-center justify-center py-20 text-[#6b6f82] gap-3">
+          <Loader2 className="w-8 h-8 text-[#4f75f2] animate-spin" />
           <span className="text-xs font-mono uppercase tracking-wider font-bold">Loading Syllabus Units...</span>
         </div>
       ) : units.length === 0 ? (
-        <div className="text-center py-20 bg-[#fafafb] rounded-3xl border border-[#d9d9dd] border-dashed">
-          <BookOpen className="w-12 h-12 text-[#999999] mx-auto mb-3" />
-          <h3 className="text-lg font-bold text-[#212121]">No Syllabus Found</h3>
-          <p className="text-[#666666] text-xs mt-1 max-w-md mx-auto">
+        <div className="text-center py-20 bg-white rounded-3xl border border-[#e3e6ed] border-dashed">
+          <BookOpen className="w-12 h-12 text-[#8c8fa1] mx-auto mb-3" />
+          <h3 className="text-lg font-bold text-[#121217]">No Syllabus Found</h3>
+          <p className="text-[#6b6f82] text-xs mt-1 max-w-md mx-auto font-sans">
             Click "Add Unit" or "AI Auto-Extract" to build your syllabus curriculum.
           </p>
         </div>
@@ -280,26 +283,26 @@ export default function SyllabusManager() {
             return (
               <div
                 key={unit.id}
-                className="bg-white border border-[#d9d9dd] rounded-3xl p-6 md:p-8 space-y-6 shadow-sm hover:border-[#212121] transition-all"
+                className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs hover:border-[#4f75f2] transition-all"
               >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-[#e5e5e8]">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-[#e3e6ed]">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="bg-[#fafafb] text-[#212121] border border-[#d9d9dd] px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold">
+                      <span className="bg-[#edf3fc] text-[#4f75f2] border border-[#d0dcf5] px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold">
                         Unit {unit.unitNumber}
                       </span>
-                      <span className="bg-[#212121] text-white px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold">
+                      <span className="bg-[#e4e7fd] text-[#3b52c4] border border-[#d0d8fb] px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold">
                         {unit.weightagePercentage}% Exam Weightage
                       </span>
                     </div>
-                    <h3 className="text-lg font-black text-[#212121]">{unit.title}</h3>
-                    <p className="text-[#666666] text-xs mt-1 leading-relaxed">
+                    <h3 className="text-lg font-extrabold text-[#121217]">{unit.title}</h3>
+                    <p className="text-[#6b6f82] text-xs mt-1 leading-relaxed font-sans">
                       {unit.learningOutcomes}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-mono font-bold text-[#666666]">
+                    <span className="text-xs font-mono font-bold text-[#4f75f2] bg-[#edf3fc] px-3 py-1 rounded-xl border border-[#d0dcf5]">
                       {unitCompleted}/{unit.topics.length} done ({unitPercent}%)
                     </span>
                   </div>
@@ -311,17 +314,17 @@ export default function SyllabusManager() {
                     <div
                       key={topic.id}
                       onClick={() => toggleTopicCompleted(unit.id, topic.id)}
-                      className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                      className={`p-3.5 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
                         topic.completed
-                          ? 'bg-[#fafafb] border-[#d9d9dd] text-[#888888] line-through'
-                          : 'bg-white border-[#d9d9dd] text-[#212121] hover:border-[#212121] shadow-xs'
+                          ? 'bg-[#e2f6eb]/50 border-[#c9eed9] text-[#1f7247] line-through'
+                          : 'bg-[#f8f9fc] border-[#e3e6ed] text-[#121217] hover:border-[#4f75f2] shadow-xs'
                       }`}
                     >
                       <span className="text-xs font-bold">{topic.title}</span>
                       {topic.completed ? (
-                        <CheckSquare className="w-4 h-4 text-[#212121] shrink-0 ml-2" />
+                        <CheckSquare className="w-4 h-4 text-[#1f7247] shrink-0 ml-2" />
                       ) : (
-                        <Square className="w-4 h-4 text-[#888888] shrink-0 ml-2" />
+                        <Square className="w-4 h-4 text-[#8c8fa1] shrink-0 ml-2" />
                       )}
                     </div>
                   ))}
@@ -335,69 +338,69 @@ export default function SyllabusManager() {
       {/* Add Unit Modal */}
       {showAddUnitModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="bg-white border border-[#d9d9dd] w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl p-6 space-y-6">
-            <h3 className="text-lg font-black text-[#212121] flex items-center gap-2">
-              <Plus className="w-5 h-5 text-[#212121]" /> Add Syllabus Unit
+          <div className="bg-white border border-[#e3e6ed] w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl p-6 space-y-6">
+            <h3 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
+              <Plus className="w-5 h-5 text-[#4f75f2]" /> Add Syllabus Unit
             </h3>
 
             <form onSubmit={handleAddUnit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-[#666666] mb-1 font-bold">Unit Title</label>
+                <label className="block text-[#6b6f82] mb-1 font-bold">Unit Title</label>
                 <input
                   type="text"
                   required
                   value={newUnitTitle}
                   onChange={e => setNewUnitTitle(e.target.value)}
                   placeholder="e.g. Unit 3: Informed Search & Game Theory"
-                  className="w-full bg-[#fafafb] border border-[#d9d9dd] rounded-xl px-4 py-2.5 text-[#212121] outline-none focus:border-[#212121] shadow-xs font-bold"
+                  className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-[#121217] outline-none focus:border-[#4f75f2] shadow-xs font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-[#666666] mb-1 font-bold">Exam Weightage (%)</label>
+                <label className="block text-[#6b6f82] mb-1 font-bold">Exam Weightage (%)</label>
                 <input
                   type="number"
                   min={5}
                   max={100}
                   value={newUnitWeightage}
                   onChange={e => setNewUnitWeightage(Number(e.target.value))}
-                  className="w-full bg-[#fafafb] border border-[#d9d9dd] rounded-xl px-4 py-2.5 text-[#212121] outline-none focus:border-[#212121] shadow-xs font-bold"
+                  className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-[#121217] outline-none focus:border-[#4f75f2] shadow-xs font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-[#666666] mb-1 font-bold">Learning Outcomes</label>
+                <label className="block text-[#6b6f82] mb-1 font-bold">Learning Outcomes</label>
                 <input
                   type="text"
                   value={newUnitOutcomes}
                   onChange={e => setNewUnitOutcomes(e.target.value)}
                   placeholder="e.g. Master A*, IDA*, and adversarial minimax trees."
-                  className="w-full bg-[#fafafb] border border-[#d9d9dd] rounded-xl px-4 py-2.5 text-[#212121] outline-none focus:border-[#212121] shadow-xs"
+                  className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-[#121217] outline-none focus:border-[#4f75f2] shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-[#666666] mb-1 font-bold">Topics (One per line)</label>
+                <label className="block text-[#6b6f82] mb-1 font-bold">Topics (One per line)</label>
                 <textarea
                   rows={4}
                   value={newUnitTopics}
                   onChange={e => setNewUnitTopics(e.target.value)}
                   placeholder="A* Search Heuristic&#10;Alpha-Beta Pruning&#10;Game Trees & Minimax"
-                  className="w-full bg-[#fafafb] border border-[#d9d9dd] rounded-xl p-3 text-[#212121] outline-none focus:border-[#212121] resize-none shadow-xs font-sans"
+                  className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl p-3 text-[#121217] outline-none focus:border-[#4f75f2] resize-none shadow-xs font-sans"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#d9d9dd]">
+              <div className="flex justify-end gap-3 pt-4 border-t border-[#e3e6ed]">
                 <button
                   type="button"
                   onClick={() => setShowAddUnitModal(false)}
-                  className="bg-[#f4f4f4] hover:bg-[#e5e5e8] text-[#212121] px-5 py-2.5 rounded-xl font-bold transition-colors cursor-pointer"
+                  className="bg-[#f8f9fc] hover:bg-[#edf3fc] text-[#6b6f82] hover:text-[#121217] px-5 py-2.5 rounded-xl font-bold transition-colors cursor-pointer border border-[#e3e6ed]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#212121] hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold transition-colors cursor-pointer shadow-xs"
+                  className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-6 py-2.5 rounded-xl font-bold transition-colors cursor-pointer shadow-xs"
                 >
                   Save Unit
                 </button>
@@ -410,11 +413,11 @@ export default function SyllabusManager() {
       {/* AI Extraction Modal */}
       {showExtractModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="bg-white border border-[#d9d9dd] w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl p-6 space-y-6">
-            <h3 className="text-lg font-black text-[#212121] flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-[#212121]" /> AI Syllabus Document Parser
+          <div className="bg-white border border-[#e3e6ed] w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl p-6 space-y-6">
+            <h3 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-[#4f75f2]" /> AI Syllabus Document Parser
             </h3>
-            <p className="text-xs text-[#666666] leading-relaxed">
+            <p className="text-xs text-[#6b6f82] leading-relaxed font-sans">
               Paste your university course syllabus, curriculum PDF text, or module breakdown below. The AI will parse units, calculate weightage, and index topics.
             </p>
 
@@ -423,30 +426,30 @@ export default function SyllabusManager() {
               value={extractText}
               onChange={e => setExtractText(e.target.value)}
               placeholder="Paste raw syllabus outline or lecture plan text here..."
-              className="w-full bg-[#fafafb] border border-[#d9d9dd] rounded-xl p-3 text-xs text-[#212121] outline-none focus:border-[#212121] resize-none shadow-xs font-sans"
+              className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl p-3 text-xs text-[#121217] outline-none focus:border-[#4f75f2] resize-none shadow-xs font-sans"
             />
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-[#d9d9dd]">
+            <div className="flex justify-end gap-3 pt-4 border-t border-[#e3e6ed]">
               <button
                 type="button"
                 onClick={() => setShowExtractModal(false)}
-                className="bg-[#f4f4f4] hover:bg-[#e5e5e8] text-[#212121] px-5 py-2.5 rounded-xl font-bold transition-colors cursor-pointer"
+                className="bg-[#f8f9fc] hover:bg-[#edf3fc] text-[#6b6f82] hover:text-[#121217] px-5 py-2.5 rounded-xl font-bold transition-colors cursor-pointer border border-[#e3e6ed]"
               >
                 Cancel
               </button>
               <button
                 disabled={isExtracting || !extractText.trim()}
                 onClick={handleAiExtract}
-                className="bg-[#212121] hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold transition-colors cursor-pointer flex items-center gap-2 shadow-xs disabled:opacity-50"
+                className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-6 py-2.5 rounded-xl font-bold transition-colors cursor-pointer flex items-center gap-2 shadow-xs disabled:opacity-50"
               >
                 {isExtracting ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
                     Parsing Curriculum...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-4 h-4 text-amber-200" />
                     Extract Syllabus Units
                   </>
                 )}
@@ -459,68 +462,383 @@ export default function SyllabusManager() {
   );
 }
 
-// Fallback Default Syllabus
+// Fallback Default Syllabus mapped to University of Mumbai Syllabus
 function getDefaultSyllabusForSubject(subjectName: string): Unit[] {
+  const s = subjectName.toLowerCase();
+
+  // 1. Information Retrieval System (IRS - ITDO7024)
+  if (s.includes('retrieval') || s.includes('irs')) {
+    return [
+      {
+        id: 'u-irs-1',
+        unitNumber: 1,
+        title: 'Module 1: Introduction to Information Retrieval',
+        weightagePercentage: 15,
+        learningOutcomes: 'Understand components of IR systems, Information vs Data Retrieval, Search engines.',
+        topics: [
+          { id: 't-irs-1-1', title: 'The Retrieval Process & Information Systems', completed: true },
+          { id: 't-irs-1-2', title: 'Information versus Data Retrieval', completed: true },
+          { id: 't-irs-1-3', title: 'Search Engines, Crawlers & Search APIs', completed: false }
+        ]
+      },
+      {
+        id: 'u-irs-2',
+        unitNumber: 2,
+        title: 'Module 2: Information Retrieval Models',
+        weightagePercentage: 20,
+        learningOutcomes: 'Evaluate taxonomy of IR models, Classic Vector Space, Probabilistic & Structured models.',
+        topics: [
+          { id: 't-irs-2-1', title: 'Classic IR Models: Boolean, Vector Space Model', completed: true },
+          { id: 't-irs-2-2', title: 'Probabilistic IR Models & BM25 Ranking', completed: false },
+          { id: 't-irs-2-3', title: 'Structured Text Retrieval & Browsing Models', completed: false }
+        ]
+      },
+      {
+        id: 'u-irs-3',
+        unitNumber: 3,
+        title: 'Module 3: Query Processing & Operations',
+        weightagePercentage: 20,
+        learningOutcomes: 'Master keyword querying, pattern matching, relevance feedback, and wildcard queries.',
+        topics: [
+          { id: 't-irs-3-1', title: 'Keyword Querying & Pattern Matching Algorithms', completed: false },
+          { id: 't-irs-3-2', title: 'User Relevance Feedback (Rocchio Algorithm)', completed: false },
+          { id: 't-irs-3-3', title: 'Proximity Queries and Wildcard Searching', completed: false }
+        ]
+      },
+      {
+        id: 'u-irs-4',
+        unitNumber: 4,
+        title: 'Module 4: Text Processing & Document Operations',
+        weightagePercentage: 15,
+        learningOutcomes: 'Preprocessing pipelines: tokenization, stemming (Porter), stop words, document clustering.',
+        topics: [
+          { id: 't-irs-4-1', title: 'Document Preprocessing: Tokenization & Stemming', completed: false },
+          { id: 't-irs-4-2', title: 'Document Clustering & Classification (k-Means, k-NN)', completed: false },
+          { id: 't-irs-4-3', title: 'Markup Languages & Digital Libraries', completed: false }
+        ]
+      },
+      {
+        id: 'u-irs-5',
+        unitNumber: 5,
+        title: 'Module 5: Indexing and Searching the Web',
+        weightagePercentage: 20,
+        learningOutcomes: 'Inverted files, index compression, PageRank, HITS, Web search challenges.',
+        topics: [
+          { id: 't-irs-5-1', title: 'Inverted Index Construction & Compression Techniques', completed: false },
+          { id: 't-irs-5-2', title: 'Web Crawling, Meta Searches & Hyperlink Analysis (PageRank)', completed: false },
+          { id: 't-irs-5-3', title: 'Multimedia Indexing & Feature Extraction', completed: false }
+        ]
+      },
+      {
+        id: 'u-irs-6',
+        unitNumber: 6,
+        title: 'Module 6: User Interface and Visualization',
+        weightagePercentage: 10,
+        learningOutcomes: 'HCI in search engines, query specification, result snippet visualization, SeeSoft.',
+        topics: [
+          { id: 't-irs-6-1', title: 'Human Computer Interaction in IR', completed: false },
+          { id: 't-irs-6-2', title: 'Relevance Judgments & Search Interface Support', completed: false }
+        ]
+      }
+    ];
+  }
+
+  // 2. Software Testing and Quality Assurance (STQA - ITDO7014)
+  if (s.includes('testing') || s.includes('stqa') || s.includes('qa')) {
+    return [
+      {
+        id: 'u-stqa-1',
+        unitNumber: 1,
+        title: 'Module 1: Testing Methodology & STLC',
+        weightagePercentage: 15,
+        learningOutcomes: 'Understand software failure case studies, STLC phases, Verification vs Validation.',
+        topics: [
+          { id: 't-stqa-1-1', title: 'Software Testing Life Cycle (STLC) & Goals', completed: true },
+          { id: 't-stqa-1-2', title: 'Verification vs Validation Models', completed: true },
+          { id: 't-stqa-1-3', title: 'Exhaustive vs Effective Testing Strategies', completed: false }
+        ]
+      },
+      {
+        id: 'u-stqa-2',
+        unitNumber: 2,
+        title: 'Module 2: Dynamic & Static Testing Techniques',
+        weightagePercentage: 25,
+        learningOutcomes: 'Apply Black Box (BVA, Equivalence Partitioning) and White Box (Basis Path, Mutation) testing.',
+        topics: [
+          { id: 't-stqa-2-1', title: 'Black Box: Boundary Value Analysis (BVA) & Equivalence Class', completed: true },
+          { id: 't-stqa-2-2', title: 'White Box: Basis Path, Cyclomatic Complexity & Graph Matrices', completed: false },
+          { id: 't-stqa-2-3', title: 'Mutation Testing, Loop Testing & Regression Testing', completed: false }
+        ]
+      },
+      {
+        id: 'u-stqa-3',
+        unitNumber: 3,
+        title: 'Module 3: Test Management & Software Metrics',
+        weightagePercentage: 20,
+        learningOutcomes: 'Test planning, metrics monitoring, function points, and test suite minimization.',
+        topics: [
+          { id: 't-stqa-3-1', title: 'Test Planning, Organization & Detailed Specification', completed: false },
+          { id: 't-stqa-3-2', title: 'Software Metrics & Function Point Analysis (FPA)', completed: false },
+          { id: 't-stqa-3-3', title: 'Test Suite Prioritization & Reduction Algorithms', completed: false }
+        ]
+      },
+      {
+        id: 'u-stqa-4',
+        unitNumber: 4,
+        title: 'Module 4: Test Automation Tools',
+        weightagePercentage: 15,
+        learningOutcomes: 'Automation frameworks, tools: Selenium, JIRA, Bugzilla, test script design.',
+        topics: [
+          { id: 't-stqa-4-1', title: 'Automation Tool Selection Guidelines & Cost Analysis', completed: false },
+          { id: 't-stqa-4-2', title: 'Selenium WebDriver Test Scripts & JIRA Bug Life Cycle', completed: false }
+        ]
+      },
+      {
+        id: 'u-stqa-5',
+        unitNumber: 5,
+        title: 'Module 5: Testing for Specialized Environments',
+        weightagePercentage: 15,
+        learningOutcomes: 'Agile testing in Scrum sprints, Web testing, Mobile and Cloud app challenges.',
+        topics: [
+          { id: 't-stqa-5-1', title: 'Agile Testing Life Cycle & Scrum Phases', completed: false },
+          { id: 't-stqa-5-2', title: 'Web-based Systems, Cross-browser & Cloud Testing', completed: false }
+        ]
+      },
+      {
+        id: 'u-stqa-6',
+        unitNumber: 6,
+        title: 'Module 6: Software Quality Management & Standards',
+        weightagePercentage: 10,
+        learningOutcomes: 'McCalls Quality Model, ISO 9000:2000, Six Sigma quality control.',
+        topics: [
+          { id: 't-stqa-6-1', title: 'McCalls Quality Factors & Criteria Hierarchy', completed: false },
+          { id: 't-stqa-6-2', title: 'ISO 9000:2000 Quality Management & Six Sigma Metrics', completed: false }
+        ]
+      }
+    ];
+  }
+
+  // 3. Cyber Security and Laws (CSL - ILO7016)
+  if (s.includes('cyber') || s.includes('security and laws') || s.includes('csl')) {
+    return [
+      {
+        id: 'u-csl-1',
+        unitNumber: 1,
+        title: 'Module 1: Introduction to Cybercrime & IT Act',
+        weightagePercentage: 15,
+        learningOutcomes: 'Classifications of cybercrimes, global perspectives, Indian Information Technology Act 2000.',
+        topics: [
+          { id: 't-csl-1-1', title: 'Cybercrime Definitions & Evolution', completed: true },
+          { id: 't-csl-1-2', title: 'Indian Information Technology Act 2000 (ITA 2000)', completed: true }
+        ]
+      },
+      {
+        id: 'u-csl-2',
+        unitNumber: 2,
+        title: 'Module 2: Cyber Offenses & Wireless Computing',
+        weightagePercentage: 20,
+        learningOutcomes: 'Botnets, attack vectors, mobile/wireless security challenges, organizational security policies.',
+        topics: [
+          { id: 't-csl-2-1', title: 'Social Engineering, Cyber Stalking & Botnets', completed: true },
+          { id: 't-csl-2-2', title: 'Credit Card Frauds & Wireless Computing Security', completed: false },
+          { id: 't-csl-2-3', title: 'Organizational Security Measures & Mobile Device Policies', completed: false }
+        ]
+      },
+      {
+        id: 'u-csl-3',
+        unitNumber: 3,
+        title: 'Module 3: Tools & Methods Used in Cybercrime',
+        weightagePercentage: 20,
+        learningOutcomes: 'Phishing, Keyloggers, DoS/DDoS, SQL Injection, Buffer Overflow, Steganography.',
+        topics: [
+          { id: 't-csl-3-1', title: 'Phishing, Password Cracking & Keyloggers', completed: false },
+          { id: 't-csl-3-2', title: 'DoS and DDoS Attack Architectures', completed: false },
+          { id: 't-csl-3-3', title: 'SQL Injection, Buffer Overflow & Identity Theft', completed: false }
+        ]
+      },
+      {
+        id: 'u-csl-4',
+        unitNumber: 4,
+        title: 'Module 4: The Concept of Cyberspace & Electronic Commerce',
+        weightagePercentage: 15,
+        learningOutcomes: 'Contractual aspects, IPR in cyberspace, electronic banking, evidence law.',
+        topics: [
+          { id: 't-csl-4-1', title: 'Electronic Contracts & Jurisdiction in Cyberspace', completed: false },
+          { id: 't-csl-4-2', title: 'Intellectual Property Rights (IPR) in Cyber Law', completed: false },
+          { id: 't-csl-4-3', title: 'Digital Evidence & Electronic Banking Legal Framework', completed: false }
+        ]
+      },
+      {
+        id: 'u-csl-5',
+        unitNumber: 5,
+        title: 'Module 5: Indian IT Act 2008 Amendments & Penalties',
+        weightagePercentage: 15,
+        learningOutcomes: 'Offences, penalties, compounding, adjudication under amended IT Act 2008.',
+        topics: [
+          { id: 't-csl-5-1', title: 'IT Act 2008 Major Amendments & New Sections', completed: false },
+          { id: 't-csl-5-2', title: 'Penalties, Adjudication and Cyber Appellate Tribunals', completed: false }
+        ]
+      },
+      {
+        id: 'u-csl-6',
+        unitNumber: 6,
+        title: 'Module 6: Information Security Standard Compliances',
+        weightagePercentage: 15,
+        learningOutcomes: 'SOX, GLBA, HIPAA, ISO 27001, FISMA, PCI-DSS compliance frameworks.',
+        topics: [
+          { id: 't-csl-6-1', title: 'ISO 27001 & PCI-DSS Compliance Guidelines', completed: false },
+          { id: 't-csl-6-2', title: 'SOX, HIPAA & FISMA Regulatory Compliances', completed: false }
+        ]
+      }
+    ];
+  }
+
+  // 4. Internet of Everything (IOE - ITC702)
+  if (s.includes('internet of everything') || s.includes('ioe') || s.includes('iot')) {
+    return [
+      {
+        id: 'u-ioe-1',
+        unitNumber: 1,
+        title: 'Module 1: Introduction to IoT & Smart Objects',
+        weightagePercentage: 15,
+        learningOutcomes: 'Physical & logical design, functional blocks, Arduino/ESP32 hardware fundamentals.',
+        topics: [
+          { id: 't-ioe-1-1', title: 'Characteristics & Conceptual Framework of IoT', completed: true },
+          { id: 't-ioe-1-2', title: 'Physical and Logical Design of IoT', completed: true },
+          { id: 't-ioe-1-3', title: 'Smart Objects & Microcontroller Ecosystems (ESP32, NodeMCU)', completed: false }
+        ]
+      },
+      {
+        id: 'u-ioe-2',
+        unitNumber: 2,
+        title: 'Module 2: IoT Architecture & Edge/Fog Computing',
+        weightagePercentage: 20,
+        learningOutcomes: 'IoTWF 7-layer reference model, Core functional stack, Edge vs Fog vs Cloud compute.',
+        topics: [
+          { id: 't-ioe-2-1', title: 'IoTWF Standardized 7-Layer Architecture', completed: true },
+          { id: 't-ioe-2-2', title: 'Core IoT Functional Stack (Layers 1-3)', completed: false },
+          { id: 't-ioe-2-3', title: 'Fog Computing, Edge Computing & Data Management Stack', completed: false }
+        ]
+      },
+      {
+        id: 'u-ioe-3',
+        unitNumber: 3,
+        title: 'Module 3: Connected Devices & Access Protocols',
+        weightagePercentage: 20,
+        learningOutcomes: 'RFID, NFC, BLE, Zigbee, 6LoWPAN, LoRa, LoRaWAN wireless standards.',
+        topics: [
+          { id: 't-ioe-3-1', title: 'RFID, NFC, and Bluetooth Low Energy (BLE)', completed: false },
+          { id: 't-ioe-3-2', title: 'Zigbee, 6LoWPAN, and IEEE 802.15.4 Standards', completed: false },
+          { id: 't-ioe-3-3', title: 'LoRa and LoRaWAN Long-Range Cellular IoT', completed: false }
+        ]
+      },
+      {
+        id: 'u-ioe-4',
+        unitNumber: 4,
+        title: 'Module 4: Edge-to-Cloud Protocols',
+        weightagePercentage: 20,
+        learningOutcomes: 'MQTT, MQTT-SN, CoAP, WebSockets, AMQP protocol architectures & comparisons.',
+        topics: [
+          { id: 't-ioe-4-1', title: 'MQTT and MQTT-SN Architecture & Publish-Subscribe Flows', completed: false },
+          { id: 't-ioe-4-2', title: 'Constrained Application Protocol (CoAP) & REST Constraints', completed: false },
+          { id: 't-ioe-4-3', title: 'AMQP, STOMP, and Protocol Trade-Off Analysis', completed: false }
+        ]
+      },
+      {
+        id: 'u-ioe-5',
+        unitNumber: 5,
+        title: 'Module 5: IoT and Data Analytics',
+        weightagePercentage: 15,
+        learningOutcomes: 'Cloud analytics, data lakes, dashboarding, alerts (ThingSpeak, AWS IoT).',
+        topics: [
+          { id: 't-ioe-5-1', title: 'IoT Analytics Architecture & Data Lakes', completed: false },
+          { id: 't-ioe-5-2', title: 'Cloud Dashboarding, Data Retention & Real-Time Alerts', completed: false }
+        ]
+      },
+      {
+        id: 'u-ioe-6',
+        unitNumber: 6,
+        title: 'Module 6: IoT Application Design & Case Studies',
+        weightagePercentage: 10,
+        learningOutcomes: 'Smart Cities, Industrial IoT (I-IoT), Internet of Behaviors (IoB).',
+        topics: [
+          { id: 't-ioe-6-1', title: 'Smart Home, Smart Agriculture & Forest Fire Detection', completed: false },
+          { id: 't-ioe-6-2', title: 'Industrial IoT (I-IoT) vs IoT & Internet of Behaviors (IoB)', completed: false }
+        ]
+      }
+    ];
+  }
+
+  // 5. Default: AI and DS – II (ITC701)
   return [
     {
-      id: 'u-1',
+      id: 'u-aids-1',
       unitNumber: 1,
-      title: 'Unit 1: Fundamentals & Search Strategies',
-      weightagePercentage: 20,
-      learningOutcomes: 'Understand state-space representations, blind search, and informed heuristics.',
-      topics: [
-        { id: 't-1-1', title: 'State Space Search & Problem Formulation', completed: true },
-        { id: 't-1-2', title: 'Breadth-First Search (BFS) & Depth-First Search (DFS)', completed: true },
-        { id: 't-1-3', title: 'A* Search Algorithm & Admissibility Proof', completed: true },
-        { id: 't-1-4', title: 'Heuristic Consistency & Monotonicity Criteria', completed: false }
-      ]
-    },
-    {
-      id: 'u-2',
-      unitNumber: 2,
-      title: 'Unit 2: Game Theory & Adversarial Search',
-      weightagePercentage: 20,
-      learningOutcomes: 'Analyze two-player zero-sum games and alpha-beta pruning trees.',
-      topics: [
-        { id: 't-2-1', title: 'Minimax Algorithm Formulation', completed: true },
-        { id: 't-2-2', title: 'Alpha-Beta Pruning Efficiency Bounds', completed: false },
-        { id: 't-2-3', title: 'Evaluation Functions & Horizon Effects', completed: false }
-      ]
-    },
-    {
-      id: 'u-3',
-      unitNumber: 3,
-      title: 'Unit 3: Knowledge Representation & Inference',
-      weightagePercentage: 25,
-      learningOutcomes: 'Construct first-order logic models, unification, and resolution refutation.',
-      topics: [
-        { id: 't-3-1', title: 'Propositional & First-Order Predicate Logic (FOL)', completed: true },
-        { id: 't-3-2', title: 'Unification Algorithm & Clause Normal Form (CNF)', completed: false },
-        { id: 't-3-3', title: 'Forward and Backward Chaining Engines', completed: false }
-      ]
-    },
-    {
-      id: 'u-4',
-      unitNumber: 4,
-      title: 'Unit 4: Probabilistic Reasoning & Uncertainty',
-      weightagePercentage: 20,
-      learningOutcomes: 'Apply Bayes Theorem, Bayesian Networks, and Markov Models.',
-      topics: [
-        { id: 't-4-1', title: 'Conditional Probability & Bayes Rule Formulation', completed: false },
-        { id: 't-4-2', title: 'Bayesian Belief Networks (BBN) Exact Inference', completed: false },
-        { id: 't-4-3', title: 'Markov Decision Processes (MDP) & Bellman Equation', completed: false }
-      ]
-    },
-    {
-      id: 'u-5',
-      unitNumber: 5,
-      title: 'Unit 5: Enterprise Deployment & Modern Extensions',
+      title: 'Module 1: Uncertainty in AI',
       weightagePercentage: 15,
-      learningOutcomes: 'Synthesize machine learning pipelines and real-world system integrations.',
+      learningOutcomes: 'Inference using full joint distributions, Bayes Theorem, Bayesian Networks, and MDPs.',
       topics: [
-        { id: 't-5-1', title: 'Deep Neural Architecture Fundamentals', completed: false },
-        { id: 't-5-2', title: 'Reinforcement Learning: Q-Learning & SARSA', completed: false },
-        { id: 't-5-3', title: 'Safety Invariants & Model Evaluation Metrics', completed: false }
+        { id: 't-aids-1-1', title: 'Inference Using Full Joint Distributions', completed: true },
+        { id: 't-aids-1-2', title: 'Bayes Theorem & Semantics of Bayesian Networks', completed: true },
+        { id: 't-aids-1-3', title: 'Exact Inference in Bayesian Networks & Markov Decision Processes (MDP)', completed: false }
+      ]
+    },
+    {
+      id: 'u-aids-2',
+      unitNumber: 2,
+      title: 'Module 2: Cognitive Computing',
+      weightagePercentage: 20,
+      learningOutcomes: 'Design principles for cognitive systems, NLP support, taxonomies, ontologies, IBM Watson.',
+      topics: [
+        { id: 't-aids-2-1', title: 'Foundations & Design Principles of Cognitive Systems', completed: true },
+        { id: 't-aids-2-2', title: 'Representing Knowledge in Taxonomies and Ontologies', completed: false },
+        { id: 't-aids-2-3', title: 'Building Cognitive Healthcare & Support Applications', completed: false }
+      ]
+    },
+    {
+      id: 'u-aids-3',
+      unitNumber: 3,
+      title: 'Module 3: Fuzzy Logic & Applications',
+      weightagePercentage: 20,
+      learningOutcomes: 'Fuzzy sets, membership functions, defuzzification, Mamdani controller design.',
+      topics: [
+        { id: 't-aids-3-1', title: 'Fuzzy Sets, Membership Functions & Operations', completed: false },
+        { id: 't-aids-3-2', title: 'Max-Min & Max-Product Fuzzy Compositions', completed: false },
+        { id: 't-aids-3-3', title: 'Mamdani Fuzzy Control System (Washing Machine / Shower Controller)', completed: false }
+      ]
+    },
+    {
+      id: 'u-aids-4',
+      unitNumber: 4,
+      title: 'Module 4: Introduction to Deep Learning',
+      weightagePercentage: 20,
+      learningOutcomes: 'ANNs, Convolutional Neural Networks (CNNs), RNNs, LSTM, and Autoencoders.',
+      topics: [
+        { id: 't-aids-4-1', title: 'Artificial Neural Networks vs Deep Learning', completed: false },
+        { id: 't-aids-4-2', title: 'CNN Architectures, Pooling & Feature Maps', completed: false },
+        { id: 't-aids-4-3', title: 'Recurrent Neural Networks (RNN) & LSTM Networks', completed: false }
+      ]
+    },
+    {
+      id: 'u-aids-5',
+      unitNumber: 5,
+      title: 'Module 5: Advanced ML Classification Techniques',
+      weightagePercentage: 15,
+      learningOutcomes: 'Ensemble methods (Bagging, Boosting, Random Forests), ROC curves, Cross-Validation.',
+      topics: [
+        { id: 't-aids-5-1', title: 'Ensemble Learning: Bagging, AdaBoost, Random Forests', completed: false },
+        { id: 't-aids-5-2', title: 'Classifier Evaluation: Cross-Validation, Bootstrap & ROC Curves', completed: false }
+      ]
+    },
+    {
+      id: 'u-aids-6',
+      unitNumber: 6,
+      title: 'Module 6: Trends and Applications in Data Science',
+      weightagePercentage: 10,
+      learningOutcomes: 'Multimodal applications, ImageNet classification, and modern case studies.',
+      topics: [
+        { id: 't-aids-6-1', title: 'Multimodal Data Science Applications (Audio, Video, Text)', completed: false },
+        { id: 't-aids-6-2', title: 'ImageNet Large Scale Visual Recognition Challenge (ILSVRC)', completed: false }
       ]
     }
   ];

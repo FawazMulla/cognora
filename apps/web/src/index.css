@@ -7,25 +7,33 @@
   --font-mono: 'Space Mono', monospace;
   
   /* Cohere Color System */
-  --color-cohere-primary: #17171c;
-  --color-cohere-black: #000000;
-  --color-cohere-ink: #212121;
-  --color-cohere-deep-green: #003c33;
-  --color-cohere-dark-navy: #071829;
-  --color-cohere-canvas: #ffffff;
-  --color-cohere-stone: #eeece7;
-  --color-cohere-pale-green: #edfce9;
-  --color-cohere-pale-blue: #f1f5ff;
-  --color-cohere-hairline: #d9d9dd;
-  --color-cohere-border-light: #e5e7eb;
-  --color-cohere-card-border: #f2f2f2;
-  --color-cohere-muted: #93939f;
-  --color-cohere-slate: #75758a;
-  --color-cohere-body-muted: #616161;
-  --color-cohere-action-blue: #1863dc;
-  --color-cohere-coral: #ff7759;
-  --color-cohere-coral-soft: #ffad9b;
-  --color-cohere-focus-violet: #9b60aa;
+  /* Peaceful Pastel & Zen Color System (Calm, Minimalist, Long-study session focus) */
+  --color-cohere-primary: #1e1e24;
+  --color-cohere-black: #121217;
+  --color-cohere-ink: #2d2d34;
+  --color-cohere-deep-green: #2a5a52;
+  --color-cohere-dark-navy: #182635;
+  --color-cohere-canvas: #f8f9fc;
+  --color-cohere-stone: #f2f3f7;
+  --color-cohere-pale-green: #eaf6ee;
+  --color-cohere-pale-blue: #edf3fc;
+  --color-cohere-hairline: #e3e6ed;
+  --color-cohere-border-light: #eceef4;
+  --color-cohere-card-border: #eef1f6;
+  --color-cohere-muted: #8c8fa1;
+  --color-cohere-slate: #6b6f82;
+  --color-cohere-body-muted: #5d6175;
+  --color-cohere-action-blue: #4f75f2;
+  --color-cohere-coral: #f28b76;
+  --color-cohere-coral-soft: #fcd9d2;
+  --color-cohere-focus-violet: #8e7bf3;
+
+  /* Peaceful pastel accents for study stickiness */
+  --color-zen-periwinkle: #e4e7fd;
+  --color-zen-sky: #e1f1fd;
+  --color-zen-mint: #e2f6eb;
+  --color-zen-sand: #fbf5e6;
+  --color-zen-lavender: #f0eafb;
 
   /* Map old gemini colors to Cohere counterparts for safety */
   --color-gemini-bg: #ffffff;
@@ -146,10 +154,7 @@ main,
   color: var(--color-cohere-ink) !important;
 }
 
-.text-white,
-.text-white *,
-[class*="text-white"],
-[class*="text-white"] * {
+.text-white {
   color: #ffffff !important;
 }
 
@@ -295,29 +300,9 @@ svg text {
   fill: var(--color-cohere-slate) !important;
 }
 
-/* Ensure white text is preserved on actual dark elements */
-.bg-black,
-.bg-black *,
-[class*="bg-black"],
-[class*="bg-black"] *,
-[class*="bg-[#212121]"],
-[class*="bg-[#212121]"] *,
-.bg-\[\#212121\],
-.bg-\[\#212121\] *,
-.bg-\[\#003c33\],
-.bg-\[\#003c33\] *,
-.bg-\[\#071829\],
-.bg-\[\#071829\] *,
-.bg-\[\#17171c\],
-.bg-\[\#17171c\] *,
-.bg-zinc-800,
-.bg-zinc-800 *,
-.bg-zinc-900,
-.bg-zinc-900 *,
+/* Ensure white text is preserved on direct dark elements and buttons */
 button.text-white,
-button.text-white *,
-.text-white.bg-black,
-.text-white.bg-\[\#003c33\] {
+.text-white {
   color: #ffffff !important;
 }
 

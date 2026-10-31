@@ -5,7 +5,18 @@ import type { Session, User } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// If Supabase credentials are not provided, create a dummy client or initialize with placeholder so app doesn't crash
+export const supabase = (supabaseUrl && supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : ({
+      auth: {
+        getSession: async () => ({ data: { session: null }, error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        signInWithPassword: async () => ({ data: null, error: new Error('Supabase is not configured. Please use Demo Mode or configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.') }),
+        signOut: async () => ({ error: null }),
+      },
+    } as unknown as ReturnType<typeof createClient>);
 
 type AuthContextType = {
   session: Session | null;
@@ -30,9 +41,15 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 const DEFAULT_SAMPLE_SUBJECTS = [
-  { name: 'AI and DS – II', code: 'AIDS-701' },
-  { name: 'Internet of Everything', code: 'IOE-702' },
-  { name: 'Secure Application Development', code: 'SAD-703' }
+  { id: 'sub-aids2', name: 'AI and DS – II', code: 'ITC701', type: 'Theory' },
+  { id: 'sub-ioe', name: 'Internet of Everything (IOE)', code: 'ITC702', type: 'Theory' },
+  { id: 'sub-stqa', name: 'Software Testing and Quality Assurance (STQA)', code: 'ITDO7014', type: 'Theory' },
+  { id: 'sub-irs', name: 'Information Retrieval System (IRS)', code: 'ITDO7024', type: 'Theory' },
+  { id: 'sub-csl', name: 'Cyber Security and Laws (CSL)', code: 'ILO7016', type: 'Theory' },
+  { id: 'lab-dsl', name: 'Data Science Lab', code: 'ITL701', type: 'Lab' },
+  { id: 'lab-ioe', name: 'IOE Lab (Sensors & Cooja)', code: 'ITL702', type: 'Lab' },
+  { id: 'lab-sad', name: 'Secure Application Development (SAD) Lab', code: 'ITL703', type: 'Lab' },
+  { id: 'lab-ossp', name: 'Recent Open Source Project Lab', code: 'ITL704', type: 'Lab' }
 ];
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -45,7 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const loginAsDemo = () => {
     const mockUser: any = {
       id: 'demo-user-101',
-      email: 'student@archademia.edu',
+      email: 'student@cognora.edu',
       user_metadata: { name: 'Demo Scholar' },
       app_metadata: {},
       aud: 'authenticated',

@@ -25,24 +25,32 @@ export default function Sidebar() {
   const { pathname } = useLocation();
 
   return (
-    <nav className="w-60 py-6 px-4 flex flex-col gap-1.5 h-full bg-[#ffffff] border-r border-[#d9d9dd] overflow-y-auto">
-      <div className="text-[10px] font-mono text-[#93939f] px-3 mb-2 uppercase tracking-widest">Workspace</div>
+    <nav className="w-64 py-6 px-4 flex flex-col gap-1.5 h-full bg-[#ffffff] border-r border-[#e3e6ed] overflow-y-auto font-sans">
+      <div className="flex items-center gap-2 px-3 mb-3">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#4f75f2]" />
+        <span className="text-[10px] font-mono font-bold text-[#8c8fa1] uppercase tracking-widest">
+          Workspace Navigation
+        </span>
+      </div>
       {navItems.map(({ href, label, icon: Icon }) => {
         const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
         return (
           <Link
             key={href}
             to={href}
-            className={`flex items-center gap-3 px-3.5 py-2 rounded-full font-mono text-[11px] uppercase tracking-wider transition-colors group ${
+            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-2xl font-mono text-[11px] tracking-wide transition-all group ${
               isActive
-                ? 'bg-white text-black border border-black shadow-none font-bold'
-                : 'text-[#75758a] hover:bg-[#eeece7] hover:text-black border border-transparent'
+                ? 'bg-[#edf3fc] text-[#4f75f2] border border-[#d0dcf5] font-bold shadow-xs'
+                : 'text-[#6b6f82] hover:bg-[#f8f9fc] hover:text-[#121217] border border-transparent'
             }`}
           >
-            <Icon className={`w-3.5 h-3.5 shrink-0 transition-colors ${
-              isActive ? 'text-black' : 'text-[#75758a] group-hover:text-black'
+            <Icon className={`w-4 h-4 shrink-0 transition-colors ${
+              isActive ? 'text-[#4f75f2]' : 'text-[#8c8fa1] group-hover:text-[#4f75f2]'
             }`} />
             <span className="flex-1 truncate">{label}</span>
+            {isActive && (
+              <span className="w-1.5 h-1.5 rounded-full bg-[#4f75f2]" />
+            )}
           </Link>
         );
       })}

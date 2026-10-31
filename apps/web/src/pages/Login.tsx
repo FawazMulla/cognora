@@ -61,7 +61,7 @@ export default function Login() {
           </div>
           
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-black font-display uppercase tracking-tight">ArchAdemia</h1>
+            <h1 className="text-2xl font-bold text-black font-display uppercase tracking-tight">Cognora</h1>
             <p className="text-xs text-[#75758a] font-mono uppercase tracking-wider mt-1.5">
               {isSignUp ? 'Create your academic account' : 'Sign in to your intelligent workspace'}
             </p>

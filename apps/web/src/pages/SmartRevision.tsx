@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrainCircuit, Calendar, Flame, CheckCircle, Clock, Zap, RotateCcw, Loader2, Sparkles, Plus, X, Award, ChevronRight } from 'lucide-react';
+import { BrainCircuit, Calendar, Flame, CheckCircle, Clock, Zap, RotateCcw, Loader2, Plus, X } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { getDefaultSubjects } from '../lib/ai-service';
 
@@ -111,7 +111,6 @@ export default function SmartRevision() {
     const card = cards[currentIdx];
     setReviewing(true);
 
-    // Calculate local SM-2 updates
     const prevEase = card.easeFactor || 2.5;
     const prevInterval = card.intervalDays || 1;
     let newInterval = 1;
@@ -154,16 +153,20 @@ export default function SmartRevision() {
   const selectedSubject = subjects.find(s => s.id === selectedSubjectId);
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 font-sans text-[#212121] bg-white min-h-screen">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-[#d9d9dd]">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 font-sans text-[#121217] bg-[#f8f9fc] min-h-screen">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-[#e3e6ed]">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-[#fcf0ff] border border-[#f2d5fc] text-[#9b60aa] text-[9px] font-mono font-bold tracking-wider uppercase rounded mb-2">
-            <BrainCircuit className="w-3 h-3 text-[#9b60aa]" /> Spaced Repetition (FSRS / SM-2)
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
+            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] uppercase font-bold">
+              SPACED REPETITION ENGINE
+            </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-display font-light text-black tracking-tight uppercase">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#121217] tracking-tight">
             Smart Revision
           </h1>
-          <p className="text-[#75758a] mt-1 text-xs">
+          <p className="text-[#6b6f82] mt-1 text-xs md:text-sm">
             Optimized active recall calibrated to your personalized cognitive forgetting curve.
           </p>
         </div>
@@ -172,17 +175,17 @@ export default function SmartRevision() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsAddingCard(true)}
-              className="bg-black hover:bg-zinc-800 text-white px-4 py-2 rounded-full text-xs font-mono uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5"
+              className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-5 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shadow-xs"
             >
-              <Plus className="w-3.5 h-3.5 text-white" />
+              <Plus className="w-4 h-4 text-white" />
               <span>Add Card</span>
             </button>
-            <div className="flex items-center gap-2 bg-white border border-[#d9d9dd] rounded-full px-4 py-2">
-              <Calendar className="w-3.5 h-3.5 text-[#75758a]" />
+            <div className="flex items-center gap-2 bg-white border border-[#e3e6ed] rounded-2xl px-4 py-2.5 shadow-xs">
+              <Calendar className="w-4 h-4 text-[#6b6f82]" />
               <select
                 value={selectedSubjectId}
                 onChange={e => setSelectedSubjectId(e.target.value)}
-                className="bg-transparent text-black outline-none text-xs font-mono font-bold cursor-pointer"
+                className="bg-transparent text-[#121217] outline-none text-xs font-bold cursor-pointer"
               >
                 {subjects.map(s => (
                   <option key={s.id} value={s.id}>{s.name}</option>
@@ -194,8 +197,8 @@ export default function SmartRevision() {
       </header>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#75758a] font-mono text-xs uppercase">
-          <Loader2 className="w-6 h-6 text-black animate-spin" />
+        <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6b6f82] font-mono text-xs uppercase">
+          <Loader2 className="w-7 h-7 text-[#4f75f2] animate-spin" />
           <span>Sorting Active Revision Queue...</span>
         </div>
       ) : (
@@ -204,58 +207,60 @@ export default function SmartRevision() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               {[
-                { label: 'Active Streak', val: `${streak}d`, icon: Flame, color: 'text-[#ff7759]' },
-                { label: 'Reviews Today', val: `${totalReviewed}`, icon: Zap, color: 'text-black' },
-                { label: 'Queue Length', val: `${cards.length}`, icon: Clock, color: 'text-[#1863dc]' },
-                { label: 'Mastered', val: `${masteredCount}`, icon: CheckCircle, color: 'text-[#003c33]' }
+                { label: 'Active Streak', val: `${streak}d`, icon: Flame, bg: 'bg-[#fbf5e6]', border: 'border-[#f1dfba]', text: 'text-[#9c6a1e]' },
+                { label: 'Reviews Today', val: `${totalReviewed}`, icon: Zap, bg: 'bg-[#edf3fc]', border: 'border-[#d0dcf5]', text: 'text-[#4f75f2]' },
+                { label: 'Queue Length', val: `${cards.length}`, icon: Clock, bg: 'bg-[#f5effe]', border: 'border-[#e4d4fa]', text: 'text-[#713fb8]' },
+                { label: 'Mastered', val: `${masteredCount}`, icon: CheckCircle, bg: 'bg-[#e2f6eb]', border: 'border-[#c1e8d4]', text: 'text-[#1e784f]' }
               ].map((stat, i) => (
-                <div key={i} className="bg-[#eeece7] border border-[#d9d9dd] p-4 rounded-xl flex flex-col justify-between min-h-[90px]">
-                  <stat.icon className={`w-4 h-4 mb-2 ${stat.color}`} />
+                <div key={i} className={`${stat.bg} border ${stat.border} p-4 rounded-2xl flex flex-col justify-between min-h-[96px] shadow-xs`}>
+                  <stat.icon className={`w-4 h-4 mb-2 ${stat.text}`} />
                   <div>
-                    <div className="text-xl font-mono font-bold text-black">{stat.val}</div>
-                    <div className="text-[9px] font-mono text-[#75758a] uppercase tracking-wider mt-0.5">{stat.label}</div>
+                    <div className="text-xl font-mono font-bold text-[#121217]">{stat.val}</div>
+                    <div className="text-[10px] font-mono text-[#6b6f82] uppercase tracking-wider mt-0.5">{stat.label}</div>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="bg-white border border-[#d9d9dd] p-5 rounded-2xl space-y-3">
-              <h3 className="text-xs font-mono font-bold text-black uppercase tracking-wider">Queue Progress</h3>
+            <div className="bg-white border border-[#e3e6ed] p-6 rounded-3xl space-y-4 shadow-xs">
+              <h3 className="text-xs font-bold text-[#121217] uppercase tracking-wider">Queue Progress</h3>
               <div>
-                <div className="flex justify-between text-xs font-mono mb-1.5 text-[#75758a]">
+                <div className="flex justify-between text-xs font-mono mb-2 text-[#6b6f82]">
                   <span>Card {currentIdx + 1} of {cards.length}</span>
-                  <span className="font-bold text-black">{Math.round(progressPct)}%</span>
+                  <span className="font-bold text-[#121217]">{Math.round(progressPct)}%</span>
                 </div>
-                <div className="h-1.5 bg-[#eeece7] rounded-full overflow-hidden">
-                  <div className="h-full bg-black transition-all duration-300" style={{ width: `${progressPct}%` }} />
+                <div className="h-2 bg-[#f0f2f7] rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-[#4f75f2] to-[#713fb8] transition-all duration-300" style={{ width: `${progressPct}%` }} />
                 </div>
               </div>
-              <p className="text-[10px] text-[#75758a] font-mono leading-relaxed uppercase">
+              <p className="text-[11px] text-[#6b6f82] font-mono leading-relaxed uppercase">
                 Subject: {selectedSubject?.name || 'Active Course'}
               </p>
             </div>
           </div>
 
+          {/* Flashcard Area */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white border border-[#d9d9dd] rounded-2xl p-6 md:p-8 flex flex-col min-h-[500px] relative shadow-none">
-
+            <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 flex flex-col min-h-[500px] relative shadow-xs">
               {cards.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-8 relative z-10">
-                  <CheckCircle className="w-16 h-16 text-[#003c33] mb-4 animate-pulse" />
-                  <h3 className="text-xl font-bold text-black font-display uppercase">All Caught Up!</h3>
-                  <p className="text-[#75758a] max-w-xs mt-2 text-xs font-sans">No pending flashcards for today. Generate more or check back tomorrow.</p>
+                  <div className="w-16 h-16 rounded-full bg-[#e2f6eb] flex items-center justify-center mb-4 text-[#1e784f]">
+                    <CheckCircle className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-bold text-[#121217]">All Caught Up!</h3>
+                  <p className="text-[#6b6f82] max-w-xs mt-2 text-xs">No pending flashcards for today. Generate more or check back tomorrow.</p>
                 </div>
               ) : (
                 <>
                   <div className="flex justify-between items-center mb-4 relative z-10">
-                    <h2 className="text-sm font-bold text-black uppercase font-display tracking-wider">Spaced Revision</h2>
-                    <span className="text-xs font-mono font-bold text-[#75758a]">{currentIdx + 1} of {cards.length} cards</span>
+                    <h2 className="text-sm font-bold text-[#121217] uppercase tracking-wider">Active Flashcard</h2>
+                    <span className="text-xs font-mono font-bold text-[#6b6f82]">{currentIdx + 1} of {cards.length} cards</span>
                   </div>
 
                   {/* Progress bar */}
-                  <div className="h-1 bg-[#eeece7] rounded-full mb-6 overflow-hidden relative z-10">
+                  <div className="h-1.5 bg-[#f0f2f7] rounded-full mb-6 overflow-hidden relative z-10">
                     <div
-                      className="h-full bg-black rounded-full transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-[#4f75f2] to-[#713fb8] rounded-full transition-all duration-500"
                       style={{ width: `${progressPct}%` }}
                     />
                   </div>
@@ -271,25 +276,25 @@ export default function SmartRevision() {
                       style={{
                         transformStyle: 'preserve-3d',
                         transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                        minHeight: '240px'
+                        minHeight: '260px'
                       }}
                     >
                       {/* Front */}
                       <div
-                        className="absolute inset-0 bg-[#fafafb] border border-[#d9d9dd] rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-none"
+                        className="absolute inset-0 bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-xs"
                         style={{ backfaceVisibility: 'hidden' }}
                       >
-                        <div className="text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-widest mb-4">Question Concept</div>
-                        <p className="text-lg font-bold text-black leading-relaxed max-w-xl font-display">{activeCard.front}</p>
-                        <p className="text-xs font-mono text-[#ff7759] mt-6 font-bold uppercase tracking-wider">Click card to reveal answer →</p>
+                        <div className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-4">Question Concept</div>
+                        <p className="text-lg font-bold text-[#121217] leading-relaxed max-w-xl">{activeCard.front}</p>
+                        <p className="text-xs font-mono text-[#4f75f2] mt-6 font-bold uppercase tracking-wider">Click card to reveal answer →</p>
                       </div>
                       {/* Back */}
                       <div
-                        className="absolute inset-0 bg-[#edfce9] border border-[#ccebc5] rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-none"
+                        className="absolute inset-0 bg-[#eef5fc] border border-[#d3e3f8] rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-xs"
                         style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                       >
-                        <div className="text-[10px] font-mono font-bold text-[#003c33] uppercase tracking-widest mb-4">Recall Answer</div>
-                        <p className="text-sm font-sans font-medium text-black leading-relaxed max-w-xl whitespace-pre-wrap">{activeCard.back}</p>
+                        <div className="text-[10px] font-mono font-bold text-[#4f75f2] uppercase tracking-widest mb-4">Recall Answer</div>
+                        <p className="text-sm font-medium text-[#121217] leading-relaxed max-w-xl whitespace-pre-wrap">{activeCard.back}</p>
                       </div>
                     </div>
                   </div>
@@ -299,33 +304,33 @@ export default function SmartRevision() {
                     {flipped && (
                       <div className="flex gap-2 animate-in fade-in duration-300">
                         {[
-                          { rating: 0, label: 'Again', color: 'bg-[#fff1ed] hover:bg-white text-[#ff7759] border-[#ffdad0] hover:border-black' },
-                          { rating: 1, label: 'Hard', color: 'bg-[#faf6e8] hover:bg-white text-[#967d22] border-[#eadeb5] hover:border-black' },
-                          { rating: 2, label: 'Good', color: 'bg-[#f1f5ff] hover:bg-white text-[#1863dc] border-[#d0dcf5] hover:border-black' },
-                          { rating: 3, label: 'Easy', color: 'bg-[#edfce9] hover:bg-white text-[#003c33] border-[#ccebc5] hover:border-black' }
+                          { rating: 0, label: 'Again', color: 'bg-[#fef2f2] hover:bg-[#fee2e2] text-[#dc2626] border-[#fecaca]' },
+                          { rating: 1, label: 'Hard', color: 'bg-[#fbf5e6] hover:bg-[#f7ebcf] text-[#b45309] border-[#f5e0b8]' },
+                          { rating: 2, label: 'Good', color: 'bg-[#edf3fc] hover:bg-[#dbeafe] text-[#4f75f2] border-[#d0dcf5]' },
+                          { rating: 3, label: 'Easy', color: 'bg-[#e2f6eb] hover:bg-[#d1fae5] text-[#059669] border-[#a7f3d0]' }
                         ].map(({ rating, label, color }) => (
                           <button
                             key={rating}
                             disabled={reviewing}
                             onClick={() => handleReview(rating)}
-                            className={`flex-1 font-bold py-2.5 rounded-full border transition-all text-xs font-mono uppercase tracking-wider cursor-pointer disabled:opacity-50 ${color}`}
+                            className={`flex-1 font-bold py-3 rounded-2xl border transition-all text-xs font-mono uppercase tracking-wider cursor-pointer disabled:opacity-50 shadow-xs ${color}`}
                           >
                             {label}
                           </button>
                         ))}
                       </div>
                     )}
-                    <div className="flex gap-2">
+                    <div className="flex gap-3">
                       <button
                         onClick={() => setFlipped(f => !f)}
-                        className="flex-1 bg-white hover:bg-[#eeece7] text-black border border-[#d9d9dd] py-2.5 rounded-full text-xs font-mono uppercase tracking-wider font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                        className="flex-1 bg-white hover:bg-[#f8f9fc] text-[#121217] border border-[#e3e6ed] py-3 rounded-2xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                       >
-                        <RotateCcw className="w-3.5 h-3.5 text-black" />
+                        <RotateCcw className="w-3.5 h-3.5 text-[#4f75f2]" />
                         {flipped ? 'Hide Answer' : 'Show Answer'}
                       </button>
                       <button
                         onClick={() => { setFlipped(false); setCurrentIdx(p => (p + 1) % cards.length); }}
-                        className="flex-1 bg-white hover:bg-[#eeece7] border border-[#d9d9dd] text-black py-2.5 rounded-full text-xs font-mono uppercase tracking-wider font-bold transition-colors cursor-pointer"
+                        className="flex-1 bg-white hover:bg-[#f8f9fc] border border-[#e3e6ed] text-[#121217] py-3 rounded-2xl text-xs font-bold transition-colors cursor-pointer shadow-xs"
                       >
                         Skip Card →
                       </button>
@@ -340,43 +345,43 @@ export default function SmartRevision() {
 
       {/* Add Card Modal */}
       {isAddingCard && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white border border-[#d9d9dd] w-full max-w-md rounded-2xl overflow-hidden shadow-2xl flex flex-col relative animate-in fade-in zoom-in duration-200 text-black">
-            <header className="p-6 border-b border-[#d9d9dd] flex justify-between items-center bg-white">
-              <h3 className="text-sm font-bold text-black uppercase font-display tracking-wider flex items-center gap-2">
-                <Plus className="w-4 h-4 text-[#ff7759]" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+          <div className="bg-white border border-[#e3e6ed] w-full max-w-md rounded-3xl overflow-hidden shadow-xl flex flex-col relative animate-in fade-in zoom-in duration-200 text-[#121217]">
+            <header className="p-6 border-b border-[#e3e6ed] flex justify-between items-center bg-white">
+              <h3 className="text-sm font-bold text-[#121217] uppercase tracking-wider flex items-center gap-2">
+                <Plus className="w-4 h-4 text-[#4f75f2]" />
                 Add Flashcard Manually
               </h3>
               <button 
                 onClick={() => setIsAddingCard(false)}
-                className="text-[#75758a] hover:text-black p-1.5 rounded-full hover:bg-[#eeece7] transition-colors cursor-pointer"
+                className="text-[#6b6f82] hover:text-[#121217] p-1.5 rounded-full hover:bg-[#f0f2f7] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </header>
             
-            <form onSubmit={handleAddCard} className="p-6 space-y-5 bg-white">
-              <div className="space-y-2">
-                <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wide">Front (Question / Concept)</label>
+            <form onSubmit={handleAddCard} className="p-6 space-y-4 bg-white">
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-mono font-bold text-[#6b6f82] uppercase tracking-wide">Front (Question / Concept)</label>
                 <textarea
                   value={newFront}
                   onChange={e => setNewFront(e.target.value)}
                   placeholder="Type the question or prompt..."
                   rows={3}
                   required
-                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-black placeholder-[#93939f] outline-none focus:border-[#9b60aa] transition-colors resize-none font-sans"
+                  className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-xs text-[#121217] placeholder-[#a0a4b8] outline-none focus:border-[#4f75f2] transition-colors resize-none font-sans"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="block text-[10px] font-mono font-bold text-[#75758a] uppercase tracking-wide">Back (Recall Answer)</label>
+              <div className="space-y-1.5">
+                <label className="block text-[11px] font-mono font-bold text-[#6b6f82] uppercase tracking-wide">Back (Recall Answer)</label>
                 <textarea
                   value={newBack}
                   onChange={e => setNewBack(e.target.value)}
                   placeholder="Type the model answer or explanation..."
                   rows={4}
                   required
-                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-black placeholder-[#93939f] outline-none focus:border-[#9b60aa] transition-colors resize-none font-sans"
+                  className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-xs text-[#121217] placeholder-[#a0a4b8] outline-none focus:border-[#4f75f2] transition-colors resize-none font-sans"
                 />
               </div>
 
@@ -384,14 +389,14 @@ export default function SmartRevision() {
                 <button 
                   type="button"
                   onClick={() => setIsAddingCard(false)}
-                  className="bg-transparent hover:bg-[#eeece7] border border-[#d9d9dd] text-black px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer font-sans"
+                  className="bg-white hover:bg-[#f8f9fc] border border-[#e3e6ed] text-[#121217] px-5 py-2.5 rounded-2xl text-xs font-bold transition-colors cursor-pointer shadow-xs"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
                   disabled={adding || !newFront.trim() || !newBack.trim()}
-                  className="bg-black hover:bg-zinc-800 text-white px-6 py-2.5 rounded-full text-xs font-semibold transition-all cursor-pointer disabled:opacity-50 font-sans"
+                  className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-6 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer disabled:opacity-50 shadow-xs"
                 >
                   {adding ? 'Saving...' : 'Add Flashcard'}
                 </button>

@@ -7,6 +7,7 @@ type Subject = {
   id: string;
   name: string;
   code?: string;
+  type?: string;
 };
 
 type VivaQuestion = {
@@ -39,21 +40,32 @@ export default function PracticalGenerator() {
 
   useEffect(() => {
     async function loadSubjects() {
+      // Helper: keep only lab subjects (exclude theory)
+      const labsOnly = (list: Subject[]) =>
+        list.filter(s => s.type === 'Lab' || s.name.toLowerCase().includes('lab'));
+
       try {
         const res = await fetchApi('/api/subjects');
         if (res.subjects && res.subjects.length > 0) {
-          setSubjects(res.subjects);
-          setSelectedSubjectId(res.subjects[0].id);
+          const labs = labsOnly(res.subjects);
+          if (labs.length > 0) {
+            setSubjects(labs);
+            setSelectedSubjectId(labs[0].id);
+          } else {
+            const defaults = labsOnly(getDefaultSubjects());
+            setSubjects(defaults);
+            setSelectedSubjectId(defaults[0]?.id || '');
+          }
         } else {
-          const defaults = getDefaultSubjects();
+          const defaults = labsOnly(getDefaultSubjects());
           setSubjects(defaults);
-          setSelectedSubjectId(defaults[0].id);
+          setSelectedSubjectId(defaults[0]?.id || '');
         }
       } catch (err) {
         console.error("Error loading subjects:", err);
-        const defaults = getDefaultSubjects();
+        const defaults = labsOnly(getDefaultSubjects());
         setSubjects(defaults);
-        setSelectedSubjectId(defaults[0].id);
+        setSelectedSubjectId(defaults[0]?.id || '');
       }
     }
     loadSubjects();
@@ -161,16 +173,19 @@ ${practical.conclusion}
   };
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10 bg-white text-[#212121] min-h-screen font-display">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-[#d9d9dd]">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] text-[#2d2d34] min-h-screen font-sans">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-widest text-[#666666] uppercase mb-2">
-            <FlaskConical className="w-3.5 h-3.5 text-[#212121]" /> Practical Journal Studio
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
+            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] uppercase font-bold">
+              Practical Journal Studio
+            </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#212121] flex items-center gap-3">
-            Lab Journal & Code Engine
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] flex items-center gap-3">
+            Lab Journal &amp; Code Engine
           </h1>
-          <p className="text-[#666666] mt-2 text-sm md:text-base max-w-2xl">
+          <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans max-w-2xl">
             Generate university-grade practical journal files, executable implementations, execution trace diagrams, and examiner viva prep.
           </p>
         </div>
@@ -178,18 +193,21 @@ ${practical.conclusion}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Configuration Panel */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-[#fafafb] border border-[#d9d9dd] rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
-            <h2 className="text-xl font-black text-[#212121]">Experiment Setup</h2>
+        <div className="lg:col-span-5 space-y-6">
+          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+            <h2 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
+              <FlaskConical className="w-5 h-5 text-[#4f75f2]" />
+              Experiment Setup
+            </h2>
             
-            <div className="space-y-6">
+            <div className="space-y-5">
               {subjects.length > 0 ? (
                 <div>
-                  <label className="block text-[10px] font-mono font-bold text-[#666666] uppercase mb-2">Subject Context</label>
+                  <label className="block text-[10px] font-mono font-bold text-[#6b6f82] uppercase mb-1.5">Subject Context</label>
                   <select 
                     value={selectedSubjectId}
                     onChange={(e) => setSelectedSubjectId(e.target.value)}
-                    className="w-full bg-white border border-[#d9d9dd] rounded-xl px-4 py-2.5 text-xs font-bold text-[#212121] outline-none focus:border-[#212121] cursor-pointer shadow-xs"
+                    className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-xs font-bold text-[#121217] outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
                   >
                     {subjects.map(s => (
                       <option key={s.id} value={s.id}>{s.name} ({s.code || 'CS'})</option>
@@ -197,18 +215,18 @@ ${practical.conclusion}
                   </select>
                 </div>
               ) : (
-                <div className="text-[#666666] text-xs flex items-center gap-1.5 bg-white p-3 rounded-xl border border-[#d9d9dd]">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-[#212121]" />
+                <div className="text-[#6b6f82] text-xs flex items-center gap-1.5 bg-[#f8f9fc] p-3 rounded-2xl border border-[#e3e6ed]">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-[#4f75f2]" />
                   No subjects configured. Creating a generic entry.
                 </div>
               )}
               
               <div>
-                <label className="block text-[10px] font-mono font-bold text-[#666666] uppercase mb-2">Preferred Code Language</label>
+                <label className="block text-[10px] font-mono font-bold text-[#6b6f82] uppercase mb-1.5">Preferred Code Language</label>
                 <select 
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full bg-white border border-[#d9d9dd] rounded-xl px-4 py-2.5 text-xs font-bold text-[#212121] outline-none focus:border-[#212121] cursor-pointer shadow-xs"
+                  className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-xs font-bold text-[#121217] outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
                 >
                   <option value="python">Python</option>
                   <option value="cpp">C++</option>
@@ -218,28 +236,54 @@ ${practical.conclusion}
               </div>
               
               <div>
-                <label className="block text-[10px] font-mono font-bold text-[#666666] uppercase mb-2">Experiment Aim / Objective</label>
+                <label className="block text-[10px] font-mono font-bold text-[#6b6f82] uppercase mb-1.5">Experiment Aim / Objective</label>
                 <textarea 
                   value={aim}
                   onChange={(e) => setAim(e.target.value)}
-                  className="w-full bg-white border border-[#d9d9dd] rounded-xl p-3 text-xs text-[#212121] outline-none focus:border-[#212121] h-28 resize-none shadow-xs font-sans"
-                  placeholder="e.g. Implement DFS search and solve water jug problem."
+                  className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl p-3 text-xs text-[#121217] outline-none focus:border-[#4f75f2] h-24 resize-none shadow-xs font-sans"
+                  placeholder="e.g. Implement Bayesian Network inferencing in Python."
                 />
+
+                {/* Quick Presets from Mumbai University Syllabus */}
+                <div className="mt-3">
+                  <span className="text-[10px] font-mono uppercase text-[#6b6f82] font-bold block mb-2">
+                    Curated Mumbai Univ Lab Experiments:
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      'Implement Inferencing with Bayesian Network in Python',
+                      'Design Mamdani Fuzzy Controller using Fuzzy Logic tool',
+                      'Traffic Light pattern & Sensor integration using Arduino & ESP8266',
+                      'Simulate 6LoWPAN and CoAP protocols in Contiki Cooja',
+                      'VAPT Testing of Web Application using Burp Suite Proxy',
+                      'SQL Injection vulnerability bypass & Registration page validation'
+                    ].map((presetAim, pIdx) => (
+                      <button
+                        key={pIdx}
+                        type="button"
+                        onClick={() => setAim(presetAim)}
+                        className="text-[10px] text-left font-medium bg-[#f8f9fc] hover:bg-[#edf3fc] hover:text-[#4f75f2] border border-[#e3e6ed] hover:border-[#d0dcf5] px-2.5 py-1.5 rounded-xl transition-all cursor-pointer"
+                      >
+                        • {presetAim.slice(0, 42)}...
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <button 
                 onClick={handleGenerate}
                 disabled={generating || !aim.trim()}
-                className="w-full bg-[#212121] hover:bg-black text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm disabled:opacity-50"
+                className="w-full bg-[#4f75f2] hover:bg-[#385dd8] text-white font-bold py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
               >
                 {generating ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin text-white" />
                     Assembling Journal Sections...
                   </>
                 ) : (
                   <>
-                    <Wand2 className="w-5 h-5" />
+                    <Wand2 className="w-5 h-5 text-amber-200" />
                     Build Journal Entry
                   </>
                 )}
@@ -249,36 +293,36 @@ ${practical.conclusion}
         </div>
 
         {/* Output Document Viewer */}
-        <div className="lg:col-span-8">
-          <div className="bg-white border border-[#d9d9dd] rounded-3xl h-[650px] flex flex-col overflow-hidden shadow-sm">
+        <div className="lg:col-span-7">
+          <div className="bg-white border border-[#e3e6ed] rounded-3xl h-[680px] flex flex-col overflow-hidden shadow-xs">
             {!practical ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#fafafb]">
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center border border-[#d9d9dd] mb-4 shadow-xs">
-                  <FlaskConical className="w-7 h-7 text-[#212121]" />
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#f8f9fc]">
+                <div className="w-16 h-16 bg-[#edf3fc] rounded-2xl flex items-center justify-center border border-[#d0dcf5] mb-4 shadow-xs">
+                  <FlaskConical className="w-7 h-7 text-[#4f75f2]" />
                 </div>
-                <h3 className="text-lg font-bold text-[#212121]">Ready to Assemble</h3>
-                <p className="text-[#666666] max-w-sm mt-2 text-xs leading-relaxed">
+                <h3 className="text-lg font-extrabold text-[#121217]">Ready to Assemble</h3>
+                <p className="text-[#6b6f82] max-w-sm mt-2 text-xs leading-relaxed font-sans">
                   Your AI lab assistant will draft fully structured index entries, complete algorithms, verified codes, and viva prep questions.
                 </p>
               </div>
             ) : (
               <>
-                <div className="flex justify-between items-center p-5 border-b border-[#d9d9dd] bg-[#fafafb]">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#212121]">
+                <div className="flex justify-between items-center p-5 border-b border-[#e3e6ed] bg-[#f8f9fc]">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#121217]">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     Syllabus Standard File Generated
                   </div>
                   <div className="flex gap-2">
                     <button 
                       onClick={handleCopy}
-                      className="p-2 bg-white border border-[#d9d9dd] hover:bg-[#fafafb] rounded-xl text-[#212121] transition-colors cursor-pointer shadow-xs" 
+                      className="p-2 bg-white border border-[#e3e6ed] hover:bg-[#edf3fc] rounded-xl text-[#121217] transition-colors cursor-pointer shadow-xs" 
                       title={copied ? "Copied!" : "Copy Markdown Code"}
                     >
-                      {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                      {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-[#4f75f2]" />}
                     </button>
                     <button 
                       onClick={handleExport}
-                      className="flex items-center gap-1.5 px-4 py-2 bg-[#212121] hover:bg-black rounded-xl text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                      className="flex items-center gap-1.5 px-4 py-2 bg-[#121217] hover:bg-[#252530] rounded-xl text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
                     >
                       <Download className="w-4 h-4" />
                       Export Markdown
@@ -286,36 +330,36 @@ ${practical.conclusion}
                   </div>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 select-text bg-white">
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-7 select-text bg-white">
                   <div>
-                    <h3 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1.5">Experiment Aim</h3>
-                    <p className="text-[#212121] font-black text-base leading-relaxed">{practical.aim}</p>
+                    <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Experiment Aim</h3>
+                    <p className="text-[#121217] font-extrabold text-base leading-relaxed">{practical.aim}</p>
                   </div>
 
                   {practical.apparatus && (
-                    <div className="bg-[#fafafb] border border-[#e5e5e8] p-4 rounded-xl">
-                      <h3 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1">Apparatus & System Requirements</h3>
-                      <p className="text-xs text-[#212121] font-mono leading-relaxed">{practical.apparatus}</p>
+                    <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
+                      <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1">Apparatus &amp; System Requirements</h3>
+                      <p className="text-xs text-[#121217] font-mono leading-relaxed">{practical.apparatus}</p>
                     </div>
                   )}
                   
                   <div>
-                    <h3 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1.5">Theory & Mathematical Context</h3>
-                    <p className="text-[#444444] leading-relaxed text-xs md:text-sm">{practical.theory}</p>
+                    <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Theory &amp; Mathematical Context</h3>
+                    <p className="text-[#4f5367] leading-relaxed text-xs md:text-sm font-sans">{practical.theory}</p>
                   </div>
 
                   {practical.diagramAscii && (
                     <div>
-                      <h3 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1.5">Architecture & Execution Flow</h3>
-                      <pre className="bg-[#fafafb] p-4 rounded-xl text-[11px] text-[#212121] font-mono overflow-x-auto border border-[#d9d9dd] leading-snug font-bold">
+                      <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Architecture &amp; Execution Flow</h3>
+                      <pre className="bg-[#f8f9fc] p-4 rounded-2xl text-[11px] text-[#121217] font-mono overflow-x-auto border border-[#e3e6ed] leading-snug font-bold">
                         {practical.diagramAscii}
                       </pre>
                     </div>
                   )}
                   
                   <div>
-                    <h3 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1.5">Procedural Algorithm</h3>
-                    <ol className="text-[#444444] list-decimal pl-5 space-y-1.5 leading-relaxed text-xs md:text-sm">
+                    <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Procedural Algorithm</h3>
+                    <ol className="text-[#4f5367] list-decimal pl-5 space-y-1.5 leading-relaxed text-xs md:text-sm">
                       {practical.algorithm.map((step, idx) => (
                         <li key={idx}>{step}</li>
                       ))}
@@ -323,45 +367,45 @@ ${practical.conclusion}
                   </div>
                   
                   <div>
-                    <h3 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1.5">Code Implementation</h3>
-                    <pre className="bg-[#fafafb] p-5 rounded-2xl overflow-x-auto text-xs text-[#212121] font-mono border border-[#d9d9dd] leading-relaxed">
+                    <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Code Implementation</h3>
+                    <pre className="bg-[#f8f9fc] p-5 rounded-2xl overflow-x-auto text-xs text-[#121217] font-mono border border-[#e3e6ed] leading-relaxed">
                       {practical.code}
                     </pre>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-[#fafafb] border border-[#e5e5e8] p-4 rounded-2xl">
-                      <h4 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1.5">Expected Input Format</h4>
-                      <p className="text-xs text-[#212121] whitespace-pre-wrap font-mono">{practical.expectedInput}</p>
+                    <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
+                      <h4 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Expected Input Format</h4>
+                      <p className="text-xs text-[#121217] whitespace-pre-wrap font-mono">{practical.expectedInput}</p>
                     </div>
-                    <div className="bg-[#fafafb] border border-[#e5e5e8] p-4 rounded-2xl">
-                      <h4 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1.5">Expected Output Log</h4>
-                      <pre className="text-xs text-[#212121] whitespace-pre-wrap font-mono">{practical.expectedOutput}</pre>
+                    <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
+                      <h4 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Expected Output Log</h4>
+                      <pre className="text-xs text-[#121217] whitespace-pre-wrap font-mono">{practical.expectedOutput}</pre>
                     </div>
                   </div>
 
                   {practical.observation && (
-                    <div className="bg-[#fafafb] border border-[#e5e5e8] p-4 rounded-xl">
-                      <h3 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1">Observations & Operational Performance</h3>
-                      <pre className="text-xs text-[#212121] font-mono whitespace-pre-wrap leading-relaxed">{practical.observation}</pre>
+                    <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
+                      <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1">Observations &amp; Operational Performance</h3>
+                      <pre className="text-xs text-[#121217] font-mono whitespace-pre-wrap leading-relaxed">{practical.observation}</pre>
                     </div>
                   )}
 
                   <div>
-                    <h3 className="text-[10px] font-mono font-bold text-[#666666] uppercase tracking-widest mb-1.5">Conclusion</h3>
-                    <p className="text-[#444444] leading-relaxed text-xs italic">{practical.conclusion}</p>
+                    <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Conclusion</h3>
+                    <p className="text-[#4f5367] leading-relaxed text-xs italic font-sans">{practical.conclusion}</p>
                   </div>
 
-                  <div className="border-t border-[#d9d9dd] pt-6">
-                    <h3 className="text-sm font-black text-[#212121] mb-4 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#212121]" />
+                  <div className="border-t border-[#e3e6ed] pt-6">
+                    <h3 className="text-sm font-extrabold text-[#121217] mb-4 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-[#4f75f2]" />
                       Associated Viva Questions
                     </h3>
                     <div className="space-y-3">
                       {practical.vivaQuestions?.map((q, idx) => (
-                        <div key={idx} className="p-4 bg-[#fafafb] border border-[#e5e5e8] rounded-xl space-y-1">
-                          <p className="text-xs font-bold text-[#212121]">Q: {q.question}</p>
-                          <p className="text-xs text-[#666666]">A: {q.answer}</p>
+                        <div key={idx} className="p-4 bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl space-y-1">
+                          <p className="text-xs font-bold text-[#121217]">Q: {q.question}</p>
+                          <p className="text-xs text-[#6b6f82]">A: {q.answer}</p>
                         </div>
                       ))}
                     </div>
