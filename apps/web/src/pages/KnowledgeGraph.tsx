@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { Network, Loader2, ZoomIn, ZoomOut, RefreshCw, BookOpen, BrainCircuit, Sparkles, Layers, Info } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { getDefaultSubjects, generateKnowledgeGraphAI } from '../lib/ai-service';
+import { usePreferences } from '../context/PreferencesContext';
 
 type Subject = { id: string; name: string; code?: string };
 type KGNode = { id: string; label: string; type: string; mastery: string; x: number; y: number };
@@ -19,6 +20,17 @@ const NODE_COLORS: Record<string, { fill: string; stroke: string; text: string }
   default: { fill: '#f8fafc', stroke: '#64748b', text: '#334155' }
 };
 
+
+const DARK_NODE_COLORS: Record<string, { fill: string; stroke: string; text: string }> = {
+  Algorithm: { fill: '#17223b', stroke: '#60a5fa', text: '#bfdbfe' },
+  Concept: { fill: '#241b36', stroke: '#a78bfa', text: '#ddd6fe' },
+  Property: { fill: '#132a22', stroke: '#34d399', text: '#a7f3d0' },
+  Component: { fill: '#2e2415', stroke: '#fbbf24', text: '#fde68a' },
+  System: { fill: '#33192b', stroke: '#f472b6', text: '#fbcfe8' },
+  'Data Structure': { fill: '#132a2f', stroke: '#2dd4bf', text: '#99f6e4' },
+  default: { fill: '#1e293b', stroke: '#94a3b8', text: '#f1f5f9' }
+};
+
 const MASTERY_RING: Record<string, string> = {
   weak: '#ef4444',
   improving: '#f59e0b',
@@ -27,6 +39,7 @@ const MASTERY_RING: Record<string, string> = {
 };
 
 export default function KnowledgeGraph() {
+  const { isDark } = usePreferences();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('');
   const [nodes, setNodes] = useState<KGNode[]>([]);
@@ -126,17 +139,17 @@ export default function KnowledgeGraph() {
   const selectedNodeCards = selectedNode ? cards.slice(0, 2) : [];
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto min-h-screen bg-[#f8f9fc] text-[#121217] space-y-8 font-sans">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto min-h-screen bg-[#f8f9fc] dark:bg-slate-950 text-[#121217] dark:text-slate-100 space-y-8 font-sans transition-colors">
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-[#e3e6ed]">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 pb-6 border-b border-[#e3e6ed] dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
-            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] uppercase font-bold">
+            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] dark:text-slate-400 uppercase font-bold">
               SEMANTIC CONCEPT GRAPH
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] dark:text-white flex items-center gap-3">
             Interactive Knowledge Graph
             {nodes.length > 0 && (
               <span className="text-xs bg-[#edf3fc] text-[#4f75f2] px-3 py-1 rounded-full border border-[#d0dcf5] font-mono font-bold">
@@ -144,7 +157,7 @@ export default function KnowledgeGraph() {
               </span>
             )}
           </h1>
-          <p className="text-[#6b6f82] mt-1 text-xs md:text-sm max-w-2xl">
+          <p className="text-[#6b6f82] dark:text-slate-400 mt-1 text-xs md:text-sm max-w-2xl">
             Autonomous multi-dimensional graph of core topics, dependencies, mastery retention, and linked university questions.
           </p>
         </div>
@@ -154,17 +167,17 @@ export default function KnowledgeGraph() {
             <select
               value={selectedSubjectId}
               onChange={e => setSelectedSubjectId(e.target.value)}
-              className="bg-white border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-xs font-bold text-[#121217] outline-none cursor-pointer shadow-xs"
+              className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-bold text-[#121217] dark:text-slate-200 outline-none cursor-pointer shadow-xs"
             >
               {subjects.map(s => (
                 <option key={s.id} value={s.id}>{s.name} ({s.code || 'CS'})</option>
               ))}
             </select>
           )}
-          <div className="flex gap-1 bg-white p-1 rounded-2xl border border-[#e3e6ed] shadow-xs">
+          <div className="flex gap-1 bg-white dark:bg-slate-900 p-1 rounded-2xl border border-[#e3e6ed] dark:border-slate-800 shadow-xs">
             <button
               onClick={() => setZoom(z => Math.min(2.5, z + 0.2))}
-              className="p-2 hover:bg-[#f8f9fc] rounded-xl text-[#121217] cursor-pointer transition-colors"
+              className="p-2 hover:bg-[#f8f9fc] dark:hover:bg-slate-800 rounded-xl text-[#121217] dark:text-slate-200 cursor-pointer transition-colors"
               title="Zoom In"
             >
               <ZoomIn className="w-4 h-4 text-[#4f75f2]" />
@@ -189,7 +202,7 @@ export default function KnowledgeGraph() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Graph Canvas */}
-        <div className="lg:col-span-3 bg-white border border-[#e3e6ed] rounded-3xl overflow-hidden relative shadow-xs" style={{ height: '620px' }}>
+        <div className="lg:col-span-3 bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl overflow-hidden relative shadow-xs" style={{ height: '620px' }}>
           {loading ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-[#6b6f82]">
               <Loader2 className="w-8 h-8 text-[#4f75f2] animate-spin" />
@@ -224,7 +237,7 @@ export default function KnowledgeGraph() {
                     <g key={i}>
                       <line
                         x1={src.x} y1={src.y} x2={tgt.x} y2={tgt.y}
-                        stroke="#d0dcf5" strokeWidth="2" strokeDasharray="4 4"
+                        stroke={isDark ? "#334155" : "#d0dcf5"} strokeWidth="2" strokeDasharray="4 4"
                       />
                       <rect
                         x={(src.x + tgt.x) / 2 - 35}
@@ -232,12 +245,12 @@ export default function KnowledgeGraph() {
                         width="70"
                         height="18"
                         rx="6"
-                        fill="white"
-                        stroke="#e3e6ed"
+                        fill={isDark ? "#1e293b" : "white"}
+                        stroke={isDark ? "#334155" : "#e3e6ed"}
                       />
                       <text
                         x={(src.x + tgt.x) / 2} y={(src.y + tgt.y) / 2 + 3}
-                        textAnchor="middle" fontSize="8" fill="#6b6f82" fontWeight="600" fontFamily="sans-serif"
+                        textAnchor="middle" fontSize="8" fill={isDark ? "#94a3b8" : "#6b6f82"} fontWeight="600" fontFamily="sans-serif"
                       >
                         {edge.label}
                       </text>
@@ -247,7 +260,7 @@ export default function KnowledgeGraph() {
 
                 {/* Nodes */}
                 {nodes.map(node => {
-                  const colorConfig = NODE_COLORS[node.type] || NODE_COLORS.default;
+                  const colorConfig = isDark ? (DARK_NODE_COLORS[node.type] || DARK_NODE_COLORS.default) : (NODE_COLORS[node.type] || NODE_COLORS.default);
                   const ringColor = MASTERY_RING[node.mastery] || MASTERY_RING.none;
                   const isSelected = selectedNode?.id === node.id;
                   return (
@@ -258,7 +271,7 @@ export default function KnowledgeGraph() {
                       style={{ filter: isSelected ? 'drop-shadow(0 6px 16px rgba(79,117,242,0.25))' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.04))' }}
                     >
                       {/* Outer Mastery Halo */}
-                      <circle cx={node.x} cy={node.y} r="32" fill={ringColor} opacity="0.15" />
+                      <circle cx={node.x} cy={node.y} r="32" fill={ringColor} opacity={isDark ? 0.35 : 0.18} />
                       {/* Main Node Circle */}
                       <circle
                         cx={node.x}
@@ -285,7 +298,7 @@ export default function KnowledgeGraph() {
                         y={node.y + 44}
                         textAnchor="middle"
                         fontSize="10"
-                        fill="#121217"
+                        fill={isDark ? "#f8fafc" : "#121217"}
                         fontWeight="700"
                         fontFamily="sans-serif"
                       >
@@ -301,9 +314,9 @@ export default function KnowledgeGraph() {
           {/* Type Legend */}
           <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
             {Object.entries(NODE_COLORS).filter(([k]) => k !== 'default').slice(0, 5).map(([type, colors]) => (
-              <div key={type} className="flex items-center gap-1.5 bg-white/95 px-3 py-1 rounded-xl border border-[#e3e6ed] shadow-xs">
+              <div key={type} className="flex items-center gap-1.5 bg-white/95 dark:bg-slate-800/95 px-3 py-1 rounded-xl border border-[#e3e6ed] dark:border-slate-700 shadow-xs">
                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: colors.stroke }} />
-                <span className="text-[10px] text-[#121217] font-bold">{type}</span>
+                <span className="text-[10px] text-[#121217] dark:text-slate-200 font-bold">{type}</span>
               </div>
             ))}
           </div>
@@ -312,7 +325,7 @@ export default function KnowledgeGraph() {
         {/* Node Detail Drawer */}
         <div className="space-y-6">
           {selectedNode ? (
-            <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 space-y-5 shadow-xs">
+            <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 space-y-5 shadow-xs">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span
@@ -321,7 +334,7 @@ export default function KnowledgeGraph() {
                   />
                   <span className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase">{selectedNode.type}</span>
                 </div>
-                <h3 className="text-xl font-extrabold text-[#121217] leading-tight">{selectedNode.label}</h3>
+                <h3 className="text-xl font-extrabold text-[#121217] dark:text-white leading-tight">{selectedNode.label}</h3>
                 <div className="mt-2.5 flex items-center gap-2">
                   <span className={`text-[10px] font-mono font-bold px-3 py-1 rounded-full uppercase border ${
                     selectedNode.mastery === 'weak' ? 'bg-[#fef2f2] text-[#dc2626] border-[#fecaca]' :
@@ -365,19 +378,19 @@ export default function KnowledgeGraph() {
               )}
             </div>
           ) : (
-            <div className="bg-white border border-[#e3e6ed] border-dashed rounded-3xl p-8 text-center flex flex-col items-center justify-center min-h-[220px] shadow-xs">
+            <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 border-dashed rounded-3xl p-8 text-center flex flex-col items-center justify-center min-h-[220px] shadow-xs">
               <div className="w-12 h-12 rounded-2xl bg-[#edf3fc] flex items-center justify-center mb-3 text-[#4f75f2]">
                 <Sparkles className="w-6 h-6" />
               </div>
-              <h4 className="font-bold text-sm text-[#121217]">Concept Inspector</h4>
-              <p className="text-xs text-[#6b6f82] mt-1 max-w-xs leading-relaxed">
+              <h4 className="font-bold text-sm text-[#121217] dark:text-white">Concept Inspector</h4>
+              <p className="text-xs text-[#6b6f82] dark:text-slate-400 mt-1 max-w-xs leading-relaxed">
                 Click any concept node in the canvas to view detailed syllabus links, previous questions, and flashcards.
               </p>
             </div>
           )}
 
           {/* Mastery Key */}
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 shadow-xs">
             <h4 className="text-[11px] font-mono font-bold text-[#6b6f82] uppercase mb-3.5 flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5 text-[#4f75f2]" /> Mastery Ring Key
             </h4>
@@ -385,7 +398,7 @@ export default function KnowledgeGraph() {
               <div className="flex items-center justify-between text-xs font-medium">
                 <div className="flex items-center gap-2">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#10b981]" />
-                  <span className="text-[#121217] font-semibold">Strong Mastery (&gt;80%)</span>
+                  <span className="text-[#121217] dark:text-slate-200 font-semibold">Strong Mastery (&gt;80%)</span>
                 </div>
                 <span className="font-mono text-[10px] text-[#059669] bg-[#e2f6eb] px-2 py-0.5 rounded-lg border border-[#a7f3d0]">High Retention</span>
               </div>

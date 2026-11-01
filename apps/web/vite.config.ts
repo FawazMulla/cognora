@@ -24,6 +24,10 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
+      dedupe: ['react', 'react-dom'],
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react-router-dom'],
     },
     define: {
       // Ensure VITE_ variables loaded from .env or process.env are available
@@ -39,4 +43,3 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
-

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { BookOpen, Activity, Search, Flame, Target, Clock, Sparkles, BrainCircuit, Loader2, ChevronRight, Zap, PlayCircle, X, Layers, FileText, HelpCircle, Award, Edit3, Check } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { getDefaultSubjects } from '../lib/ai-service';
+import { getLastNavigationState, type NavigationState } from '../lib/navigation-tracker';
 
 type Subject = { id: string; name: string; code?: string; examDate?: string; progress?: number; type?: string };
 type HealthData = { healthScore: number; updatedAt: string };
@@ -13,6 +14,7 @@ export default function Dashboard() {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [aiTip, setAiTip] = useState<string>('');
+  const [lastNav, setLastNav] = useState<NavigationState | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'All' | 'Theory' | 'Labs'>('All');
@@ -195,6 +197,7 @@ export default function Dashboard() {
       '⚡ Study sessions under 90 minutes have higher recall rates. Take breaks!'
     ];
     setAiTip(tips[Math.floor(Math.random() * tips.length)]);
+    getLastNavigationState().then(nav => { if (nav && nav.pagePath && nav.pagePath !== '/') setLastNav(nav); });
   }, []);
 
   useEffect(() => {
@@ -261,7 +264,7 @@ export default function Dashboard() {
 
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 font-sans text-[#2d2d34] min-h-screen bg-[#f8f9fc]">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 font-sans text-[#2d2d34] dark:text-slate-100 min-h-screen bg-[#f8f9fc] dark:bg-slate-950 transition-colors">
       {/* Top Bar */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed]">
         <div>
@@ -279,6 +282,42 @@ export default function Dashboard() {
           </p>
         </div>
       </header>
+
+      {/* Resume Where You Left Off Banner */}
+      {lastNav && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/5 border border-indigo-200 dark:border-indigo-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs my-3">
+          <div className="flex items-center space-x-3.5">
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <PlayCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 font-mono">
+                  Continue Where You Left Off
+                </span>
+                <span className="text-xs text-slate-400">•</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">
+                  Saved workspace session
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                {lastNav.pageTitle || 'Previous Session'}
+                {lastNav.subjectName ? ' • ' + lastNav.subjectName : ''}
+                {lastNav.topicTitle ? ' (' + lastNav.topicTitle + ')' : ''}
+              </h3>
+            </div>
+          </div>
+
+          <Link
+            to={lastNav.pagePath}
+            className="inline-flex items-center justify-center space-x-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition-all transform hover:-translate-y-0.5 shrink-0"
+          >
+            <span>Resume Learning</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+      )}
+
 
       {/* Main Peaceful Grid Layout (Left: Courses/Subjects | Right: Performance Chart & Homework) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

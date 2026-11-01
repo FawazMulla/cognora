@@ -152,8 +152,8 @@ export default function AssignmentEngine() {
   };
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] text-[#2d2d34] min-h-screen font-sans">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed]">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] dark:bg-slate-950 text-[#2d2d34] dark:text-slate-100 min-h-screen font-sans transition-colors">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed] dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
@@ -161,7 +161,7 @@ export default function AssignmentEngine() {
               Academic Assignment Studio
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] dark:text-white flex items-center gap-3">
             Assignment &amp; Report Engine
           </h1>
           <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans max-w-2xl">
@@ -174,7 +174,7 @@ export default function AssignmentEngine() {
         
         {/* Configuration Column */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
             <h2 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
               <SlidersHorizontal className="w-5 h-5 text-[#4f75f2]" />
               Report Specifications

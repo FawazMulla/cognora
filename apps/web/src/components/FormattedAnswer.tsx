@@ -19,25 +19,37 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
   const flushTable = (key: string) => {
     if (tableRows.length === 0) return;
     const header = tableRows[0];
-    const body = tableRows.slice(1).filter(r => !r.every(c => c.match(/^[:\-\s]+$/)));
+    const body = tableRows.slice(1).filter((r) => !r.every((c) => c.match(/^[:\-\s]+$/)));
 
     blocks.push(
-      <div key={key} className="my-4 overflow-x-auto rounded-xl border border-[#d9d9dd] bg-white shadow-xs">
+      <div
+        key={key}
+        className="my-4 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs"
+      >
         <table className="w-full text-left border-collapse text-xs md:text-sm">
           <thead>
-            <tr className="bg-[#f4f4f4] border-b border-[#d9d9dd]">
+            <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
               {header.map((col, idx) => (
-                <th key={idx} className="p-3 font-bold text-[#212121]">
+                <th
+                  key={idx}
+                  className="p-3.5 font-bold text-slate-900 dark:text-white"
+                >
                   {renderInlineFormatted(col.trim())}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#e5e5e8]">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
             {body.map((row, rIdx) => (
-              <tr key={rIdx} className="hover:bg-[#fafafb] transition-colors">
+              <tr
+                key={rIdx}
+                className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors"
+              >
                 {row.map((cell, cIdx) => (
-                  <td key={cIdx} className="p-3 text-[#212121]">
+                  <td
+                    key={cIdx}
+                    className="p-3.5 text-slate-800 dark:text-slate-200 leading-relaxed"
+                  >
                     {renderInlineFormatted(cell.trim())}
                   </td>
                 ))}
@@ -45,7 +57,7 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
             ))}
           </tbody>
         </table>
-      </div>
+      </div>,
     );
     tableRows = [];
     isTable = false;
@@ -55,23 +67,26 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
     if (codeLines.length === 0) return;
     const rawCode = codeLines.join('\n');
     blocks.push(
-      <div key={key} className="my-5 rounded-2xl border border-[#d0dcf5] bg-[#f8faff] overflow-hidden shadow-xs">
-        <div className="bg-[#eef4ff] px-4 py-2.5 border-b border-[#d0dcf5] flex items-center justify-between">
+      <div
+        key={key}
+        className="my-5 rounded-2xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/30 dark:bg-slate-900 overflow-hidden shadow-xs"
+      >
+        <div className="bg-indigo-50/80 dark:bg-slate-800 px-4 py-2.5 border-b border-indigo-100 dark:border-slate-700 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-[#1863dc] animate-pulse" />
-            <Code2 className="w-4 h-4 text-[#1863dc]" />
-            <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-[#1863dc]">
+            <span className="flex h-2 w-2 rounded-full bg-indigo-600 dark:bg-indigo-400 animate-pulse" />
+            <Code2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-indigo-700 dark:text-indigo-300">
               Architecture Flow &amp; Schematic Diagram
             </span>
           </div>
-          <span className="text-[10px] font-mono font-medium text-[#666666] bg-white px-2 py-0.5 rounded border border-[#d0dcf5]">
+          <span className="text-[10px] font-mono font-medium text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 px-2.5 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
             ASCII System Pipeline
           </span>
         </div>
-        <pre className="p-4 md:p-6 overflow-x-auto text-[11px] md:text-xs font-mono text-[#003c33] leading-relaxed select-text font-bold bg-white/70">
+        <pre className="p-4 md:p-6 overflow-x-auto text-[11px] md:text-xs font-mono text-emerald-800 dark:text-emerald-300 leading-relaxed select-text font-bold bg-white/70 dark:bg-slate-950">
           {rawCode}
         </pre>
-      </div>
+      </div>,
     );
     codeLines = [];
     inCodeBlock = false;
@@ -101,7 +116,10 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
     // Handle Markdown Tables
     if (line.startsWith('|') && line.endsWith('|')) {
       isTable = true;
-      const cells = line.split('|').slice(1, -1).map(c => c.trim());
+      const cells = line
+        .split('|')
+        .slice(1, -1)
+        .map((c) => c.trim());
       tableRows.push(cells);
       continue;
     } else if (isTable) {
@@ -115,19 +133,21 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
 
     // Dividers
     if (line === '---' || line === '***') {
-      blocks.push(<hr key={`hr-${i}`} className="my-5 border-t border-[#d9d9dd]" />);
+      blocks.push(
+        <hr key={`hr-${i}`} className="my-5 border-t border-slate-200 dark:border-slate-800" />,
+      );
       continue;
     }
 
     // H1 Heading
     if (line.startsWith('# ')) {
       blocks.push(
-        <div key={`h1-${i}`} className="pb-3 pt-2 border-b-2 border-[#1863dc]/20 mb-4">
-          <h2 className="text-xl md:text-2xl font-black text-[#17171c] tracking-tight flex items-center gap-2">
-            <Award className="w-6 h-6 text-[#1863dc]" />
+        <div key={`h1-${i}`} className="pb-3 pt-2 border-b-2 border-indigo-500/20 mb-4">
+          <h2 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+            <Award className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             <span>{line.replace('# ', '')}</span>
           </h2>
-        </div>
+        </div>,
       );
       continue;
     }
@@ -137,11 +157,11 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
       const headingText = line.replace('## ', '');
       blocks.push(
         <div key={`h2-${i}`} className="mt-6 mb-3 flex items-center gap-2.5">
-          <div className="w-1.5 h-5 bg-[#1863dc] rounded-full" />
-          <h3 className="text-base md:text-lg font-bold text-[#17171c]">
+          <div className="w-1.5 h-5 bg-indigo-600 dark:bg-indigo-400 rounded-full" />
+          <h3 className="text-base md:text-lg font-bold text-slate-900 dark:text-white">
             {headingText}
           </h3>
-        </div>
+        </div>,
       );
       continue;
     }
@@ -149,10 +169,13 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
     // H3 Heading
     if (line.startsWith('### ')) {
       blocks.push(
-        <h4 key={`h3-${i}`} className="text-sm font-bold text-[#212121] mt-4 mb-2 flex items-center gap-1.5">
-          <BookOpen className="w-4 h-4 text-[#1863dc]" />
+        <h4
+          key={`h3-${i}`}
+          className="text-sm font-bold text-slate-900 dark:text-white mt-4 mb-2 flex items-center gap-1.5"
+        >
+          <BookOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           <span>{renderInlineFormatted(line.replace('### ', ''))}</span>
-        </h4>
+        </h4>,
       );
       continue;
     }
@@ -162,11 +185,11 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
       const content = line.replace(/^[-*•]\s+/, '');
       blocks.push(
         <div key={`bullet-${i}`} className="flex items-start gap-2.5 my-1.5 pl-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#1863dc] mt-2 shrink-0" />
-          <div className="text-xs md:text-sm text-[#212121] leading-relaxed flex-1">
+          <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400 mt-2 shrink-0" />
+          <div className="text-xs md:text-sm text-slate-800 dark:text-slate-200 leading-relaxed flex-1">
             {renderInlineFormatted(content)}
           </div>
-        </div>
+        </div>,
       );
       continue;
     }
@@ -179,13 +202,13 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
         const text = match[2];
         blocks.push(
           <div key={`num-${i}`} className="flex items-start gap-3 my-2 pl-1">
-            <span className="w-5 h-5 rounded-full bg-[#fafafb] border border-[#d9d9dd] text-[11px] font-mono font-bold text-[#1863dc] flex items-center justify-center shrink-0 mt-0.5">
+            <span className="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
               {num}
             </span>
-            <div className="text-xs md:text-sm text-[#212121] leading-relaxed flex-1">
+            <div className="text-xs md:text-sm text-slate-800 dark:text-slate-200 leading-relaxed flex-1">
               {renderInlineFormatted(text)}
             </div>
-          </div>
+          </div>,
         );
         continue;
       }
@@ -195,35 +218,48 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
     if (line.startsWith('$$') && line.endsWith('$$')) {
       const math = line.slice(2, -2).trim();
       blocks.push(
-        <div key={`math-${i}`} className="my-3 p-3.5 bg-[#fafafb] border border-[#d9d9dd] rounded-xl text-center font-mono text-sm md:text-base font-bold text-[#17171c] shadow-xs">
+        <div
+          key={`math-${i}`}
+          className="my-3.5 p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-center font-mono text-sm md:text-base font-bold text-slate-900 dark:text-slate-100 shadow-xs overflow-x-auto"
+        >
           {math}
-        </div>
+        </div>,
       );
       continue;
     }
 
     // Callout / Key Takeaway box
-    if (line.startsWith('**Question:**') || line.startsWith('**Examination Format:**') || line.startsWith('**Subject:**')) {
+    if (
+      line.startsWith('**Question:**') ||
+      line.startsWith('**Examination Format:**') ||
+      line.startsWith('**Subject:**')
+    ) {
       blocks.push(
-        <div key={`meta-${i}`} className="text-xs text-[#666666] font-mono bg-[#f8f8fa] px-3.5 py-1.5 rounded-lg border border-[#e5e5e8] my-1 inline-block mr-2">
+        <div
+          key={`meta-${i}`}
+          className="text-xs text-slate-600 dark:text-slate-300 font-mono bg-slate-100 dark:bg-slate-800 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 my-1 inline-block mr-2"
+        >
           {renderInlineFormatted(line)}
-        </div>
+        </div>,
       );
       continue;
     }
 
     // Standard Paragraph
     blocks.push(
-      <p key={`p-${i}`} className="my-2.5 text-xs md:text-sm text-[#212121] leading-relaxed">
+      <p
+        key={`p-${i}`}
+        className="my-2.5 text-xs md:text-sm text-slate-800 dark:text-slate-200 leading-relaxed"
+      >
         {renderInlineFormatted(line)}
-      </p>
+      </p>,
     );
   }
 
   if (inCodeBlock) flushCode('final-code');
   if (isTable) flushTable('final-table');
 
-  return <div className="space-y-1 font-sans">{blocks}</div>;
+  return <div className="space-y-1 font-sans select-text">{blocks}</div>;
 }
 
 /**
@@ -253,7 +289,7 @@ function renderInlineFormatted(text: string): React.ReactNode {
         if (part.startsWith('**') && part.endsWith('**')) {
           const boldText = part.slice(2, -2);
           return (
-            <strong key={index} className="font-bold text-[#111114]">
+            <strong key={index} className="font-bold text-slate-900 dark:text-white">
               {boldText}
             </strong>
           );
@@ -265,7 +301,7 @@ function renderInlineFormatted(text: string): React.ReactNode {
           return (
             <code
               key={index}
-              className="px-1.5 py-0.5 mx-0.5 rounded-md bg-[#eeece7] text-[#17171c] font-mono text-[11px] md:text-xs font-semibold border border-[#d9d9dd]"
+              className="px-1.5 py-0.5 mx-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 font-mono text-[11px] md:text-xs font-semibold border border-slate-200 dark:border-slate-700"
             >
               {codeText}
             </code>
@@ -278,7 +314,7 @@ function renderInlineFormatted(text: string): React.ReactNode {
           return (
             <span
               key={index}
-              className="px-1.5 py-0.5 mx-0.5 rounded bg-[#f1f5ff] text-[#1863dc] font-mono text-[11px] md:text-xs font-bold border border-[#d0dcf5]"
+              className="px-1.5 py-0.5 mx-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-mono text-[11px] md:text-xs font-bold border border-indigo-200 dark:border-indigo-800"
             >
               {mathText}
             </span>

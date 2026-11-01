@@ -153,7 +153,7 @@ export default function SmartRevision() {
   const selectedSubject = subjects.find(s => s.id === selectedSubjectId);
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 font-sans text-[#121217] bg-[#f8f9fc] min-h-screen">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 font-sans text-[#121217] dark:text-slate-100 bg-[#f8f9fc] dark:bg-slate-950 min-h-screen transition-colors">
       {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-6 border-b border-[#e3e6ed]">
         <div>

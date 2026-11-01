@@ -18,6 +18,11 @@ import { generatePracticalAI, getDefaultSubjects } from '../lib/ai-service';
 import { fetchApi } from '../lib/api';
 import { executeHybridQuery } from '../lib/hybrid-router';
 import type { QuickPickItem } from '../lib/quick-picks-data';
+import { BookmarkButton } from '../components/BookmarkButton';
+import { FocusReadingMode } from '../components/FocusReadingMode';
+import { exportToDocx, exportToPdf } from '../lib/export-engine';
+import { trackNavigation } from '../lib/navigation-tracker';
+import { BookOpen, FileText } from 'lucide-react';
 
 type Subject = {
   id: string;
@@ -87,6 +92,15 @@ export default function PracticalGenerator() {
   const [language, setLanguage] = useState<string>('python');
   const [generating, setGenerating] = useState(false);
   const [practical, setPractical] = useState<Practical | null>(null);
+  const [focusOpen, setFocusOpen] = useState(false);
+
+  useEffect(() => {
+    trackNavigation({
+      pagePath: '/practicals',
+      pageTitle: 'Practical Generator',
+      topicTitle: aim.slice(0, 50),
+    });
+  }, [aim]);
   const [copied, setCopied] = useState(false);
   const [progress, setProgress] = useState(0);
   const [generationStage, setGenerationStage] = useState('');
@@ -253,6 +267,34 @@ ${practical.conclusion}
     setTimeout(() => setCopied(false), 2000);
   };
 
+  
+  const getFullPracticalMarkdown = () => {
+    if (!practical) return '';
+    return `# Aim\n${practical.aim}\n\n## Theory\n${practical.theory}\n\n## Algorithm\n${practical.algorithm.map((s, i) => `${i + 1}. ${s}`).join('\n')}\n\n## Code Implementation\n\`\`\`${language}\n${practical.code}\n\`\`\`\n\n## Expected Input\n\`\`\`\n${practical.expectedInput}\n\`\`\`\n\n## Expected Output\n\`\`\`\n${practical.expectedOutput}\n\`\`\`\n\n## Conclusion\n${practical.conclusion}\n\n## Viva Questions\n${practical.vivaQuestions.map(v => `**Q: ${v.question}**\nA: ${v.answer}`).join('\n\n')}`;
+  };
+
+  const handleExportPdf = () => {
+    const md = getFullPracticalMarkdown();
+    if (!md) return;
+    exportToPdf({
+      title: practical?.aim || 'Lab Practical',
+      subject: subjects.find(s => s.id === selectedSubjectId)?.name || 'Lab Journal',
+      module: 'Experiment Writeup',
+      rawMarkdown: md,
+    });
+  };
+
+  const handleExportDocx = async () => {
+    const md = getFullPracticalMarkdown();
+    if (!md) return;
+    await exportToDocx({
+      title: practical?.aim || 'Lab Practical',
+      subject: subjects.find(s => s.id === selectedSubjectId)?.name || 'Lab Journal',
+      module: 'Experiment Writeup',
+      rawMarkdown: md,
+    });
+  };
+
   const handleExport = () => {
     if (!practical) return;
     const fullText = `
@@ -295,8 +337,8 @@ ${practical.conclusion}
   };
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] text-[#2d2d34] min-h-screen font-sans">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed]">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] dark:bg-slate-950 text-[#2d2d34] dark:text-slate-100 min-h-screen font-sans transition-colors">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed] dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
@@ -304,10 +346,10 @@ ${practical.conclusion}
               Practical Journal Studio
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] dark:text-white flex items-center gap-3">
             Lab Journal &amp; Code Engine
           </h1>
-          <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans max-w-2xl">
+          <p className="text-xs md:text-sm text-[#6b6f82] dark:text-slate-400 mt-1 font-sans max-w-2xl">
             Generate university-grade practical journal files, executable implementations, execution
             trace diagrams, and examiner viva prep.
           </p>
@@ -323,8 +365,8 @@ ${practical.conclusion}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Configuration Panel */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
-            <h2 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+            <h2 className="text-lg font-extrabold text-[#121217] dark:text-white flex items-center gap-2">
               <FlaskConical className="w-5 h-5 text-[#4f75f2]" />
               Experiment Setup
             </h2>
@@ -338,7 +380,7 @@ ${practical.conclusion}
                   <select
                     value={selectedSubjectId}
                     onChange={(e) => setSelectedSubjectId(e.target.value)}
-                    className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-xs font-bold text-[#121217] outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
+                    className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl px-4 py-2.5 text-xs font-bold text-[#121217] dark:text-slate-200 outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
                   >
                     {subjects.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -377,7 +419,7 @@ ${practical.conclusion}
                 <textarea
                   value={aim}
                   onChange={(e) => setAim(e.target.value)}
-                  className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl p-3 text-xs text-[#121217] outline-none focus:border-[#4f75f2] h-24 resize-none shadow-xs font-sans"
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800/90 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl p-3 text-xs text-[#121217] dark:text-white placeholder-[#8c8fa1] dark:placeholder-slate-500 outline-none focus:border-[#4f75f2] h-24 resize-none shadow-xs font-sans"
                   placeholder="e.g. Implement Bayesian Network inferencing in Python."
                 />
 
@@ -496,9 +538,9 @@ ${practical.conclusion}
               </div>
             ) : (
               <>
-                <div className="flex flex-wrap justify-between items-center p-4 md:p-5 border-b border-[#e3e6ed] bg-[#f8f9fc] gap-3">
+                <div className="flex flex-wrap justify-between items-center p-4 md:p-5 border-b border-[#e3e6ed] dark:border-slate-800 bg-[#f8f9fc] dark:bg-slate-850 gap-3">
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#121217]">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#121217] dark:text-white">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                       Syllabus Standard File Generated
                     </div>
@@ -580,12 +622,42 @@ ${practical.conclusion}
                         <Copy className="w-4 h-4 text-[#4f75f2]" />
                       )}
                     </button>
+                    <BookmarkButton
+                      resourceType="practical"
+                      resourceId={`prac-${activeQuickPickId || 'custom'}`}
+                      title={practical?.aim.slice(0, 60) || 'Practical'}
+                      targetUrl="/practicals"
+                      metadata={{ aim: practical?.aim, language, rawContent: getFullPracticalMarkdown() }}
+                    />
+                    <button
+                      onClick={() => setFocusOpen(true)}
+                      className="p-2 bg-white dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 hover:bg-[#edf3fc] dark:hover:bg-slate-750 rounded-xl text-slate-700 dark:text-slate-200 transition-colors cursor-pointer shadow-xs"
+                      title="Focus Reading Mode"
+                    >
+                      <BookOpen className="w-4 h-4 text-indigo-500" />
+                    </button>
+                    <button
+                      onClick={handleExportPdf}
+                      className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 hover:bg-[#edf3fc] dark:hover:bg-slate-750 rounded-xl text-emerald-700 dark:text-emerald-400 text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                      title="Export as PDF"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      PDF
+                    </button>
+                    <button
+                      onClick={handleExportDocx}
+                      className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 hover:bg-[#edf3fc] dark:hover:bg-slate-750 rounded-xl text-blue-700 dark:text-blue-400 text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                      title="Export as Microsoft Word (.docx)"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      Word
+                    </button>
                     <button
                       onClick={handleExport}
-                      className="flex items-center gap-1.5 px-4 py-2 bg-[#121217] hover:bg-[#252530] rounded-xl text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                      className="flex items-center gap-1.5 px-3.5 py-2 bg-[#121217] hover:bg-[#252530] rounded-xl text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
                     >
-                      <Download className="w-4 h-4" />
-                      Export Markdown
+                      <Download className="w-3.5 h-3.5" />
+                      Markdown
                     </button>
                   </div>
                 </div>
@@ -725,6 +797,43 @@ ${practical.conclusion}
           </div>
         </div>
       </div>
+
+      {/* Focus Reading Mode */}
+      {practical && (
+        <FocusReadingMode
+          isOpen={focusOpen}
+          onClose={() => setFocusOpen(false)}
+          title={practical.aim}
+          subject={subjects.find(s => s.id === selectedSubjectId)?.name || 'Lab Journal'}
+          topic="Experiment Writeup"
+        >
+          <div className="space-y-6">
+            <h1 className="text-2xl font-bold">{practical.aim}</h1>
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Theory</h2>
+              <p className="whitespace-pre-wrap">{practical.theory}</p>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Algorithm</h2>
+              <ol className="list-decimal pl-5 space-y-1">
+                {practical.algorithm.map((st, i) => <li key={i}>{st}</li>)}
+              </ol>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Code Implementation</h2>
+              <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto">{practical.code}</pre>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Expected Output</h2>
+              <pre className="p-4 rounded-xl bg-slate-100 dark:bg-slate-800 font-mono text-xs overflow-x-auto">{practical.expectedOutput}</pre>
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold mb-2">Conclusion</h2>
+              <p className="italic">{practical.conclusion}</p>
+            </div>
+          </div>
+        </FocusReadingMode>
+      )}
     </div>
   );
 }

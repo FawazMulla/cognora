@@ -234,7 +234,7 @@ export default function StudySession() {
               <div className="w-8 h-8 rounded-2xl bg-white border border-[#e3e6ed] flex items-center justify-center shrink-0 shadow-xs">
                 <BrainCircuit className="w-4 h-4 text-[#4f75f2]" />
               </div>
-              <div className="bg-white border border-[#e3e6ed] rounded-3xl rounded-tl-none px-5 py-4 flex items-center gap-1.5 shadow-xs">
+              <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl rounded-tl-none px-5 py-4 flex items-center gap-1.5 shadow-xs">
                 <div className="w-1.5 h-1.5 bg-[#4f75f2] rounded-full animate-bounce [animation-delay:-0.3s]" />
                 <div className="w-1.5 h-1.5 bg-[#4f75f2] rounded-full animate-bounce [animation-delay:-0.15s]" />
                 <div className="w-1.5 h-1.5 bg-[#4f75f2] rounded-full animate-bounce" />

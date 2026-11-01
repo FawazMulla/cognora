@@ -1,59 +1,22 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  /* Set custom Cohere font families */
+  /* Set custom font families */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'Space Mono', monospace;
-  
-  /* Cohere Color System */
-  /* Peaceful Pastel & Zen Color System (Calm, Minimalist, Long-study session focus) */
-  --color-cohere-primary: #1e1e24;
-  --color-cohere-black: #121217;
-  --color-cohere-ink: #2d2d34;
-  --color-cohere-deep-green: #2a5a52;
-  --color-cohere-dark-navy: #182635;
-  --color-cohere-canvas: #f8f9fc;
-  --color-cohere-stone: #f2f3f7;
-  --color-cohere-pale-green: #eaf6ee;
-  --color-cohere-pale-blue: #edf3fc;
-  --color-cohere-hairline: #e3e6ed;
-  --color-cohere-border-light: #eceef4;
-  --color-cohere-card-border: #eef1f6;
-  --color-cohere-muted: #8c8fa1;
-  --color-cohere-slate: #6b6f82;
-  --color-cohere-body-muted: #5d6175;
-  --color-cohere-action-blue: #4f75f2;
-  --color-cohere-coral: #f28b76;
-  --color-cohere-coral-soft: #fcd9d2;
-  --color-cohere-focus-violet: #8e7bf3;
-
-  /* Peaceful pastel accents for study stickiness */
-  --color-zen-periwinkle: #e4e7fd;
-  --color-zen-sky: #e1f1fd;
-  --color-zen-mint: #e2f6eb;
-  --color-zen-sand: #fbf5e6;
-  --color-zen-lavender: #f0eafb;
-
-  /* Map old gemini colors to Cohere counterparts for safety */
-  --color-gemini-bg: #ffffff;
-  --color-gemini-surface: #eeece7;
-  --color-gemini-surface-hover: #e5e7eb;
-  --color-gemini-text: #212121;
-  --color-gemini-text-muted: #75758a;
-  --color-gemini-border: #d9d9dd;
-  --color-gemini-blue: #1863dc;
-  --color-gemini-purple: #9b60aa;
-  --color-gemini-red: #b30000;
 }
 
 @layer base {
   body {
-    background-color: var(--color-cohere-canvas);
-    color: var(--color-cohere-ink);
+    background-color: #f8f9fc;
+    color: #121217;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   /* Custom editorial scrollbars */
@@ -65,273 +28,343 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--color-cohere-hairline);
+    background: #cbd5e1;
     border-radius: 9999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-cohere-slate);
+    background: #94a3b8;
   }
 
   /* Selection colors */
   ::selection {
-    background-color: rgba(24, 99, 220, 0.08) !important;
-    color: var(--color-cohere-action-blue) !important;
+    background-color: rgba(79, 117, 242, 0.2);
+    color: #3b52c4;
   }
 
   /* Monospaced Display Headlines Split */
   h1, h2, h3, .font-display {
-    font-family: var(--font-display) !important;
-    letter-spacing: -0.03em !important;
-    line-height: 1.1 !important;
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
   }
 
-  /* Numbers and Technical Labels Monospace Split */
   .mono-label, .technical-label {
-    font-family: var(--font-mono) !important;
-    letter-spacing: 0.02em !important;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
   }
 }
 
 /* ==========================================================================
-   Cohere Global Overrides (Transforms standard layout elements dynamically)
+   DARK THEME SYSTEM (Comprehensive, Accessible, High Contrast)
    ========================================================================== */
 
-/* Main Container Base background */
-main, 
-.flex-1.max-h-\[calc\(100vh-57px\)\] {
-  background-color: var(--color-cohere-canvas) !important;
+html.dark {
+  color-scheme: dark;
 }
 
-/* Force dark cards to Cohere's Clean White Card/Form layout */
-.bg-slate-900\/40, 
-.bg-slate-900\/30, 
-.bg-slate-900\/50, 
-.bg-slate-900,
-.bg-slate-950\/60,
-.bg-slate-950\/40,
-.bg-slate-950\/30,
-.bg-slate-950,
-.bg-slate-800\/40,
-.bg-slate-800\/80,
-.bg-gemini-surface\/30 {
-  background-color: var(--color-cohere-canvas) !important;
-  border-color: var(--color-cohere-hairline) !important;
-  border-width: 1px !important;
-  box-shadow: none !important; /* Flat elevation */
+html.dark body {
+  background-color: #0b0f19 !important;
+  color: #f8fafc !important;
 }
 
-/* Map specific containers to Soft Stone (mineral surface style) */
-.bg-slate-50,
-.bg-slate-50\/50,
-.bg-slate-100 {
-  background-color: var(--color-cohere-stone) !important;
-  border-color: var(--color-cohere-hairline) !important;
+/* Main workspace background */
+html.dark .min-h-screen,
+html.dark .bg-\[\#f8f9fc\] {
+  background-color: #0b0f19 !important;
 }
 
-/* Borders mapping to hairline dividers */
-.border-slate-800, 
-.border-slate-800\/80, 
-.border-slate-800\/60, 
-.border-slate-850, 
-.border-slate-700, 
-.border-slate-700\/50, 
-.border-white\/5,
-.border-gemini-border,
-.border-gemini-border\/60,
-.border-slate-200,
-.border-slate-200\/80,
-.border-slate-200\/60,
-.border-slate-100 {
-  border-color: var(--color-cohere-hairline) !important;
+/* Navbars & Sidebars */
+html.dark nav,
+html.dark aside,
+html.dark header.sticky {
+  background-color: #111724 !important;
+  border-color: #1e293b !important;
 }
 
-/* Text coloring mapping to Ink and Slate */
-.text-slate-100, 
-.text-slate-200, 
-.text-slate-300, 
-.text-slate-300\/80,
-.text-gemini-text {
-  color: var(--color-cohere-ink) !important;
+/* Standard cards and white surfaces */
+html.dark .bg-white,
+html.dark .bg-\[\#ffffff\],
+html.dark .bg-\[\#fafafb\] {
+  background-color: #131926 !important;
+  border-color: #1e293b !important;
+  color: #f8fafc !important;
 }
 
-.text-white {
+/* Muted surface layers & Progress Bar tracks */
+html.dark .bg-slate-50,
+html.dark .bg-slate-100,
+html.dark .bg-\[\#f2f3f7\],
+html.dark .bg-\[\#f1f3f7\],
+html.dark .bg-\[\#f0f2f7\] {
+  background-color: #182030 !important;
+  border-color: #243046 !important;
+}
+
+/* Light pastel button / container backgrounds */
+html.dark .bg-\[\#f1f5ff\] {
+  background-color: #17223b !important;
+  border-color: #2a3c68 !important;
+}
+html.dark .bg-\[\#fcf0ff\] {
+  background-color: #26162e !important;
+  border-color: #4c285d !important;
+}
+html.dark .bg-\[\#edfce9\] {
+  background-color: #11281d !important;
+  border-color: #1e4e37 !important;
+}
+html.dark .bg-\[\#fff1ed\] {
+  background-color: #2d1a18 !important;
+  border-color: #582b26 !important;
+}
+html.dark .bg-\[\#eefaf7\] {
+  background-color: #122824 !important;
+  border-color: #205047 !important;
+}
+html.dark .bg-\[\#fef3c7\] {
+  background-color: #2d2212 !important;
+  border-color: #553e1c !important;
+}
+
+/* Text Colors */
+html.dark .text-\[\#121217\],
+html.dark .text-\[\#2d2d34\],
+html.dark .text-\[\#212121\],
+html.dark .text-\[\#17171c\],
+html.dark .text-\[\#111114\],
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4 {
+  color: #f8fafc !important;
+}
+
+html.dark .text-\[\#6b6f82\],
+html.dark .text-\[\#4f5367\],
+html.dark .text-\[\#8c8fa1\],
+html.dark .text-slate-600,
+html.dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+/* Dividers & Borders */
+html.dark .border-\[\#e3e6ed\],
+html.dark .border-\[\#d9d9dd\],
+html.dark .border-\[\#eceef4\],
+html.dark .border-\[\#eef1f6\],
+html.dark .border-\[\#d0d8fb\],
+html.dark .border-\[\#c9eed9\],
+html.dark .border-\[\#fde68a\],
+html.dark .border-\[\#fca5a5\],
+html.dark .border-\[\#a7f3d0\],
+html.dark .border-\[\#f2d5fc\],
+html.dark .border-\[\#ccebc5\],
+html.dark .border-\[\#ffdad0\],
+html.dark .border-\[\#d3ede7\],
+html.dark .border-\[\#f4e8cc\],
+html.dark .border-slate-200,
+html.dark .border-slate-100 {
+  border-color: #1e293b !important;
+}
+
+/* Badge Text Colors */
+html.dark .text-\[\#1f7247\],
+html.dark .text-\[\#059669\],
+html.dark .text-\[\#047857\] {
+  color: #6ee7b7 !important;
+}
+
+html.dark .text-\[\#b45309\],
+html.dark .text-\[\#967018\] {
+  color: #fde047 !important;
+}
+
+html.dark .text-\[\#dc2626\] {
+  color: #f87171 !important;
+}
+
+html.dark .text-\[\#3b52c4\],
+html.dark .text-\[\#1863dc\] {
+  color: #93c5fd !important;
+}
+
+html.dark .text-\[\#9b60aa\] {
+  color: #d8b4fe !important;
+}
+
+html.dark .text-\[\#ff7759\] {
+  color: #fb923c !important;
+}
+
+html.dark .text-\[\#2b8a78\] {
+  color: #5eead4 !important;
+}
+
+html.dark .border-\[\#d0dcf5\] {
+  border-color: #2e3d5e !important;
+}
+
+/* Form Inputs & Controls */
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: #161e2e !important;
+  border-color: #26354d !important;
+  color: #f8fafc !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b !important;
+}
+
+html.dark select option {
+  background-color: #161e2e !important;
+  color: #f8fafc !important;
+}
+
+/* Navbar action buttons */
+html.dark nav button,
+html.dark nav a {
+  border-color: #26354d !important;
+}
+
+html.dark nav .bg-white {
+  background-color: #182234 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark nav .bg-white:hover {
+  background-color: #222f46 !important;
   color: #ffffff !important;
 }
 
-.text-slate-400,
-.text-slate-500,
-.text-gemini-text-muted {
-  color: var(--color-cohere-slate) !important;
+/* Sidebar navigation links */
+html.dark nav a:not([class*="bg-\[\#edf3fc\]"]):not([class*="dark:bg-indigo-950"]) {
+  color: #94a3b8 !important;
 }
 
-/* Accent texts in editorial system */
-.text-rose-400, .text-rose-500 { color: var(--color-cohere-coral) !important; }
-.text-emerald-400, .text-emerald-500 { color: var(--color-cohere-deep-green) !important; }
-.text-blue-400, .text-blue-500 { color: var(--color-cohere-action-blue) !important; }
-.text-indigo-400, .text-indigo-500 { color: var(--color-cohere-action-blue) !important; }
-.text-purple-400, .text-purple-500 { color: var(--color-cohere-focus-violet) !important; }
-
-/* Status tags and Category chips using Cohere taxonomy accents */
-.bg-rose-500\/10, .bg-rose-500\/5, .bg-rose-50\/70, .bg-rose-50 {
-  background-color: var(--color-cohere-pale-green) !important; /* using mineral green */
-  color: var(--color-cohere-deep-green) !important;
-  border: 1px solid var(--color-cohere-deep-green) !important;
-  border-radius: 4px !important;
-}
-.text-rose-600 {
-  color: var(--color-cohere-deep-green) !important;
-}
-
-.bg-emerald-500\/10, .bg-emerald-500\/5, .bg-emerald-50 {
-  background-color: var(--color-cohere-pale-green) !important;
-  color: var(--color-cohere-deep-green) !important;
-  border: 1px solid var(--color-cohere-deep-green) !important;
-  border-radius: 4px !important;
-}
-.text-emerald-600 {
-  color: var(--color-cohere-deep-green) !important;
-}
-
-.bg-amber-500\/10, .bg-amber-500\/5, .bg-amber-50 {
-  background-color: var(--color-cohere-stone) !important;
-  color: var(--color-cohere-primary) !important;
-  border: 1px solid var(--color-cohere-hairline) !important;
-  border-radius: 4px !important;
-}
-.text-amber-600 {
-  color: var(--color-cohere-ink) !important;
-}
-
-.bg-purple-500\/10, .bg-indigo-500\/10, .bg-blue-500\/10, .bg-indigo-50 {
-  background-color: var(--color-cohere-pale-blue) !important;
-  color: var(--color-cohere-action-blue) !important;
-  border: 1px solid var(--color-cohere-action-blue) !important;
-  border-radius: 4px !important;
-}
-
-/* Custom form inputs styled with hairline borders and form-focus violet */
-input, textarea, select, option {
-  background-color: var(--color-cohere-canvas) !important;
-  color: var(--color-cohere-ink) !important;
-  border: 1px solid var(--color-cohere-hairline) !important;
-  border-radius: 4px !important;
-  box-shadow: none !important;
-}
-input:focus, textarea:focus, select:focus {
-  border-color: var(--color-cohere-focus-violet) !important;
-  outline: none !important;
-}
-input::placeholder, textarea::placeholder {
-  color: var(--color-cohere-muted) !important;
-}
-
-/* Cohere button-primary: Near-black pill CTA */
-button[class*="bg-gradient-to-"],
-button[class*="bg-blue-600"],
-button[class*="bg-indigo-600"],
-button[class*="bg-rose-600"],
-button[class*="bg-purple-600"],
-a[class*="bg-gradient-to-"],
-a[class*="bg-blue-600"],
-a[class*="bg-indigo-600"] {
-  background: var(--color-cohere-primary) !important;
-  color: var(--color-cohere-canvas) !important;
-  border-radius: 32px !important; /* Pill shape */
-  border: 1px solid var(--color-cohere-primary) !important;
-  box-shadow: none !important;
-  font-weight: 500 !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  transition: background-color 0.15s ease-in-out !important;
-  cursor: pointer !important;
-}
-button[class*="bg-gradient-to-"]:hover,
-button[class*="bg-blue-600"]:hover,
-button[class*="bg-indigo-600"]:hover,
-button[class*="bg-rose-600"]:hover,
-button[class*="bg-purple-600"]:hover,
-a[class*="bg-gradient-to-"]:hover,
-a[class*="bg-blue-600"]:hover,
-a[class*="bg-indigo-600"]:hover {
-  background: var(--color-cohere-black) !important;
-  border-color: var(--color-cohere-black) !important;
-}
-
-/* Secondary Actions mapping to Underlined Links */
-button[class*="bg-slate-800"],
-button[class*="bg-slate-900"],
-a[class*="bg-slate-800"] {
-  background: transparent !important;
-  color: var(--color-cohere-primary) !important;
-  border: 1px solid var(--color-cohere-hairline) !important;
-  border-radius: 30px !important; /* Outlined Pill */
-  box-shadow: none !important;
-}
-button[class*="bg-slate-800"]:hover,
-a[class*="bg-slate-800"]:hover {
-  background: var(--color-cohere-stone) !important;
-  border-color: var(--color-cohere-hairline) !important;
-}
-
-/* Clean UI text formatting */
-.gemini-gradient-text {
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: unset !important;
-  color: var(--color-cohere-ink) !important;
-  font-family: var(--font-display) !important;
-}
-
-.gemini-gradient-bg {
-  background: var(--color-cohere-primary) !important;
-  color: var(--color-cohere-canvas) !important;
-}
-
-/* Radar Chart customization */
-svg path[fill*="rgba(99,102,241"] {
-  fill: rgba(24, 99, 220, 0.15) !important;
-  stroke: var(--color-cohere-action-blue) !important;
-}
-svg circle[fill*="rgb(99,102,241"] {
-  fill: var(--color-cohere-action-blue) !important;
-}
-svg text {
-  font-family: var(--font-mono) !important;
-  fill: var(--color-cohere-slate) !important;
-}
-
-/* Ensure white text is preserved on direct dark elements and buttons */
-button.text-white,
-.text-white {
+html.dark nav a:not([class*="bg-\[\#edf3fc\]"]):not([class*="dark:bg-indigo-950"]):hover {
+  background-color: #1a2336 !important;
   color: #ffffff !important;
 }
 
-/* Disable all gradient text across the site and force solid black/ink colors */
-[class*="bg-gradient-to-"][class*="bg-clip-text"],
-[class*="bg-gradient-to-br"][class*="bg-clip-text"],
-[class*="bg-gradient-to-"][class*="text-transparent"],
-[class*="bg-gradient-to-br"][class*="text-transparent"],
-.bg-clip-text,
-.text-transparent {
-  background: none !important;
-  background-clip: unset !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: var(--color-cohere-ink) !important;
-  color: var(--color-cohere-ink) !important;
+html.dark nav a.bg-\[\#edf3fc\],
+html.dark nav a.dark\:bg-indigo-950\/50,
+html.dark .bg-\[\#edf3fc\] {
+  background-color: #1c2744 !important;
+  border-color: #314470 !important;
+  color: #818cf8 !important;
 }
 
-/* Disable all speculative card gradients and force them to soft stone or stark white */
-div[class*="bg-gradient-to-"],
-div[class*="bg-gradient-to-br"],
-div[class*="from-indigo-950"],
-.bg-gradient-to-br {
-  background: var(--color-cohere-stone) !important;
-  border-color: var(--color-cohere-hairline) !important;
-  box-shadow: none !important;
+/* Course cards pastel adaptations for dark mode */
+html.dark .bg-\[\#e4e7fd\] {
+  background-color: #1a2238 !important;
+  border-color: #324370 !important;
+  color: #e2e8f0 !important;
 }
 
-/* Ensure progress bars do not use gradients but solid colors */
-div[class*="bg-gradient-to-"][class*="h-"],
-div[class*="bg-gradient-to-"][class*="h-1"] {
-  background: var(--color-cohere-ink) !important;
+html.dark .bg-\[\#e1f1fd\] {
+  background-color: #14283c !important;
+  border-color: #264a6d !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .bg-\[\#e2f6eb\] {
+  background-color: #132a22 !important;
+  border-color: #225642 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .bg-\[\#fbf5e6\] {
+  background-color: #2e2415 !important;
+  border-color: #5c4723 !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .bg-\[\#f0eafb\],
+html.dark .bg-\[\#f5effe\] {
+  background-color: #241b36 !important;
+  border-color: #49336e !important;
+  color: #e2e8f0 !important;
+}
+
+html.dark .border-\[\#e4d4fa\] {
+  border-color: #49336e !important;
+}
+
+html.dark .text-\[\#713fb8\] {
+  color: #c084fc !important;
+}
+
+html.dark .bg-\[\#fee2e2\]\/60 {
+  background-color: #3b1b1f !important;
+  color: #f87171 !important;
+  border-color: #7f1d1d !important;
+}
+
+html.dark .bg-\[\#ecfdf5\] {
+  background-color: #064e3b !important;
+  color: #6ee7b7 !important;
+}
+
+/* Code & Pre */
+html.dark pre,
+html.dark code {
+  background-color: #0b0e17 !important;
+  color: #93c5fd !important;
+  border-color: #1e293b !important;
+}
+
+/* Scrollbars in Dark Mode */
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* ==========================================================================
+   ADJUSTABLE READING DENSITY MODES
+   ========================================================================== */
+
+[data-density="compact"] .p-6 {
+  padding: 1rem !important;
+}
+[data-density="compact"] .p-8,
+[data-density="compact"] .p-10 {
+  padding: 1.25rem !important;
+}
+[data-density="compact"] .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem !important;
+}
+[data-density="compact"] .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem !important;
+}
+[data-density="compact"] p,
+[data-density="compact"] li {
+  line-height: 1.45 !important;
+  font-size: 0.8125rem !important;
+}
+
+[data-density="comfortable"] .p-6 {
+  padding: 2rem !important;
+}
+[data-density="comfortable"] .p-8,
+[data-density="comfortable"] .p-10 {
+  padding: 2.75rem !important;
+}
+[data-density="comfortable"] .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 2rem !important;
+}
+[data-density="comfortable"] .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 2.5rem !important;
+}
+[data-density="comfortable"] p,
+[data-density="comfortable"] li,
+[data-density="comfortable"] .leading-relaxed {
+  line-height: 1.9 !important;
+  font-size: 0.9375rem !important;
 }

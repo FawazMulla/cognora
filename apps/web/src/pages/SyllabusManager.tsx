@@ -178,32 +178,32 @@ export default function SyllabusManager() {
   const selectedSubject = subjects.find(s => s.id === selectedSubjectId);
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] text-[#2d2d34] min-h-screen font-sans">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] dark:bg-slate-950 text-[#2d2d34] dark:text-slate-100 min-h-screen font-sans transition-colors">
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed]">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed] dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
-            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] uppercase font-bold">
+            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] dark:text-slate-400 uppercase font-bold">
               Curriculum &amp; Coverage
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] dark:text-white flex items-center gap-3">
             Syllabus &amp; Units Manager
           </h1>
-          <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans max-w-2xl">
+          <p className="text-xs md:text-sm text-[#6b6f82] dark:text-slate-400 mt-1 font-sans max-w-2xl">
             Structured unit breakdowns, exam weightage distribution, and interactive topic completion tracking.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           {subjects.length > 0 && (
-            <div className="flex items-center gap-2 bg-white border border-[#e3e6ed] rounded-2xl p-1.5 shadow-xs">
+            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-2xl p-1.5 shadow-xs">
               <Filter className="w-3.5 h-3.5 text-[#8c8fa1] ml-2" />
               <select
                 value={selectedSubjectId}
                 onChange={e => setSelectedSubjectId(e.target.value)}
-                className="bg-transparent text-[#121217] outline-none text-xs font-bold pr-4 cursor-pointer"
+                className="bg-transparent text-[#121217] dark:text-slate-200 outline-none text-xs font-bold pr-4 cursor-pointer"
               >
                 {subjects.map(s => (
                   <option key={s.id} value={s.id}>
@@ -216,7 +216,7 @@ export default function SyllabusManager() {
 
           <button
             onClick={() => setShowExtractModal(true)}
-            className="flex items-center gap-2 bg-white hover:bg-[#edf3fc] text-[#4f75f2] border border-[#d0dcf5] px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+            className="flex items-center gap-2 bg-white dark:bg-slate-900 hover:bg-[#edf3fc] dark:hover:bg-slate-800 text-[#4f75f2] dark:text-indigo-400 border border-[#d0dcf5] dark:border-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
           >
             <Sparkles className="w-4 h-4 text-[#4f75f2]" />
             AI Auto-Extract
@@ -233,24 +233,24 @@ export default function SyllabusManager() {
       </header>
 
       {/* Progress & Overview Card */}
-      <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-xs">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <span className="text-[10px] font-mono uppercase tracking-widest text-[#3b52c4] bg-[#e4e7fd] px-3 py-1 rounded-full border border-[#d0d8fb] mb-3 inline-block font-bold">
               {selectedSubject?.code || 'SUBJECT'} SYLLABUS STATUS
             </span>
-            <h2 className="text-2xl font-extrabold text-[#121217]">{selectedSubject?.name || 'Subject Syllabus'}</h2>
-            <p className="text-[#6b6f82] text-xs mt-1 font-medium font-sans">
+            <h2 className="text-2xl font-extrabold text-[#121217] dark:text-white">{selectedSubject?.name || 'Subject Syllabus'}</h2>
+            <p className="text-[#6b6f82] dark:text-slate-400 text-xs mt-1 font-medium font-sans">
               {units.length} Units • {allTopics.length} Total Topics • {completedTopics.length} Completed
             </p>
           </div>
 
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="text-right">
-              <div className="text-3xl font-extrabold text-[#121217]">{completionPercentage}%</div>
-              <div className="text-[10px] font-mono uppercase text-[#6b6f82] font-bold">Coverage</div>
+              <div className="text-3xl font-extrabold text-[#121217] dark:text-white">{completionPercentage}%</div>
+              <div className="text-[10px] font-mono uppercase text-[#6b6f82] dark:text-slate-400 font-bold">Coverage</div>
             </div>
-            <div className="w-36 bg-[#f0f2f7] h-3 rounded-full overflow-hidden p-0.5">
+            <div className="w-36 bg-[#f0f2f7] dark:bg-slate-800 h-3 rounded-full overflow-hidden p-0.5">
               <div
                 className="bg-gradient-to-r from-[#4f75f2] to-[#713fb8] h-full rounded-full transition-all duration-500"
                 style={{ width: `${completionPercentage}%` }}
@@ -283,26 +283,26 @@ export default function SyllabusManager() {
             return (
               <div
                 key={unit.id}
-                className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs hover:border-[#4f75f2] transition-all"
+                className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs hover:border-[#4f75f2] dark:hover:border-indigo-500 transition-all"
               >
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-[#e3e6ed]">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-[#e3e6ed] dark:border-slate-800">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="bg-[#edf3fc] text-[#4f75f2] border border-[#d0dcf5] px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold">
+                      <span className="bg-[#edf3fc] dark:bg-indigo-950/60 text-[#4f75f2] dark:text-indigo-400 border border-[#d0dcf5] dark:border-indigo-800 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold">
                         Unit {unit.unitNumber}
                       </span>
-                      <span className="bg-[#e4e7fd] text-[#3b52c4] border border-[#d0d8fb] px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold">
+                      <span className="bg-[#e4e7fd] dark:bg-purple-950/60 text-[#3b52c4] dark:text-purple-300 border border-[#d0d8fb] dark:border-purple-800 px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold">
                         {unit.weightagePercentage}% Exam Weightage
                       </span>
                     </div>
-                    <h3 className="text-lg font-extrabold text-[#121217]">{unit.title}</h3>
-                    <p className="text-[#6b6f82] text-xs mt-1 leading-relaxed font-sans">
+                    <h3 className="text-lg font-extrabold text-[#121217] dark:text-white">{unit.title}</h3>
+                    <p className="text-[#6b6f82] dark:text-slate-400 text-xs mt-1 leading-relaxed font-sans">
                       {unit.learningOutcomes}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-mono font-bold text-[#4f75f2] bg-[#edf3fc] px-3 py-1 rounded-xl border border-[#d0dcf5]">
+                    <span className="text-xs font-mono font-bold text-[#4f75f2] dark:text-indigo-400 bg-[#edf3fc] dark:bg-indigo-950/60 px-3 py-1 rounded-xl border border-[#d0dcf5] dark:border-indigo-800">
                       {unitCompleted}/{unit.topics.length} done ({unitPercent}%)
                     </span>
                   </div>
@@ -322,9 +322,9 @@ export default function SyllabusManager() {
                     >
                       <span className="text-xs font-bold">{topic.title}</span>
                       {topic.completed ? (
-                        <CheckSquare className="w-4 h-4 text-[#1f7247] shrink-0 ml-2" />
+                        <CheckSquare className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 ml-2" />
                       ) : (
-                        <Square className="w-4 h-4 text-[#8c8fa1] shrink-0 ml-2" />
+                        <Square className="w-4 h-4 text-[#8c8fa1] dark:text-slate-500 shrink-0 ml-2" />
                       )}
                     </div>
                   ))}

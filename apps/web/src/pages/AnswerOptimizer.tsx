@@ -57,7 +57,7 @@ export default function AnswerOptimizer() {
   };
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] text-[#2d2d34] min-h-screen font-sans">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] dark:bg-slate-950 text-[#2d2d34] dark:text-slate-100 min-h-screen font-sans transition-colors">
       {/* Header */}
       <header className="pb-2 border-b border-[#e3e6ed]">
         <div className="flex items-center gap-2 mb-1.5">
@@ -75,7 +75,7 @@ export default function AnswerOptimizer() {
       </header>
 
       {/* Input Card */}
-      <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
         <form onSubmit={handleOptimize} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-3 space-y-2">

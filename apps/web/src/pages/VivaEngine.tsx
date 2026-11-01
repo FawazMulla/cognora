@@ -199,7 +199,7 @@ export default function VivaEngine() {
   const averageScore = scoresList.length > 0 ? (scoresList.reduce((a, b) => a + b, 0) / scoresList.length).toFixed(1) : "0.0";
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 font-sans min-h-screen text-[#2d2d34] bg-[#f8f9fc]">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 font-sans min-h-screen text-[#2d2d34] dark:text-slate-100 bg-[#f8f9fc] dark:bg-slate-950 transition-colors">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed] shrink-0">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
@@ -208,7 +208,7 @@ export default function VivaEngine() {
               Interactive Oral Exam
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#121217] tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#121217] dark:text-white tracking-tight">
             Viva Engine
           </h1>
           <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans">

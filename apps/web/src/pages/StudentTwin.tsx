@@ -298,7 +298,7 @@ export default function StudentTwin() {
   const predictions = profile?.subjectPredictions || [];
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 font-sans min-h-screen bg-[#f8f9fc] text-[#121217]">
+    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 font-sans min-h-screen bg-[#f8f9fc] dark:bg-slate-950 text-[#121217] dark:text-slate-100 transition-colors">
       {/* Header Banner */}
       <div className="bg-white border border-[#e3e6ed] p-8 md:p-10 rounded-3xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-xs">
         <div className="space-y-1.5 z-10">

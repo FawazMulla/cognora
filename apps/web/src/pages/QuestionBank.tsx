@@ -514,20 +514,20 @@ export default function QuestionBank() {
   });
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] text-[#2d2d34] min-h-screen font-sans">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] dark:bg-slate-950 text-[#2d2d34] dark:text-slate-100 min-h-screen font-sans transition-colors">
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed]">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed] dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
-            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] uppercase font-bold">
+            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] dark:text-slate-400 uppercase font-bold">
               Question Bank Repository
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] dark:text-white flex items-center gap-3">
             Question Bank (QB) Explorer
           </h1>
-          <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans max-w-2xl">
+          <p className="text-xs md:text-sm text-[#6b6f82] dark:text-slate-400 mt-1 font-sans max-w-2xl">
             Unit-wise question banks, mark distributions (2M, 5M, 10M, 15M), IAE/PYQ tagging, and
             instant topper model answers with schematic architecture diagrams.
           </p>
@@ -535,12 +535,12 @@ export default function QuestionBank() {
 
         <div className="flex flex-wrap items-center gap-3">
           {subjects.length > 0 && (
-            <div className="flex items-center gap-2 bg-white border border-[#e3e6ed] rounded-2xl p-1.5 shadow-xs">
-              <Filter className="w-3.5 h-3.5 text-[#8c8fa1] ml-2" />
+            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-2xl p-1.5 shadow-xs">
+              <Filter className="w-3.5 h-3.5 text-[#8c8fa1] dark:text-slate-400 ml-2" />
               <select
                 value={selectedSubjectId}
                 onChange={(e) => setSelectedSubjectId(e.target.value)}
-                className="bg-transparent text-[#121217] outline-none text-xs font-bold pr-3 cursor-pointer"
+                className="bg-transparent text-[#121217] dark:text-slate-200 outline-none text-xs font-bold pr-3 cursor-pointer"
               >
                 {subjects.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -568,16 +568,16 @@ export default function QuestionBank() {
       />
 
       {/* Search & Filters Toolbar */}
-      <div className="bg-white border border-[#e3e6ed] rounded-3xl p-5 md:p-6 space-y-4 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-5 md:p-6 space-y-4 shadow-xs">
         <div className="flex flex-col md:flex-row items-center gap-3">
           <div className="relative flex-1 w-full">
-            <Search className="w-4 h-4 text-[#8c8fa1] absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#8c8fa1] dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search syllabus questions, concepts, or algorithms..."
-              className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl pl-10 pr-4 py-2.5 text-xs text-[#121217] outline-none focus:border-[#4f75f2] shadow-xs"
+              className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-[#121217] dark:text-slate-100 placeholder-[#8c8fa1] dark:placeholder-slate-500 outline-none focus:border-[#4f75f2] shadow-xs"
             />
           </div>
 
@@ -586,7 +586,7 @@ export default function QuestionBank() {
             <select
               value={unitFilter}
               onChange={(e) => setUnitFilter(e.target.value)}
-              className="bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-3 py-2 text-xs font-bold text-[#121217] outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
+              className="bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl px-3 py-2 text-xs font-bold text-[#121217] dark:text-slate-200 outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
             >
               <option value="All">All Units</option>
               <option value="Unit 1">Unit 1</option>
@@ -601,7 +601,7 @@ export default function QuestionBank() {
             <select
               value={marksFilter}
               onChange={(e) => setMarksFilter(e.target.value)}
-              className="bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-3 py-2 text-xs font-bold text-[#121217] outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
+              className="bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl px-3 py-2 text-xs font-bold text-[#121217] dark:text-slate-200 outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
             >
               <option value="All">All Marks</option>
               <option value="2">2 Marks</option>
@@ -614,7 +614,7 @@ export default function QuestionBank() {
             <select
               value={tagFilter}
               onChange={(e) => setTagFilter(e.target.value)}
-              className="bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-3 py-2 text-xs font-bold text-[#121217] outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
+              className="bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl px-3 py-2 text-xs font-bold text-[#121217] dark:text-slate-200 outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
             >
               <option value="All">All Tags</option>
               <option value="IAE">IAE</option>
@@ -629,8 +629,8 @@ export default function QuestionBank() {
               onClick={() => setShowOnlyBookmarks(!showOnlyBookmarks)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all border cursor-pointer shadow-xs ${
                 showOnlyBookmarks
-                  ? 'bg-[#fee2e2]/60 text-[#dc2626] border-[#fca5a5]'
-                  : 'bg-[#f8f9fc] border-[#e3e6ed] text-[#6b6f82] hover:text-[#121217]'
+                  ? 'bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800'
+                  : 'bg-[#f8f9fc] dark:bg-slate-800 border-[#e3e6ed] dark:border-slate-700 text-[#6b6f82] dark:text-slate-300 hover:text-[#121217] dark:hover:text-white'
               }`}
             >
               <Bookmark className={`w-3.5 h-3.5 ${showOnlyBookmarks ? 'fill-current' : ''}`} />
@@ -640,7 +640,7 @@ export default function QuestionBank() {
         </div>
 
         {/* Status bar */}
-        <div className="flex justify-between items-center text-[11px] font-mono text-[#8c8fa1] pt-1">
+        <div className="flex justify-between items-center text-[11px] font-mono text-[#8c8fa1] dark:text-slate-400 pt-1">
           <span>Displaying {filteredQuestions.length} exam questions</span>
           <span>Semester VII Curriculum Standard</span>
         </div>
@@ -648,16 +648,16 @@ export default function QuestionBank() {
 
       {/* Questions Listing */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6b6f82] font-mono text-xs uppercase">
+        <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6b6f82] dark:text-slate-400 font-mono text-xs uppercase">
           <Loader2 className="w-6 h-6 text-[#4f75f2] animate-spin" />
           <span>Curating Unit-Wise Question Bank...</span>
         </div>
       ) : filteredQuestions.length === 0 ? (
-        <div className="bg-white border border-[#e3e6ed] rounded-3xl p-12 text-center space-y-3 shadow-xs">
-          <p className="text-sm font-bold text-[#121217]">
+        <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-12 text-center space-y-3 shadow-xs">
+          <p className="text-sm font-bold text-[#121217] dark:text-white">
             No questions match the applied filters.
           </p>
-          <p className="text-xs text-[#8c8fa1]">
+          <p className="text-xs text-[#8c8fa1] dark:text-slate-400">
             Try adjusting your search query, unit selection, or bookmark filter.
           </p>
         </div>
@@ -669,14 +669,14 @@ export default function QuestionBank() {
             return (
               <div
                 key={q.id}
-                className="bg-white border border-[#e3e6ed] hover:border-[#4f75f2] rounded-3xl p-6 transition-all space-y-4 shadow-xs"
+                className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 hover:border-[#4f75f2] dark:hover:border-indigo-500 rounded-3xl p-6 transition-all space-y-4 shadow-xs"
               >
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] font-mono font-bold bg-[#edf3fc] text-[#4f75f2] border border-[#d0dcf5] px-2.5 py-0.5 rounded-lg uppercase">
+                    <span className="text-[10px] font-mono font-bold bg-[#edf3fc] dark:bg-indigo-950/60 text-[#4f75f2] dark:text-indigo-400 border border-[#d0dcf5] dark:border-indigo-800 px-2.5 py-0.5 rounded-lg uppercase">
                       {q.unit}
                     </span>
-                    <span className="text-[10px] font-mono font-bold bg-[#f1f3f7] text-[#121217] border border-[#e3e6ed] px-2.5 py-0.5 rounded-lg">
+                    <span className="text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-2.5 py-0.5 rounded-lg">
                       {q.marks} Marks
                     </span>
                     {q.tags.map((tag) => (
@@ -684,37 +684,37 @@ export default function QuestionBank() {
                         key={tag}
                         className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-lg uppercase border ${
                           tag === 'IAE'
-                            ? 'bg-[#fee2e2]/60 text-[#dc2626] border-[#fca5a5]'
+                            ? 'bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800'
                             : tag === 'PYQ'
-                              ? 'bg-[#fef3c7] text-[#b45309] border-[#fde68a]'
-                              : 'bg-[#f8f9fc] text-[#6b6f82] border-[#e3e6ed]'
+                              ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                         }`}
                       >
                         {tag}
                       </span>
                     ))}
                     {q.frequencyCount && q.frequencyCount > 1 && (
-                      <span className="text-[9px] font-mono font-bold bg-[#ecfdf5] text-[#059669] border border-[#a7f3d0] px-2 py-0.5 rounded-lg">
+                      <span className="text-[9px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-lg">
                         Repeated {q.frequencyCount}x
                       </span>
                     )}
                   </div>
 
-                  <span className="text-[10px] font-mono text-[#8c8fa1]">Q#{idx + 1}</span>
+                  <span className="text-[10px] font-mono text-[#8c8fa1] dark:text-slate-500">Q#{idx + 1}</span>
                 </div>
 
-                <p className="text-sm md:text-base font-bold text-[#121217] leading-relaxed">
+                <p className="text-sm md:text-base font-bold text-[#121217] dark:text-slate-100 leading-relaxed">
                   {q.questionText}
                 </p>
 
-                <div className="flex items-center justify-between pt-2 border-t border-[#f0f2f7]">
+                <div className="flex items-center justify-between pt-2 border-t border-[#f0f2f7] dark:border-slate-800">
                   <button
                     onClick={() => toggleBookmark(q.id)}
                     title={isBookmarked ? 'Remove from Bookmarks' : 'Bookmark Question'}
                     className={`p-2.5 rounded-xl border transition-all cursor-pointer shadow-xs ${
                       isBookmarked
-                        ? 'bg-[#fee2e2]/60 text-[#dc2626] border-[#fca5a5]'
-                        : 'bg-white text-[#8c8fa1] border-[#e3e6ed] hover:text-[#121217] hover:border-[#4f75f2]'
+                        ? 'bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800'
+                        : 'bg-white dark:bg-slate-800 text-[#8c8fa1] dark:text-slate-400 border-[#e3e6ed] dark:border-slate-700 hover:text-[#121217] dark:hover:text-white hover:border-[#4f75f2]'
                     }`}
                   >
                     <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
@@ -748,13 +748,13 @@ export default function QuestionBank() {
 
       {/* Add Question Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="bg-white border border-[#e3e6ed] w-full max-w-lg rounded-3xl p-6 md:p-8 space-y-5 shadow-2xl">
-            <div className="flex justify-between items-center pb-3 border-b border-[#e3e6ed]">
-              <h3 className="text-base font-extrabold text-[#121217]">Add New Question to Bank</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 w-full max-w-lg rounded-3xl p-6 md:p-8 space-y-5 shadow-2xl">
+            <div className="flex justify-between items-center pb-3 border-b border-[#e3e6ed] dark:border-slate-800">
+              <h3 className="text-base font-extrabold text-[#121217] dark:text-white">Add New Question to Bank</h3>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-[#6b6f82] hover:text-[#121217] p-1 rounded-lg"
+                className="text-[#6b6f82] dark:text-slate-400 hover:text-[#121217] dark:hover:text-white p-1 rounded-lg"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -762,24 +762,24 @@ export default function QuestionBank() {
 
             <form onSubmit={handleAddQuestion} className="space-y-4 text-xs font-sans">
               <div>
-                <label className="block text-[#666666] mb-1 font-bold">Question Text</label>
+                <label className="block text-slate-700 dark:text-slate-300 mb-1 font-bold">Question Text</label>
                 <textarea
                   required
                   rows={3}
                   value={newQuestionText}
                   onChange={(e) => setNewQuestionText(e.target.value)}
                   placeholder="Enter complete university syllabus question prompt..."
-                  className="w-full bg-[#fafafb] border border-[#d9d9dd] rounded-xl p-3 text-[#212121] outline-none focus:border-[#212121] leading-relaxed resize-none shadow-xs"
+                  className="w-full bg-[#fafafb] dark:bg-slate-800 border border-[#d9d9dd] dark:border-slate-700 rounded-xl p-3 text-[#212121] dark:text-white outline-none focus:border-[#4f75f2] leading-relaxed resize-none shadow-xs"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[#666666] mb-1 font-bold">Syllabus Unit</label>
+                  <label className="block text-slate-700 dark:text-slate-300 mb-1 font-bold">Syllabus Unit</label>
                   <select
                     value={newUnit}
                     onChange={(e) => setNewUnit(e.target.value)}
-                    className="w-full bg-[#fafafb] border border-[#d9d9dd] rounded-xl px-3 py-2.5 text-[#212121] outline-none focus:border-[#212121] cursor-pointer shadow-xs font-bold"
+                    className="w-full bg-[#fafafb] dark:bg-slate-800 border border-[#d9d9dd] dark:border-slate-700 rounded-xl px-3 py-2.5 text-[#212121] dark:text-white outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs font-bold"
                   >
                     <option value="Unit 1">Unit 1</option>
                     <option value="Unit 2">Unit 2</option>
@@ -790,11 +790,11 @@ export default function QuestionBank() {
                 </div>
 
                 <div>
-                  <label className="block text-[#666666] mb-1 font-bold">Marks</label>
+                  <label className="block text-slate-700 dark:text-slate-300 mb-1 font-bold">Marks</label>
                   <select
                     value={newMarks}
                     onChange={(e) => setNewMarks(Number(e.target.value))}
-                    className="w-full bg-[#fafafb] border border-[#d9d9dd] rounded-xl px-3 py-2.5 text-[#212121] outline-none focus:border-[#212121] cursor-pointer shadow-xs font-bold"
+                    className="w-full bg-[#fafafb] dark:bg-slate-800 border border-[#d9d9dd] dark:border-slate-700 rounded-xl px-3 py-2.5 text-[#212121] dark:text-white outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs font-bold"
                   >
                     <option value={2}>2 Marks</option>
                     <option value={5}>5 Marks</option>
@@ -805,7 +805,7 @@ export default function QuestionBank() {
               </div>
 
               <div>
-                <label className="block text-[#666666] mb-1 font-bold">
+                <label className="block text-slate-700 dark:text-slate-300 mb-1 font-bold">
                   Tags (Comma-separated)
                 </label>
                 <input
@@ -813,21 +813,21 @@ export default function QuestionBank() {
                   value={newTags}
                   onChange={(e) => setNewTags(e.target.value)}
                   placeholder="IAE, PYQ, Theory, Numerical"
-                  className="w-full bg-[#fafafb] border border-[#d9d9dd] rounded-xl px-4 py-2.5 text-[#212121] outline-none focus:border-[#212121] shadow-xs"
+                  className="w-full bg-[#fafafb] dark:bg-slate-800 border border-[#d9d9dd] dark:border-slate-700 rounded-xl px-4 py-2.5 text-[#212121] dark:text-white outline-none focus:border-[#4f75f2] shadow-xs"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-[#d9d9dd]">
+              <div className="flex justify-end gap-3 pt-4 border-t border-[#d9d9dd] dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="bg-[#f4f4f4] hover:bg-[#e5e5e8] text-[#212121] px-5 py-2.5 rounded-xl font-bold transition-colors cursor-pointer"
+                  className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-5 py-2.5 rounded-xl font-bold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#212121] hover:bg-black text-white px-6 py-2.5 rounded-xl font-bold transition-colors cursor-pointer shadow-xs"
+                  className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-6 py-2.5 rounded-xl font-bold transition-colors cursor-pointer shadow-xs"
                 >
                   Save Question
                 </button>
@@ -839,25 +839,25 @@ export default function QuestionBank() {
 
       {/* Answer Modal */}
       {activeAnswer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="bg-white border border-[#e3e6ed] w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
-            <header className="p-6 border-b border-[#e3e6ed] flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#f8f9fc]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+            <header className="p-6 border-b border-[#e3e6ed] dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#f8f9fc] dark:bg-slate-850">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#3b52c4] bg-[#e4e7fd] px-3 py-1 rounded-full border border-[#d0d8fb] font-bold">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#3b52c4] dark:text-indigo-400 bg-[#e4e7fd] dark:bg-indigo-950/60 px-3 py-1 rounded-full border border-[#d0d8fb] dark:border-indigo-800 font-bold">
                     TOPPER MODEL ANSWER ({activeAnswer.marks} MARKS)
                   </span>
                   {responseSource === 'quick_pick_cache' ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
-                      <Zap className="w-3 h-3 text-emerald-600" /> Pre-computed Quick Pick
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2.5 py-0.5 rounded-full">
+                      <Zap className="w-3 h-3 text-emerald-600 dark:text-emerald-400" /> Pre-computed Quick Pick
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
-                      <Cloud className="w-3 h-3 text-blue-600" /> Live OCI GenAI
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-2.5 py-0.5 rounded-full">
+                      <Cloud className="w-3 h-3 text-blue-600 dark:text-blue-400" /> Live OCI GenAI
                     </span>
                   )}
                 </div>
-                <h3 className="text-lg md:text-xl font-extrabold text-[#121217] leading-snug">
+                <h3 className="text-lg md:text-xl font-extrabold text-[#121217] dark:text-white leading-snug">
                   {activeAnswer.question}
                 </h3>
               </div>
@@ -869,7 +869,7 @@ export default function QuestionBank() {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border cursor-pointer ${
                     isEditingAnswer
                       ? 'bg-[#4f75f2] text-white border-[#4f75f2]'
-                      : 'bg-white text-[#121217] border-[#e3e6ed] hover:border-[#4f75f2]'
+                      : 'bg-white dark:bg-slate-800 text-[#121217] dark:text-slate-200 border-[#e3e6ed] dark:border-slate-700 hover:border-[#4f75f2]'
                   }`}
                   title="Toggle Edit Answer"
                 >
@@ -884,7 +884,7 @@ export default function QuestionBank() {
                 {/* Print Answer */}
                 <button
                   onClick={() => window.print()}
-                  className="p-2 rounded-xl bg-white border border-[#e3e6ed] hover:border-[#4f75f2] text-[#6b6f82] hover:text-[#121217] transition-colors cursor-pointer shadow-xs"
+                  className="p-2 rounded-xl bg-white dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 hover:border-[#4f75f2] text-[#6b6f82] dark:text-slate-400 hover:text-[#121217] dark:hover:text-white transition-colors cursor-pointer shadow-xs"
                   title="Print Answer"
                 >
                   <Printer className="w-4 h-4" />
@@ -900,7 +900,7 @@ export default function QuestionBank() {
                     a.download = `Topper_Answer_${activeAnswer.marks}M.md`;
                     a.click();
                   }}
-                  className="p-2 rounded-xl bg-white border border-[#e3e6ed] hover:border-[#4f75f2] text-[#6b6f82] hover:text-[#121217] transition-colors cursor-pointer shadow-xs"
+                  className="p-2 rounded-xl bg-white dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 hover:border-[#4f75f2] text-[#6b6f82] dark:text-slate-400 hover:text-[#121217] dark:hover:text-white transition-colors cursor-pointer shadow-xs"
                   title="Export Markdown"
                 >
                   <Download className="w-4 h-4" />
@@ -909,17 +909,17 @@ export default function QuestionBank() {
                 {/* Close */}
                 <button
                   onClick={() => setActiveAnswer(null)}
-                  className="p-2 rounded-xl bg-white border border-[#e3e6ed] hover:bg-[#edf3fc] text-[#6b6f82] hover:text-[#121217] transition-colors cursor-pointer shadow-xs"
+                  className="p-2 rounded-xl bg-white dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 hover:bg-[#edf3fc] dark:hover:bg-slate-700 text-[#6b6f82] dark:text-slate-400 hover:text-[#121217] dark:hover:text-white transition-colors cursor-pointer shadow-xs"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             </header>
 
-            <div className="p-6 md:p-8 overflow-y-auto space-y-4 select-text bg-white">
+            <div className="p-6 md:p-8 overflow-y-auto space-y-4 select-text bg-white dark:bg-slate-900">
               {isEditingAnswer ? (
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center text-xs font-mono text-[#6b6f82]">
+                  <div className="flex justify-between items-center text-xs font-mono text-[#6b6f82] dark:text-slate-400">
                     <span>
                       Editing custom topper answer notes (supports Markdown &amp; diagrams)
                     </span>
@@ -937,7 +937,7 @@ export default function QuestionBank() {
                     rows={16}
                     value={editedAnswerText}
                     onChange={(e) => setEditedAnswerText(e.target.value)}
-                    className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl p-4 font-mono text-xs md:text-sm text-[#121217] outline-none focus:border-[#4f75f2] leading-relaxed shadow-inner"
+                    className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl p-4 font-mono text-xs md:text-sm text-[#121217] dark:text-slate-100 outline-none focus:border-[#4f75f2] leading-relaxed shadow-inner"
                   />
                 </div>
               ) : (
@@ -945,7 +945,7 @@ export default function QuestionBank() {
               )}
             </div>
 
-            <footer className="p-4 bg-[#f8f9fc] border-t border-[#e3e6ed] flex items-center justify-between">
+            <footer className="p-4 bg-[#f8f9fc] dark:bg-slate-850 border-t border-[#e3e6ed] dark:border-slate-800 flex items-center justify-between">
               <button
                 onClick={() => {
                   if (activeAnswer) {
@@ -954,7 +954,7 @@ export default function QuestionBank() {
                     setTimeout(() => setCopiedAnswer(false), 2000);
                   }
                 }}
-                className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-[#212121] hover:text-[#1863dc] px-3.5 py-2 rounded-xl border border-[#d9d9dd] hover:border-[#1863dc] bg-white transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 hover:text-[#1863dc] px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-[#1863dc] bg-white dark:bg-slate-800 transition-all cursor-pointer shadow-xs"
               >
                 {copiedAnswer ? (
                   <Check className="w-3.5 h-3.5 text-emerald-600" />

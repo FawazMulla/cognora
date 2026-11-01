@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { Sparkles, FileText, Filter, Clock, Copy, Download, Check, Loader2, Zap, AlertTriangle, BookOpen } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { getDefaultSubjects, generateExamNotesAI } from '../lib/ai-service';
+import { BookmarkButton } from '../components/BookmarkButton';
+import { FocusReadingMode } from '../components/FocusReadingMode';
+import { exportToDocx, exportToPdf } from '../lib/export-engine';
+import { trackNavigation } from '../lib/navigation-tracker';
 
 type Subject = {
   id: string;
@@ -28,6 +32,15 @@ export default function ExamNotes() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [notes, setNotes] = useState<ExamNotesResult | null>(null);
+  const [focusOpen, setFocusOpen] = useState(false);
+
+  useEffect(() => {
+    trackNavigation({
+      pagePath: '/exam-notes',
+      pageTitle: 'Exam & IAE Notes',
+      subjectName: subjects.find(s => s.id === selectedSubjectId)?.name || 'Exam Pack',
+    });
+  }, [selectedSubjectId, examType]);
 
   useEffect(() => {
     async function loadSubjects() {
@@ -102,6 +115,50 @@ export default function ExamNotes() {
 
   const selectedSubject = subjects.find(s => s.id === selectedSubjectId);
 
+  
+  const getExamNotesMarkdown = () => {
+    if (!notes) return '';
+    let md = `# ${notes.examTitle}\n\n## High Yield Priority Topics\n`;
+    notes.highYieldTopics.forEach(t => {
+      md += `- **${t.topic}** (${Math.round(t.probability * 100)}% Probability, ${t.markRange}): ${t.rationale}\n`;
+    });
+    md += `\n## 2-Mark High Yield Definitions\n`;
+    notes.twoMarkDefinitions.forEach(d => {
+      md += `### ${d.term}\n${d.definition}\n${d.keyFormula ? `**Formula:** ${d.keyFormula}\n` : ''}\n`;
+    });
+    md += `\n## 5 & 10 Mark Detailed Questions\n`;
+    notes.fiveAndTenMarkNotes.forEach(q => {
+      md += `### ${q.question} (${q.marks} Marks)\n**Key Points:**\n${q.keyPoints.map(p => `- ${p}`).join('\n')}\n\n**Model Answer Snippet:**\n${q.modelAnswerSnippet}\n\n`;
+    });
+    md += `\n## Last-Minute Cramming Summary\n`;
+    notes.crammingSummary.forEach(c => {
+      md += `- ${c}\n`;
+    });
+    return md;
+  };
+
+  const handleExportPdf = () => {
+    const md = getExamNotesMarkdown();
+    if (!md) return;
+    exportToPdf({
+      title: notes?.examTitle || 'Exam Notes Pack',
+      subject: selectedSubject?.name,
+      module: `${examType} - ${selectedUnits.join(', ')}`,
+      rawMarkdown: md,
+    });
+  };
+
+  const handleExportDocx = async () => {
+    const md = getExamNotesMarkdown();
+    if (!md) return;
+    await exportToDocx({
+      title: notes?.examTitle || 'Exam Notes Pack',
+      subject: selectedSubject?.name,
+      module: `${examType} - ${selectedUnits.join(', ')}`,
+      rawMarkdown: md,
+    });
+  };
+
   const handleCopyNotes = () => {
     if (!notes) return;
     const text = `
@@ -138,9 +195,9 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
   };
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] text-[#2d2d34] min-h-screen font-sans">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 bg-[#f8f9fc] dark:bg-slate-950 text-[#2d2d34] dark:text-slate-100 min-h-screen font-sans transition-colors">
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed]">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed] dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
@@ -148,21 +205,21 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
               High-Yield Exam Synthesizer
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] flex items-center gap-3">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#121217] dark:text-white flex items-center gap-3">
             Exam &amp; IAE Score Booster
           </h1>
-          <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans max-w-2xl">
+          <p className="text-xs md:text-sm text-[#6b6f82] dark:text-slate-400 mt-1 font-sans max-w-2xl">
             Synthesize high-yield notes tailored for Internal Assessment Exams (IAE-1, IAE-2), 2-mark definitions, formulas, and last-night revision sheets.
           </p>
         </div>
 
         {subjects.length > 0 && (
-          <div className="flex items-center gap-2 bg-white border border-[#e3e6ed] rounded-2xl p-1.5 shadow-xs">
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-2xl p-1.5 shadow-xs">
             <Filter className="w-3.5 h-3.5 text-[#8c8fa1] ml-2" />
             <select
               value={selectedSubjectId}
               onChange={(e) => setSelectedSubjectId(e.target.value)}
-              className="bg-transparent text-[#121217] outline-none text-xs font-bold pr-4 cursor-pointer"
+              className="bg-transparent text-[#121217] dark:text-slate-200 outline-none text-xs font-bold pr-4 cursor-pointer"
             >
               {subjects.map(s => (
                 <option key={s.id} value={s.id}>
@@ -175,8 +232,8 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
       </header>
 
       {/* Control Configuration Panel */}
-      <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
-        <h2 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+        <h2 className="text-lg font-extrabold text-[#121217] dark:text-white flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-[#4f75f2]" />
           Configure Exam Parameters
         </h2>
@@ -195,8 +252,8 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
                   onClick={() => setExamType(type)}
                   className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                     examType === type
-                      ? 'bg-[#edf3fc] text-[#4f75f2] border-[#d0dcf5] shadow-xs'
-                      : 'bg-[#f8f9fc] border-[#e3e6ed] text-[#6b6f82] hover:text-[#121217] hover:border-[#4f75f2]'
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                      : 'bg-[#f8f9fc] dark:bg-slate-800 border-[#e3e6ed] dark:border-slate-700 text-[#6b6f82] dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:border-indigo-400'
                   }`}
                 >
                   {type}
@@ -220,8 +277,8 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
                     onClick={() => handleToggleUnit(unit)}
                     className={`py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                       isSelected
-                        ? 'bg-[#edf3fc] text-[#4f75f2] border-[#d0dcf5] shadow-xs'
-                        : 'bg-[#f8f9fc] border-[#e3e6ed] text-[#6b6f82] hover:text-[#121217]'
+                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                        : 'bg-[#f8f9fc] dark:bg-slate-800 border-[#e3e6ed] dark:border-slate-700 text-[#6b6f82] dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white'
                     }`}
                   >
                     {unit}
@@ -239,7 +296,7 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
             <select
               value={timeRemaining}
               onChange={e => setTimeRemaining(e.target.value)}
-              className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl px-4 py-2.5 text-xs font-bold text-[#121217] outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
+              className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl px-4 py-2.5 text-xs font-bold text-[#121217] dark:text-slate-200 outline-none focus:border-[#4f75f2] cursor-pointer shadow-xs"
             >
               <option value="tomorrow">Exam Tomorrow (High-Yield &amp; Concise)</option>
               <option value="3days">Exam in 3 Days (Balanced Theory &amp; Numericals)</option>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { BookOpen, FileText, LayoutDashboard, BrainCircuit, ArrowLeft, Play, BarChart3, Clock, Loader2, AlertTriangle, FileDown, Plus, HelpCircle } from 'lucide-react';
 import { fetchApi } from '../lib/api';
+import { trackNavigation } from '../lib/navigation-tracker';
 import { getDefaultSubjects, generatePYQDataAI } from '../lib/ai-service';
 
 type Subject = {
@@ -83,6 +84,12 @@ export default function SubjectDetail() {
       }
 
       setSubject(matchedSubject);
+      trackNavigation({
+        pagePath: `/subject/${id}`,
+        pageTitle: matchedSubject.name,
+        subjectId: matchedSubject.id,
+        subjectName: matchedSubject.name,
+      });
 
       try {
         const twinProfile = await fetchApi(`/api/student-twin/full-profile?subjectId=${id}`);
@@ -193,7 +200,7 @@ export default function SubjectDetail() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto p-6 lg:p-8 space-y-8 font-sans text-[#121217] bg-[#f8f9fc] min-h-screen">
+    <main className="max-w-7xl mx-auto p-6 lg:p-8 space-y-8 font-sans text-[#121217] dark:text-slate-100 bg-[#f8f9fc] dark:bg-slate-950 min-h-screen transition-colors">
       <Link to="/" className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#6b6f82] hover:text-[#121217] uppercase tracking-wider transition-colors">
         <ArrowLeft className="w-3.5 h-3.5 text-[#4f75f2]" />
         Back to Dashboard
@@ -298,7 +305,7 @@ export default function SubjectDetail() {
             </div>
           </div>
         ) : activeTab === 'resources' ? (
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 shadow-xs">
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-xs">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xs font-bold text-[#121217] uppercase tracking-wider">Academic Reference Files</h3>
               <button 
