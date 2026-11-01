@@ -1,0 +1,506 @@
+{
+  "title": "Semester Learning Video Catalogue",
+  "description": "Syllabus-aligned YouTube resources for the five uploaded subjects. Links point to the original YouTube videos; topic tags are mapped to the supplied syllabus modules.",
+  "subjects": [
+    {
+      "subject": "AI and DS–II",
+      "course_code": "ITC701",
+      "videos": [
+        {
+          "title": "AI Course | Lecture 6: Uncertainty: Bayesian Networks & Markov Models for AI",
+          "channel": "PMRF, IISc Bangalore",
+          "topic": "Module I – Uncertainty; Bayesian networks and Markov models",
+          "url": "https://www.youtube.com/watch?v=HQUqifo556Q",
+          "youtubeId": "HQUqifo556Q",
+          "embedUrl": "https://www.youtube.com/embed/HQUqifo556Q"
+        },
+        {
+          "title": "W12_L3: Gaussian Mixture Models & Expectation Maximization",
+          "channel": "IIT Madras BS Degree Programme",
+          "topic": "Module I – Uncertainty; Gaussian mixture models",
+          "url": "https://www.youtube.com/watch?v=6Zk77RKcI2Q",
+          "youtubeId": "6Zk77RKcI2Q",
+          "embedUrl": "https://www.youtube.com/embed/6Zk77RKcI2Q"
+        },
+        {
+          "title": "Tutorial on IBM Watson – A Cognitive Computing System",
+          "channel": "HackerEarth",
+          "topic": "Module II – Cognitive computing; IBM Watson",
+          "url": "https://www.youtube.com/watch?v=bg8YodBhFt4",
+          "youtubeId": "bg8YodBhFt4",
+          "embedUrl": "https://www.youtube.com/embed/bg8YodBhFt4"
+        },
+        {
+          "title": "Lec 53: Fuzzy Sets and Systems",
+          "channel": "NPTEL / IISc Bengaluru",
+          "topic": "Module III – Fuzzy sets and their properties",
+          "url": "https://www.youtube.com/watch?v=qH0YeoUxbqc",
+          "youtubeId": "qH0YeoUxbqc",
+          "embedUrl": "https://www.youtube.com/embed/qH0YeoUxbqc"
+        },
+        {
+          "title": "Lec 54: Fuzzification and Defuzzification Methods",
+          "channel": "NPTEL / IISc Bengaluru",
+          "topic": "Module III – Fuzzification and defuzzification",
+          "url": "https://www.youtube.com/watch?v=DlLV45GZ3KE",
+          "youtubeId": "DlLV45GZ3KE",
+          "embedUrl": "https://www.youtube.com/embed/DlLV45GZ3KE"
+        },
+        {
+          "title": "Introduction to Deep Learning",
+          "channel": "NPTEL-NOC / IIT Madras",
+          "topic": "Module IV – Deep learning foundations and neural networks",
+          "url": "https://www.youtube.com/watch?v=-E1tiQbP_Kw",
+          "youtubeId": "-E1tiQbP_Kw",
+          "embedUrl": "https://www.youtube.com/embed/-E1tiQbP_Kw"
+        },
+        {
+          "title": "Lec 14: Convolutional Neural Network – I",
+          "channel": "NPTEL / IIT Guwahati",
+          "topic": "Module IV – CNN introduction and architecture",
+          "url": "https://www.youtube.com/watch?v=Pu2LaEH8oi8",
+          "youtubeId": "Pu2LaEH8oi8",
+          "embedUrl": "https://www.youtube.com/embed/Pu2LaEH8oi8"
+        },
+        {
+          "title": "Lec 48: RNN & LSTMs",
+          "channel": "NPTEL / IISc Bengaluru",
+          "topic": "Module IV – Recurrent neural networks and LSTM",
+          "url": "https://www.youtube.com/watch?v=KBRPd5zaeII",
+          "youtubeId": "KBRPd5zaeII",
+          "embedUrl": "https://www.youtube.com/embed/KBRPd5zaeII"
+        },
+        {
+          "title": "Ensemble Learning",
+          "channel": "NPTEL-NOC / IIT Madras",
+          "topic": "Module V – Ensemble classifiers",
+          "url": "https://www.youtube.com/watch?v=l-TTMwqzNMQ",
+          "youtubeId": "l-TTMwqzNMQ",
+          "embedUrl": "https://www.youtube.com/embed/l-TTMwqzNMQ"
+        },
+        {
+          "title": "Tutorial: Random Forests",
+          "channel": "NPTEL-NOC / IIT Madras",
+          "topic": "Module V – Random forests and classification",
+          "url": "https://www.youtube.com/watch?v=cs8NPsRDx4w",
+          "youtubeId": "cs8NPsRDx4w",
+          "embedUrl": "https://www.youtube.com/embed/cs8NPsRDx4w"
+        },
+        {
+          "title": "ROC Curve and ROC-AUC Explained",
+          "channel": "CampusX",
+          "topic": "Module V – Classifier evaluation and ROC curves",
+          "url": "https://www.youtube.com/watch?v=gdW6hj9IXaA",
+          "youtubeId": "gdW6hj9IXaA",
+          "embedUrl": "https://www.youtube.com/embed/gdW6hj9IXaA"
+        }
+      ]
+    },
+    {
+      "subject": "Cyber Security and Laws",
+      "course_code": "ILO7016",
+      "videos": [
+        {
+          "title": "Day 1: Concept of Cyber Crime and Recent Trends",
+          "channel": "NCERT Official",
+          "topic": "Module 1 – Introduction to cybercrime",
+          "url": "https://www.youtube.com/watch?v=-sIBz9dLeqQ",
+          "youtubeId": "-sIBz9dLeqQ",
+          "embedUrl": "https://www.youtube.com/embed/-sIBz9dLeqQ"
+        },
+        {
+          "title": "Day 2: Types of Cyber Crime",
+          "channel": "NCERT Official",
+          "topic": "Module 1–2 – Cybercrime classifications and offences",
+          "url": "https://www.youtube.com/watch?v=klwbiYsULT8",
+          "youtubeId": "klwbiYsULT8",
+          "embedUrl": "https://www.youtube.com/embed/klwbiYsULT8"
+        },
+        {
+          "title": "Day 3: Cyber Crime and the Law",
+          "channel": "NCERT Official",
+          "topic": "Module 4–5 – Cyber law and legal response",
+          "url": "https://www.youtube.com/watch?v=S97lwBexlo4",
+          "youtubeId": "S97lwBexlo4",
+          "embedUrl": "https://www.youtube.com/embed/S97lwBexlo4"
+        },
+        {
+          "title": "Day 4: Reporting Mechanism and Response",
+          "channel": "NCERT Official",
+          "topic": "Module 2–5 – Reporting cybercrime and response",
+          "url": "https://www.youtube.com/watch?v=qFOBQjIHxtE",
+          "youtubeId": "qFOBQjIHxtE",
+          "embedUrl": "https://www.youtube.com/embed/qFOBQjIHxtE"
+        },
+        {
+          "title": "Phishing Attacks Explained",
+          "channel": "Simplilearn",
+          "topic": "Module 3 – Phishing and social engineering",
+          "url": "https://www.youtube.com/watch?v=BhGWnSeNXq0",
+          "youtubeId": "BhGWnSeNXq0",
+          "embedUrl": "https://www.youtube.com/embed/BhGWnSeNXq0"
+        },
+        {
+          "title": "SQL Injection Explained | SQL Injection Attack in Cyber Security",
+          "channel": "Great Learning",
+          "topic": "Module 3 – SQL injection",
+          "url": "https://www.youtube.com/watch?v=pTzgfDw_BDg",
+          "youtubeId": "pTzgfDw_BDg",
+          "embedUrl": "https://www.youtube.com/embed/pTzgfDw_BDg"
+        },
+        {
+          "title": "Wi-Fi Networking: Penetration and Security of Wireless Networks",
+          "channel": "WsCube Tech",
+          "topic": "Module 2–3 – Wireless security, password cracking and Wi-Fi attacks",
+          "url": "https://www.youtube.com/watch?v=kYcFXYVZiBQ",
+          "youtubeId": "kYcFXYVZiBQ",
+          "embedUrl": "https://www.youtube.com/embed/kYcFXYVZiBQ"
+        },
+        {
+          "title": "Denial of Service Attacks Explained",
+          "channel": "Hussein Nasser",
+          "topic": "Module 3 – DoS and DDoS attacks",
+          "url": "https://www.youtube.com/watch?v=4I7tPW8of2g",
+          "youtubeId": "4I7tPW8of2g",
+          "embedUrl": "https://www.youtube.com/embed/4I7tPW8of2g"
+        },
+        {
+          "title": "The Indian Information Technology Act, 2000",
+          "channel": "Audit Control Governance Risk and Compliance",
+          "topic": "Module 5 – Indian IT Act 2000",
+          "url": "https://www.youtube.com/watch?v=zzsGHXS8HfA",
+          "youtubeId": "zzsGHXS8HfA",
+          "embedUrl": "https://www.youtube.com/embed/zzsGHXS8HfA"
+        },
+        {
+          "title": "What is ISO/IEC 27001? Guide to Information Security Management Systems",
+          "channel": "International Organization for Standardization (ISO)",
+          "topic": "Module 6 – Information security standards and compliance",
+          "url": "https://www.youtube.com/watch?v=jPA6gbsT2IQ",
+          "youtubeId": "jPA6gbsT2IQ",
+          "embedUrl": "https://www.youtube.com/embed/jPA6gbsT2IQ"
+        },
+        {
+          "title": "Types of Cyber Attacks",
+          "channel": "MITS Gwalior",
+          "topic": "Module 2–3 – Common attack categories and vectors",
+          "url": "https://www.youtube.com/watch?v=BT3dyUG3XRY",
+          "youtubeId": "BT3dyUG3XRY",
+          "embedUrl": "https://www.youtube.com/embed/BT3dyUG3XRY"
+        },
+        {
+          "title": "Cyber Vandalism, Cyber Stalking, Internet Frauds and Software Piracy",
+          "channel": "MITS Gwalior",
+          "topic": "Module 2 – Cyber offences and online fraud",
+          "url": "https://www.youtube.com/watch?v=osFAYrcJavs",
+          "youtubeId": "osFAYrcJavs",
+          "embedUrl": "https://www.youtube.com/embed/osFAYrcJavs"
+        }
+      ]
+    },
+    {
+      "subject": "Internet of Everything",
+      "course_code": "ITC702",
+      "videos": [
+        {
+          "title": "LIVE: IoT Introduction and Architecture",
+          "channel": "NPTEL Special Lecture Series Live",
+          "topic": "Modules I–II – IoT foundations and architecture",
+          "url": "https://www.youtube.com/watch?v=-RHYCpsn8TA",
+          "youtubeId": "-RHYCpsn8TA",
+          "embedUrl": "https://www.youtube.com/embed/-RHYCpsn8TA"
+        },
+        {
+          "title": "IoT Tutorial for Beginners | Internet of Things Applications",
+          "channel": "Intellipaat",
+          "topic": "Modules I–II – IoT components, architecture, devices and applications",
+          "url": "https://www.youtube.com/watch?v=UOnBnngjiNM",
+          "youtubeId": "UOnBnngjiNM",
+          "embedUrl": "https://www.youtube.com/embed/UOnBnngjiNM"
+        },
+        {
+          "title": "IoT Architecture",
+          "channel": "Engineering Funda",
+          "topic": "Module II – IoT architecture",
+          "url": "https://www.youtube.com/watch?v=nw8F-oPgFaY",
+          "youtubeId": "nw8F-oPgFaY",
+          "embedUrl": "https://www.youtube.com/embed/nw8F-oPgFaY"
+        },
+        {
+          "title": "IoT Applications",
+          "channel": "Engineering Funda",
+          "topic": "Module VI – IoT application areas and use cases",
+          "url": "https://www.youtube.com/watch?v=QClt177QsYk",
+          "youtubeId": "QClt177QsYk",
+          "embedUrl": "https://www.youtube.com/embed/QClt177QsYk"
+        },
+        {
+          "title": "ZigBee Explained",
+          "channel": "Engineering Funda",
+          "topic": "Module III – ZigBee and connected-device protocols",
+          "url": "https://www.youtube.com/watch?v=lVr88JS-2rM",
+          "youtubeId": "lVr88JS-2rM",
+          "embedUrl": "https://www.youtube.com/embed/lVr88JS-2rM"
+        },
+        {
+          "title": "NFC – Near Field Communication",
+          "channel": "Engineering Funda",
+          "topic": "Module III – NFC and connected-device access technologies",
+          "url": "https://www.youtube.com/watch?v=jVAGyyoN4MY",
+          "youtubeId": "jVAGyyoN4MY",
+          "embedUrl": "https://www.youtube.com/embed/jVAGyyoN4MY"
+        },
+        {
+          "title": "NB-IoT Explained: Basics, Working, Architecture and Applications",
+          "channel": "Engineering Funda",
+          "topic": "Module III – Cellular IoT / NB-IoT",
+          "url": "https://www.youtube.com/watch?v=OTjWSUw8h0o",
+          "youtubeId": "OTjWSUw8h0o",
+          "embedUrl": "https://www.youtube.com/embed/OTjWSUw8h0o"
+        },
+        {
+          "title": "MQTT Essentials – Part 1: Introduction to MQTT",
+          "channel": "HiveMQ",
+          "topic": "Module IV – MQTT messaging protocol",
+          "url": "https://www.youtube.com/watch?v=jTeJxQFD8Ak",
+          "youtubeId": "jTeJxQFD8Ak",
+          "embedUrl": "https://www.youtube.com/embed/jTeJxQFD8Ak"
+        },
+        {
+          "title": "CoAP – Constrained Application Protocol Explained",
+          "channel": "Engineering Funda",
+          "topic": "Module IV – CoAP protocol",
+          "url": "https://www.youtube.com/watch?v=zpKJuJs_zfg",
+          "youtubeId": "zpKJuJs_zfg",
+          "embedUrl": "https://www.youtube.com/embed/zpKJuJs_zfg"
+        },
+        {
+          "title": "Comparison of CoAP and MQTT",
+          "channel": "Engineering Funda",
+          "topic": "Module IV – Comparison of IoT application protocols",
+          "url": "https://www.youtube.com/watch?v=GwrWi9uYjww",
+          "youtubeId": "GwrWi9uYjww",
+          "embedUrl": "https://www.youtube.com/embed/GwrWi9uYjww"
+        },
+        {
+          "title": "Edge Computing | Fog Computing | Cloud Computing",
+          "channel": "Perfect Computer Engineer",
+          "topic": "Module II and V – Edge, fog and cloud computing",
+          "url": "https://www.youtube.com/watch?v=iE1GxmD2csw",
+          "youtubeId": "iE1GxmD2csw",
+          "embedUrl": "https://www.youtube.com/embed/iE1GxmD2csw"
+        }
+      ]
+    },
+    {
+      "subject": "Software Testing and QA",
+      "course_code": "ITD07014",
+      "videos": [
+        {
+          "title": "Software Testing Life Cycle (STLC)",
+          "channel": "Software Testing Mentor",
+          "topic": "Module I – Testing methodology and STLC",
+          "url": "https://www.youtube.com/watch?v=Kf-XaEkvPLw",
+          "youtubeId": "Kf-XaEkvPLw",
+          "embedUrl": "https://www.youtube.com/embed/Kf-XaEkvPLw"
+        },
+        {
+          "title": "Boundary Value Analysis and Equivalence Partitioning",
+          "channel": "Guru99",
+          "topic": "Module II – Black-box test design techniques",
+          "url": "https://www.youtube.com/watch?v=P1Hv2sUPKeM",
+          "youtubeId": "P1Hv2sUPKeM",
+          "embedUrl": "https://www.youtube.com/embed/P1Hv2sUPKeM"
+        },
+        {
+          "title": "What is Black Box Testing?",
+          "channel": "Guru99",
+          "topic": "Module II – Black-box testing",
+          "url": "https://www.youtube.com/watch?v=Wi75S5TTfQ0",
+          "youtubeId": "Wi75S5TTfQ0",
+          "embedUrl": "https://www.youtube.com/embed/Wi75S5TTfQ0"
+        },
+        {
+          "title": "Black Box Testing vs White Box Testing",
+          "channel": "Software Testing Mentor",
+          "topic": "Module II – Black-box and white-box testing",
+          "url": "https://www.youtube.com/watch?v=sfsrH2wZ9qY",
+          "youtubeId": "sfsrH2wZ9qY",
+          "embedUrl": "https://www.youtube.com/embed/sfsrH2wZ9qY"
+        },
+        {
+          "title": "State Transition Testing",
+          "channel": "Video resource listed in a university software-testing curriculum",
+          "topic": "Module II – State-table and state-transition testing",
+          "url": "https://www.youtube.com/watch?v=21wOCNHsSU4",
+          "youtubeId": "21wOCNHsSU4",
+          "embedUrl": "https://www.youtube.com/embed/21wOCNHsSU4"
+        },
+        {
+          "title": "Control Flow Testing",
+          "channel": "Video resource listed in a university software-testing curriculum",
+          "topic": "Module II – White-box testing and control-flow coverage",
+          "url": "https://www.youtube.com/watch?v=1uklXlRovX4",
+          "youtubeId": "1uklXlRovX4",
+          "embedUrl": "https://www.youtube.com/embed/1uklXlRovX4"
+        },
+        {
+          "title": "Data Flow and Mutation Testing",
+          "channel": "Video resource listed in a university software-testing curriculum",
+          "topic": "Module II – Data-flow and mutation testing",
+          "url": "https://www.youtube.com/watch?v=RR_nEUtwbBA",
+          "youtubeId": "RR_nEUtwbBA",
+          "embedUrl": "https://www.youtube.com/embed/RR_nEUtwbBA"
+        },
+        {
+          "title": "What is Regression Testing?",
+          "channel": "Guru99",
+          "topic": "Module II – Regression testing",
+          "url": "https://www.youtube.com/watch?v=aeu5zacsHsI",
+          "youtubeId": "aeu5zacsHsI",
+          "embedUrl": "https://www.youtube.com/embed/aeu5zacsHsI"
+        },
+        {
+          "title": "What is Selenium? Tutorial for Beginners",
+          "channel": "Guru99",
+          "topic": "Module IV – Test automation tools",
+          "url": "https://www.youtube.com/watch?v=BL4-_tVx2rE",
+          "youtubeId": "BL4-_tVx2rE",
+          "embedUrl": "https://www.youtube.com/embed/BL4-_tVx2rE"
+        },
+        {
+          "title": "What is Agile Testing?",
+          "channel": "Software Testing Mentor",
+          "topic": "Module V – Agile testing and Scrum",
+          "url": "https://www.youtube.com/watch?v=hYpx8l7KgAs",
+          "youtubeId": "hYpx8l7KgAs",
+          "embedUrl": "https://www.youtube.com/embed/hYpx8l7KgAs"
+        },
+        {
+          "title": "What is a Test Plan?",
+          "channel": "Guru99",
+          "topic": "Module III – Test planning and test management",
+          "url": "https://www.youtube.com/watch?v=Vdm1Lh540LM",
+          "youtubeId": "Vdm1Lh540LM",
+          "embedUrl": "https://www.youtube.com/embed/Vdm1Lh540LM"
+        },
+        {
+          "title": "Software Quality Assurance",
+          "channel": "Video resource listed in a university software-testing curriculum",
+          "topic": "Module VI – Software quality management",
+          "url": "https://www.youtube.com/watch?v=KqDlDubS-OU",
+          "youtubeId": "KqDlDubS-OU",
+          "embedUrl": "https://www.youtube.com/embed/KqDlDubS-OU"
+        }
+      ]
+    },
+    {
+      "subject": "Information Retrieval System",
+      "course_code": "ITD07024",
+      "videos": [
+        {
+          "title": "Week 1.1: Introduction to Information Retrieval",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Module I – Introduction and retrieval process",
+          "url": "https://youtu.be/KoLngplzDcM",
+          "youtubeId": "KoLngplzDcM",
+          "embedUrl": "https://www.youtube.com/embed/KoLngplzDcM"
+        },
+        {
+          "title": "Week 1.3: Inverted Index",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Module V – Inverted files and indexing",
+          "url": "https://youtu.be/1_uVCZO8s5U",
+          "youtubeId": "1_uVCZO8s5U",
+          "embedUrl": "https://www.youtube.com/embed/1_uVCZO8s5U"
+        },
+        {
+          "title": "Query Processing with an Inverted Index",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Modules III and V – Query processing and inverted-index search",
+          "url": "https://youtu.be/Xob9OxphH8g",
+          "youtubeId": "Xob9OxphH8g",
+          "embedUrl": "https://www.youtube.com/embed/Xob9OxphH8g"
+        },
+        {
+          "title": "Modeling in Information Retrieval",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Module II – Taxonomy and modeling of IR systems",
+          "url": "https://youtu.be/pXQAF8_ilaI",
+          "youtubeId": "pXQAF8_ilaI",
+          "embedUrl": "https://www.youtube.com/embed/pXQAF8_ilaI"
+        },
+        {
+          "title": "Boolean Model",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Module II and V – Boolean retrieval model and queries",
+          "url": "https://youtu.be/JUDbOhZd9Uc",
+          "youtubeId": "JUDbOhZd9Uc",
+          "embedUrl": "https://www.youtube.com/embed/JUDbOhZd9Uc"
+        },
+        {
+          "title": "Vector Model",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Module II – Vector-space retrieval model",
+          "url": "https://youtu.be/VQU_8XrKToQ",
+          "youtubeId": "VQU_8XrKToQ",
+          "embedUrl": "https://www.youtube.com/embed/VQU_8XrKToQ"
+        },
+        {
+          "title": "Ranked Retrieval",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Modules II and V – Ranked retrieval and scoring",
+          "url": "https://youtu.be/10ScKbkzOHQ",
+          "youtubeId": "10ScKbkzOHQ",
+          "embedUrl": "https://www.youtube.com/embed/10ScKbkzOHQ"
+        },
+        {
+          "title": "Probabilistic Retrieval Model",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Module II – Probabilistic retrieval models",
+          "url": "https://youtu.be/W4zvif4mOC4",
+          "youtubeId": "W4zvif4mOC4",
+          "embedUrl": "https://www.youtube.com/embed/W4zvif4mOC4"
+        },
+        {
+          "title": "Binary Independence Model",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Module II – Probabilistic retrieval models",
+          "url": "https://youtu.be/4bssGll5Smc",
+          "youtubeId": "4bssGll5Smc",
+          "embedUrl": "https://www.youtube.com/embed/4bssGll5Smc"
+        },
+        {
+          "title": "Ranked Evaluation Metrics",
+          "channel": "Deakin University SIT330/770",
+          "topic": "Module V – Evaluation of ranked search results",
+          "url": "https://youtu.be/5Dshev4cKuQ",
+          "youtubeId": "5Dshev4cKuQ",
+          "embedUrl": "https://www.youtube.com/embed/5Dshev4cKuQ"
+        },
+        {
+          "title": "Relevance Feedback and Query Expansion in Information Retrieval System",
+          "channel": "Parul's E-Diary",
+          "topic": "Module III and VI – Relevance feedback and query improvement",
+          "url": "https://www.youtube.com/watch?v=aVjjghFnSBw",
+          "youtubeId": "aVjjghFnSBw",
+          "embedUrl": "https://www.youtube.com/embed/aVjjghFnSBw"
+        },
+        {
+          "title": "How Search Engine Works: Crawling, Indexing, and Ranking",
+          "channel": "WsCube Tech",
+          "topic": "Module V – Web search, crawling, indexing and ranking",
+          "url": "https://www.youtube.com/watch?v=9n4l491nuOI",
+          "youtubeId": "9n4l491nuOI",
+          "embedUrl": "https://www.youtube.com/embed/9n4l491nuOI"
+        }
+      ]
+    }
+  ],
+  "totalVideos": 58,
+  "notes": [
+    "The topic/module mapping is a curation aid, not a claim that each video covers every listed syllabus subtopic.",
+    "YouTube availability, titles, and access can change; verify links again when importing or publishing the learning page.",
+    "Some syllabus topics are not represented by a dedicated video in this starter collection and may need additional resources."
+  ]
+}
