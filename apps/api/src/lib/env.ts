@@ -43,6 +43,18 @@ const envSchema = z.object({
   GOOGLE_AI_API_KEY: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : undefined)),
   ANTHROPIC_API_KEY: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : undefined)),
   COHERE_API_KEY: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : undefined)),
+
+  // ── OCI Generative AI ──────────────────────────────────────────────────────
+  OCI_ENABLED: z.string().optional().transform(val => val === "true" || val === "1"),
+  OCI_REGION: z.string().optional().default("us-chicago-1"),
+  OCI_COMPARTMENT_ID: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : undefined)),
+  OCI_CONFIG_FILE: z.string().optional().default("~/.oci/config"),
+  OCI_PROFILE: z.string().optional().default("DEFAULT"),
+  OCI_MODEL_ID: z.string().optional().default("cohere.command-a-03-2025"),
+  OCI_USER_OCID: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : (process.env.user?.trim() || undefined))),
+  OCI_FINGERPRINT: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : (process.env.fingerprint?.trim() || undefined))),
+  OCI_TENANCY_OCID: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : (process.env.tenancy?.trim() || undefined))),
+  OCI_PRIVATE_KEY: z.string().optional().transform(val => (val && val.trim().length > 0 ? val.trim() : (process.env.key_file?.trim() || undefined))),
 });
 
 /**

@@ -54,7 +54,48 @@ export async function POST(request: Request) {
       }
     }
 
-    // 1. Answer Generator
+    // 1. Direct OCI Cohere Command A Call for Exam Answer Generation
+    const { getOciInferenceClient, callOciCohereChat } = await import("../../../../lib/oci-client");
+    if (getOciInferenceClient()) {
+      let maxWords = 80;
+      if (markValue >= 15) maxWords = 900;
+      else if (markValue >= 10) maxWords = 600;
+      else if (markValue >= 5) maxWords = 300;
+
+      const ociPrompt = `You are a university exam topper and subject matter expert.
+Provide a complete, full-marks model answer formatted exactly for a university exam.
+
+EXAMINATION QUESTION: "${question}"
+TARGET MARKS: ${markValue} Marks (Calibrate depth, detail, and technical rigor to justify ${markValue} full marks)
+TARGET WORD COUNT: ~${maxWords} words.
+PRESENTATION FORMAT: ${format}
+
+REQUIRED TOPPER STRUCTURE:
+1. Core Definition & Technical Overview (Crisp, high-impact introductory statement)
+2. Mathematical Formula / Theoretical Foundation / Complexity Invariants (where applicable)
+3. ASCII Architecture Diagram / Conceptual Flow (Clear, readable ASCII box-and-arrow visualization)
+4. Comprehensive Point-by-Point Technical Breakdown (With bold keywords and clear numbered points)
+5. Practical Real-World Example / Code Snippet or Concrete Trace
+6. Critical Comparison Table or Summary Takeaways (if comparing approaches)
+
+Strictly avoid generic filler. Write the full university answer in publication-ready markdown.`;
+
+      const responseText = await callOciCohereChat({
+        message: ociPrompt,
+        systemPrompt: "You are a university topper exam answer writer who produces exhaustive, technically rigorous answers with ASCII diagrams and formulas.",
+        maxTokens: 3000,
+        temperature: 0.5
+      });
+
+      const words = responseText.trim().split(/\s+/).length;
+      return NextResponse.json({
+        answer: responseText,
+        wordCount: words,
+        qualityWarning: null
+      }, { status: 200 });
+    }
+
+    // Fallback: Answer Generator node
     let generated = await answerGeneratorNode({ 
       question, 
       markValue, 

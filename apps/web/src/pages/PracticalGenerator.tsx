@@ -37,6 +37,38 @@ export default function PracticalGenerator() {
   const [generating, setGenerating] = useState(false);
   const [practical, setPractical] = useState<Practical | null>(null);
   const [copied, setCopied] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [generationStage, setGenerationStage] = useState('');
+  const [activeTab, setActiveTab] = useState<'all' | 'page1' | 'page2' | 'page3'>('all');
+
+  useEffect(() => {
+    let interval: any;
+    if (generating) {
+      setProgress(8);
+      setGenerationStage('Connecting to OCI Command A...');
+      const stages = [
+        { threshold: 25, text: 'Formulating mathematical theory & complexity bounds...' },
+        { threshold: 50, text: 'Designing ASCII execution flowchart & architecture...' },
+        { threshold: 72, text: 'Writing complete verified code & test drivers...' },
+        { threshold: 90, text: 'Drafting observations & external viva questions...' },
+        { threshold: 98, text: 'Finalizing syllabus journal formatting...' }
+      ];
+
+      interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 95) return prev;
+          const next = prev + 3;
+          const currentStage = stages.find(s => next <= s.threshold);
+          if (currentStage) setGenerationStage(currentStage.text);
+          return next;
+        });
+      }, 400);
+    } else {
+      setProgress(100);
+      setGenerationStage('');
+    }
+    return () => clearInterval(interval);
+  }, [generating]);
 
   useEffect(() => {
     async function loadSubjects() {
@@ -81,12 +113,13 @@ export default function PracticalGenerator() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          aim,
+          aim: aim.trim(),
           subjectId: selectedSubjectId,
           codeLanguage: language
         })
       });
       if (res && res.theory) {
+        res.aim = aim.trim();
         setPractical(res);
         setGenerating(false);
         return;
@@ -96,7 +129,8 @@ export default function PracticalGenerator() {
     }
 
     try {
-      const practicalData = await generatePracticalAI(aim, language);
+      const practicalData = await generatePracticalAI(aim.trim(), language);
+      practicalData.aim = aim.trim();
       setPractical(practicalData);
     } catch (err) {
       console.error("Error generating practical:", err);
@@ -279,7 +313,7 @@ ${practical.conclusion}
                 {generating ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin text-white" />
-                    Assembling Journal Sections...
+                    <span>Assembling Journal ({progress}%)...</span>
                   </>
                 ) : (
                   <>
@@ -288,14 +322,54 @@ ${practical.conclusion}
                   </>
                 )}
               </button>
+
+              {generating && (
+                <div className="space-y-2 pt-1 animate-fadeIn">
+                  <div className="flex justify-between items-center text-[11px] font-mono text-[#6b6f82]">
+                    <span className="truncate max-w-[240px] font-semibold text-[#4f75f2]">{generationStage}</span>
+                    <span className="font-bold text-[#121217]">{progress}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-[#f0f3fa] rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-[#4f75f2] via-[#6366f1] to-emerald-500 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Output Document Viewer */}
         <div className="lg:col-span-7">
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl h-[680px] flex flex-col overflow-hidden shadow-xs">
-            {!practical ? (
+          <div className={`bg-white border rounded-3xl h-[680px] flex flex-col overflow-hidden shadow-xs transition-all duration-500 ${
+            generating ? 'border-[#4f75f2] ring-4 ring-[#4f75f2]/15 shadow-lg shadow-[#4f75f2]/10' : 'border-[#e3e6ed]'
+          }`}>
+            {generating && !practical ? (
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#f8f9fc] space-y-6">
+                <div className="relative">
+                  <div className="w-20 h-20 bg-gradient-to-tr from-[#4f75f2] to-[#7c3aed] rounded-3xl flex items-center justify-center shadow-lg shadow-[#4f75f2]/25 animate-pulse">
+                    <FlaskConical className="w-9 h-9 text-white animate-bounce" />
+                  </div>
+                  <div className="absolute -bottom-2 -right-2 bg-white px-2.5 py-1 rounded-full border border-[#d0dcf5] text-xs font-black text-[#4f75f2] shadow-xs">
+                    {progress}%
+                  </div>
+                </div>
+                <div className="space-y-2 max-w-sm">
+                  <h3 className="text-base font-extrabold text-[#121217]">OCI Command A is Generating</h3>
+                  <p className="text-xs text-[#6b6f82] font-mono leading-relaxed">
+                    {generationStage || "Analyzing syllabus requirements and synthesizing multi-page sections..."}
+                  </p>
+                </div>
+                <div className="w-64 h-2.5 bg-[#e3e6ed] rounded-full overflow-hidden shadow-inner">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#4f75f2] via-[#6366f1] to-emerald-500 rounded-full transition-all duration-300"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              </div>
+            ) : !practical ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#f8f9fc]">
                 <div className="w-16 h-16 bg-[#edf3fc] rounded-2xl flex items-center justify-center border border-[#d0dcf5] mb-4 shadow-xs">
                   <FlaskConical className="w-7 h-7 text-[#4f75f2]" />
@@ -307,11 +381,50 @@ ${practical.conclusion}
               </div>
             ) : (
               <>
-                <div className="flex justify-between items-center p-5 border-b border-[#e3e6ed] bg-[#f8f9fc]">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#121217]">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    Syllabus Standard File Generated
+                <div className="flex flex-wrap justify-between items-center p-4 md:p-5 border-b border-[#e3e6ed] bg-[#f8f9fc] gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#121217]">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      Syllabus Standard File Generated
+                    </div>
                   </div>
+
+                  {/* Step-by-step page view navigation */}
+                  <div className="flex items-center bg-white border border-[#e3e6ed] rounded-xl p-1 gap-1 text-[11px] font-bold shadow-xs">
+                    <button
+                      onClick={() => setActiveTab('all')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        activeTab === 'all' ? 'bg-[#4f75f2] text-white' : 'text-[#6b6f82] hover:text-[#121217]'
+                      }`}
+                    >
+                      All Sections
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('page1')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        activeTab === 'page1' ? 'bg-[#4f75f2] text-white' : 'text-[#6b6f82] hover:text-[#121217]'
+                      }`}
+                    >
+                      Page 1: Theory
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('page2')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        activeTab === 'page2' ? 'bg-[#4f75f2] text-white' : 'text-[#6b6f82] hover:text-[#121217]'
+                      }`}
+                    >
+                      Page 2: Code
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('page3')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        activeTab === 'page3' ? 'bg-[#4f75f2] text-white' : 'text-[#6b6f82] hover:text-[#121217]'
+                      }`}
+                    >
+                      Page 3: Viva
+                    </button>
+                  </div>
+
                   <div className="flex gap-2">
                     <button 
                       onClick={handleCopy}
@@ -336,80 +449,92 @@ ${practical.conclusion}
                     <p className="text-[#121217] font-extrabold text-base leading-relaxed">{practical.aim}</p>
                   </div>
 
-                  {practical.apparatus && (
-                    <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
-                      <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1">Apparatus &amp; System Requirements</h3>
-                      <p className="text-xs text-[#121217] font-mono leading-relaxed">{practical.apparatus}</p>
-                    </div>
-                  )}
-                  
-                  <div>
-                    <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Theory &amp; Mathematical Context</h3>
-                    <p className="text-[#4f5367] leading-relaxed text-xs md:text-sm font-sans">{practical.theory}</p>
-                  </div>
-
-                  {practical.diagramAscii && (
-                    <div>
-                      <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Architecture &amp; Execution Flow</h3>
-                      <pre className="bg-[#f8f9fc] p-4 rounded-2xl text-[11px] text-[#121217] font-mono overflow-x-auto border border-[#e3e6ed] leading-snug font-bold">
-                        {practical.diagramAscii}
-                      </pre>
-                    </div>
-                  )}
-                  
-                  <div>
-                    <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Procedural Algorithm</h3>
-                    <ol className="text-[#4f5367] list-decimal pl-5 space-y-1.5 leading-relaxed text-xs md:text-sm">
-                      {practical.algorithm.map((step, idx) => (
-                        <li key={idx}>{step}</li>
-                      ))}
-                    </ol>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Code Implementation</h3>
-                    <pre className="bg-[#f8f9fc] p-5 rounded-2xl overflow-x-auto text-xs text-[#121217] font-mono border border-[#e3e6ed] leading-relaxed">
-                      {practical.code}
-                    </pre>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
-                      <h4 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Expected Input Format</h4>
-                      <p className="text-xs text-[#121217] whitespace-pre-wrap font-mono">{practical.expectedInput}</p>
-                    </div>
-                    <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
-                      <h4 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Expected Output Log</h4>
-                      <pre className="text-xs text-[#121217] whitespace-pre-wrap font-mono">{practical.expectedOutput}</pre>
-                    </div>
-                  </div>
-
-                  {practical.observation && (
-                    <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
-                      <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1">Observations &amp; Operational Performance</h3>
-                      <pre className="text-xs text-[#121217] font-mono whitespace-pre-wrap leading-relaxed">{practical.observation}</pre>
-                    </div>
-                  )}
-
-                  <div>
-                    <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Conclusion</h3>
-                    <p className="text-[#4f5367] leading-relaxed text-xs italic font-sans">{practical.conclusion}</p>
-                  </div>
-
-                  <div className="border-t border-[#e3e6ed] pt-6">
-                    <h3 className="text-sm font-extrabold text-[#121217] mb-4 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#4f75f2]" />
-                      Associated Viva Questions
-                    </h3>
-                    <div className="space-y-3">
-                      {practical.vivaQuestions?.map((q, idx) => (
-                        <div key={idx} className="p-4 bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl space-y-1">
-                          <p className="text-xs font-bold text-[#121217]">Q: {q.question}</p>
-                          <p className="text-xs text-[#6b6f82]">A: {q.answer}</p>
+                  {(activeTab === 'all' || activeTab === 'page1') && (
+                    <>
+                      {practical.apparatus && (
+                        <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
+                          <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1">Apparatus &amp; System Requirements</h3>
+                          <p className="text-xs text-[#121217] font-mono leading-relaxed">{practical.apparatus}</p>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                      )}
+                      
+                      <div>
+                        <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Theory &amp; Mathematical Context</h3>
+                        <p className="text-[#4f5367] leading-relaxed text-xs md:text-sm font-sans whitespace-pre-wrap">{practical.theory}</p>
+                      </div>
+
+                      {practical.diagramAscii && (
+                        <div>
+                          <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Architecture &amp; Execution Flow</h3>
+                          <pre className="bg-[#f8f9fc] p-4 rounded-2xl text-[11px] text-[#121217] font-mono overflow-x-auto border border-[#e3e6ed] leading-snug font-bold">
+                            {practical.diagramAscii}
+                          </pre>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {(activeTab === 'all' || activeTab === 'page2') && (
+                    <>
+                      <div>
+                        <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Procedural Algorithm</h3>
+                        <ol className="text-[#4f5367] list-decimal pl-5 space-y-1.5 leading-relaxed text-xs md:text-sm">
+                          {practical.algorithm.map((step, idx) => (
+                            <li key={idx}>{step}</li>
+                          ))}
+                        </ol>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Code Implementation</h3>
+                        <pre className="bg-[#f8f9fc] p-5 rounded-2xl overflow-x-auto text-xs text-[#121217] font-mono border border-[#e3e6ed] leading-relaxed">
+                          {practical.code}
+                        </pre>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
+                          <h4 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Expected Input Format</h4>
+                          <p className="text-xs text-[#121217] whitespace-pre-wrap font-mono">{practical.expectedInput}</p>
+                        </div>
+                        <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
+                          <h4 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Expected Output Log</h4>
+                          <pre className="text-xs text-[#121217] whitespace-pre-wrap font-mono">{practical.expectedOutput}</pre>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {(activeTab === 'all' || activeTab === 'page3') && (
+                    <>
+                      {practical.observation && (
+                        <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-4 rounded-2xl">
+                          <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1">Observations &amp; Operational Performance</h3>
+                          <pre className="text-xs text-[#121217] font-mono whitespace-pre-wrap leading-relaxed">{practical.observation}</pre>
+                        </div>
+                      )}
+
+                      <div>
+                        <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-widest mb-1.5">Conclusion</h3>
+                        <p className="text-[#4f5367] leading-relaxed text-xs italic font-sans">{practical.conclusion}</p>
+                      </div>
+
+                      <div className="border-t border-[#e3e6ed] pt-6">
+                        <h3 className="text-sm font-extrabold text-[#121217] mb-4 flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-[#4f75f2]" />
+                          Associated Viva Questions
+                        </h3>
+                        <div className="space-y-3">
+                          {practical.vivaQuestions?.map((q, idx) => (
+                            <div key={idx} className="p-4 bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl space-y-1">
+                              <p className="text-xs font-bold text-[#121217]">Q: {q.question}</p>
+                              <p className="text-xs text-[#6b6f82]">A: {q.answer}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </>
             )}

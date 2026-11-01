@@ -18,8 +18,11 @@ export default function AssignmentEngine() {
   const [trainingStyle, setTrainingStyle] = useState(false);
   const [styleSaved, setStyleSaved] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [generationStage, setGenerationStage] = useState('');
   const [draft, setDraft] = useState<string>('');
   const [copied, setCopied] = useState(false);
+  const [activeView, setActiveView] = useState<'all' | 'summary' | 'core' | 'implementation' | 'viva'>('all');
 
   useEffect(() => {
     async function loadSubjects() {
@@ -69,6 +72,28 @@ export default function AssignmentEngine() {
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setGenerating(true);
+    setProgress(5);
+    setGenerationStage('Connecting to OCI Cohere Command A model...');
+    
+    // Smooth progress ticker
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev < 20) {
+          setGenerationStage('Analyzing assignment query and syllabus topics...');
+          return prev + 4;
+        } else if (prev < 45) {
+          setGenerationStage('Generating theoretical foundations & mathematical context...');
+          return prev + 3;
+        } else if (prev < 70) {
+          setGenerationStage('Synthesizing comparative architecture & case study pages...');
+          return prev + 2;
+        } else if (prev < 90) {
+          setGenerationStage('Compiling viva questions, limitations & formatting markdown...');
+          return prev + 1;
+        }
+        return prev;
+      });
+    }, 450);
     
     const targetSubject = subjects.find(s => s.id === selectedSubjectId)?.name || 'Computer Science';
 
@@ -83,8 +108,11 @@ export default function AssignmentEngine() {
         })
       });
       if (res && res.answer) {
+        clearInterval(interval);
+        setProgress(100);
+        setGenerationStage('Complete!');
         setDraft(res.answer);
-        setGenerating(false);
+        setTimeout(() => setGenerating(false), 400);
         return;
       }
     } catch (err) {
@@ -93,11 +121,15 @@ export default function AssignmentEngine() {
 
     try {
       const assignmentText = await generateAssignmentAI(prompt, wordLimit, targetSubject);
+      clearInterval(interval);
+      setProgress(100);
+      setGenerationStage('Complete!');
       setDraft(assignmentText);
     } catch (err) {
       console.error("Error generating assignment:", err);
+      clearInterval(interval);
     } finally {
-      setGenerating(false);
+      setTimeout(() => setGenerating(false), 400);
     }
   };
 
@@ -252,34 +284,115 @@ export default function AssignmentEngine() {
 
         {/* Preview Column */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 min-h-[600px] flex flex-col shadow-xs">
-            <div className="flex justify-between items-center mb-6 pb-4 border-b border-[#e3e6ed]">
-              <h2 className="text-xl font-extrabold text-[#121217] flex items-center gap-2">
-                <Layers className="w-5 h-5 text-[#4f75f2]" />
-                Document Workspace
-              </h2>
-              {draft && (
-                <div className="flex gap-2">
-                  <button 
-                    onClick={handleCopy}
-                    className="p-2 bg-white border border-[#e3e6ed] hover:bg-[#edf3fc] rounded-xl text-[#121217] transition-colors cursor-pointer shadow-xs" 
-                    title={copied ? "Copied!" : "Copy to Clipboard"}
-                  >
-                    {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-[#4f75f2]" />}
-                  </button>
-                  <button 
-                    onClick={handleDownload}
-                    className="p-2 bg-[#121217] hover:bg-[#252530] rounded-xl text-white transition-colors cursor-pointer shadow-xs"
-                    title="Export Markdown File"
-                  >
-                    <Download className="w-4 h-4" />
-                  </button>
+          <div className={`bg-white border rounded-3xl p-6 md:p-8 min-h-[600px] flex flex-col shadow-xs transition-all duration-500 ${
+            generating ? 'border-[#4f75f2] ring-4 ring-[#4f75f2]/15 shadow-xl shadow-[#4f75f2]/10 animate-pulse' : 'border-[#e3e6ed]'
+          }`}>
+            <div className="flex flex-wrap justify-between items-center mb-6 pb-4 border-b border-[#e3e6ed] gap-3">
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-extrabold text-[#121217] flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-[#4f75f2]" />
+                  Document Workspace
+                </h2>
+                {generating && (
+                  <span className="text-[11px] font-mono font-bold bg-[#edf3fc] text-[#4f75f2] px-2.5 py-0.5 rounded-full border border-[#d0dcf5] flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-ping" />
+                    Generating {progress}%
+                  </span>
+                )}
+              </div>
+
+              {draft && !generating && (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center bg-[#f8f9fc] border border-[#e3e6ed] rounded-xl p-1 gap-1 text-[11px] font-bold shadow-xs">
+                    <button
+                      onClick={() => setActiveView('all')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        activeView === 'all' ? 'bg-[#4f75f2] text-white' : 'text-[#6b6f82] hover:text-[#121217]'
+                      }`}
+                    >
+                      Full Report
+                    </button>
+                    <button
+                      onClick={() => setActiveView('summary')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        activeView === 'summary' ? 'bg-[#4f75f2] text-white' : 'text-[#6b6f82] hover:text-[#121217]'
+                      }`}
+                    >
+                      1. Abstract & Theory
+                    </button>
+                    <button
+                      onClick={() => setActiveView('core')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        activeView === 'core' ? 'bg-[#4f75f2] text-white' : 'text-[#6b6f82] hover:text-[#121217]'
+                      }`}
+                    >
+                      2. Architecture
+                    </button>
+                    <button
+                      onClick={() => setActiveView('implementation')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        activeView === 'implementation' ? 'bg-[#4f75f2] text-white' : 'text-[#6b6f82] hover:text-[#121217]'
+                      }`}
+                    >
+                      3. Workflow & Case Study
+                    </button>
+                    <button
+                      onClick={() => setActiveView('viva')}
+                      className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                        activeView === 'viva' ? 'bg-[#4f75f2] text-white' : 'text-[#6b6f82] hover:text-[#121217]'
+                      }`}
+                    >
+                      4. Viva Voce
+                    </button>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={handleCopy}
+                      className="p-2 bg-white border border-[#e3e6ed] hover:bg-[#edf3fc] rounded-xl text-[#121217] transition-colors cursor-pointer shadow-xs" 
+                      title={copied ? "Copied!" : "Copy to Clipboard"}
+                    >
+                      {copied ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-[#4f75f2]" />}
+                    </button>
+                    <button 
+                      onClick={handleDownload}
+                      className="p-2 bg-[#121217] hover:bg-[#252530] rounded-xl text-white transition-colors cursor-pointer shadow-xs"
+                      title="Export Markdown File"
+                    >
+                      <Download className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
             
-            <div className="flex-1 bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl p-6 flex flex-col min-h-[450px]">
-              {!draft ? (
+            <div className={`flex-1 rounded-2xl p-6 flex flex-col min-h-[450px] transition-all duration-300 ${
+              generating ? 'bg-[#f0f4ff]/50 border-2 border-dashed border-[#4f75f2]/40' : 'bg-[#f8f9fc] border border-[#e3e6ed]'
+            }`}>
+              {generating && !draft ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-8 space-y-6">
+                  <div className="relative">
+                    <div className="w-20 h-20 bg-gradient-to-tr from-[#4f75f2] to-[#7c3aed] rounded-3xl flex items-center justify-center shadow-lg shadow-[#4f75f2]/25 animate-pulse">
+                      <Layers className="w-9 h-9 text-white animate-bounce" />
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 bg-white px-2.5 py-1 rounded-full border border-[#d0dcf5] text-xs font-black text-[#4f75f2] shadow-xs">
+                      {progress}%
+                    </div>
+                  </div>
+                  <div className="space-y-2 max-w-md">
+                    <h3 className="text-base font-extrabold text-[#121217]">OCI Command A is Generating Multi-Page Report</h3>
+                    <p className="text-xs text-[#6b6f82] font-mono leading-relaxed">
+                      {generationStage || "Analyzing syllabus requirements and synthesizing multi-page sections..."}
+                    </p>
+                  </div>
+                  <div className="w-72 h-2.5 bg-[#e3e6ed] rounded-full overflow-hidden shadow-inner">
+                    <div 
+                      className="h-full bg-gradient-to-r from-[#4f75f2] via-[#6366f1] to-emerald-500 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              ) : !draft ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
                   <div className="w-16 h-16 bg-[#edf3fc] border border-[#d0dcf5] rounded-2xl flex items-center justify-center mb-4 shadow-xs">
                     <FileEdit className="w-7 h-7 text-[#4f75f2]" />
@@ -297,14 +410,14 @@ export default function AssignmentEngine() {
                 />
               )}
               
-              {draft && (
+              {draft && !generating && (
                 <div className="mt-6 pt-4 border-t border-[#e3e6ed] flex justify-between items-center text-xs text-[#6b6f82]">
                   <div className="flex items-center gap-1.5 font-bold font-mono">
                     <BookOpen className="w-4 h-4 text-[#4f75f2]" />
-                    Word Count: {draft.split(/\s+/).length} Words
+                    Word Count: {draft.split(/\s+/).length} Words (Multi-Page Structure)
                   </div>
                   <span className="font-bold text-[#4f75f2] bg-[#edf3fc] px-2.5 py-1 rounded-lg border border-[#d0dcf5] flex items-center gap-1 text-[11px]">
-                    <BrainCircuit className="w-3.5 h-3.5" /> Digital twin calibrated
+                    <BrainCircuit className="w-3.5 h-3.5" /> OCI Cohere Command A Calibrated
                   </span>
                 </div>
               )}

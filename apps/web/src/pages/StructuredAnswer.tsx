@@ -10,6 +10,8 @@ export default function StructuredAnswer() {
   const [formatVariant, setFormatVariant] = useState<string>('Topper Standard');
   
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [generationStage, setGenerationStage] = useState('');
   const [copied, setCopied] = useState(false);
   const [generatedAnswer, setGeneratedAnswer] = useState<string | null>(null);
   const [wordCount, setWordCount] = useState<number>(0);
@@ -19,6 +21,28 @@ export default function StructuredAnswer() {
     if (!questionText.trim()) return;
 
     setLoading(true);
+    setProgress(5);
+    setGenerationStage('Connecting to OCI Cohere Command A model...');
+
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev < 25) {
+          setGenerationStage('Analyzing syllabus criteria and question invariants...');
+          return prev + 5;
+        } else if (prev < 50) {
+          setGenerationStage('Formulating core definition, equations, and ASCII architecture...');
+          return prev + 3;
+        } else if (prev < 80) {
+          setGenerationStage('Structuring point-by-point breakdown and worked example...');
+          return prev + 2;
+        } else if (prev < 95) {
+          setGenerationStage('Calibrating topper mark scheme and verifying formatting...');
+          return prev + 1;
+        }
+        return prev;
+      });
+    }, 400);
+
     try {
       const res = await fetchApi('/api/answers/generate', {
         method: 'POST',
@@ -31,9 +55,12 @@ export default function StructuredAnswer() {
       });
 
       if (res && res.answer) {
+        clearInterval(interval);
+        setProgress(100);
+        setGenerationStage('Complete!');
         setGeneratedAnswer(res.answer);
         setWordCount(res.wordCount || res.answer.split(/\s+/).length);
-        setLoading(false);
+        setTimeout(() => setLoading(false), 400);
         return;
       }
     } catch (err) {
@@ -42,12 +69,16 @@ export default function StructuredAnswer() {
 
     try {
       const answer = await generateStructuredAnswerAI(questionText.trim(), markValue, formatVariant);
+      clearInterval(interval);
+      setProgress(100);
+      setGenerationStage('Complete!');
       setGeneratedAnswer(answer);
       setWordCount(answer.split(/\s+/).length);
     } catch (err) {
       console.error(err);
+      clearInterval(interval);
     } finally {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 400);
     }
   };
 
@@ -77,7 +108,9 @@ export default function StructuredAnswer() {
       </header>
 
       {/* Input Configuration Card */}
-      <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+      <div className={`bg-white border rounded-3xl p-6 md:p-8 space-y-6 shadow-xs transition-all duration-500 ${
+        loading ? 'border-[#4f75f2] ring-4 ring-[#4f75f2]/15 shadow-xl shadow-[#4f75f2]/10' : 'border-[#e3e6ed]'
+      }`}>
         <form onSubmit={handleGenerate} className="space-y-6">
           <div>
             <label className="text-[10px] font-mono uppercase tracking-wider text-[#6b6f82] font-bold block mb-2">
@@ -135,21 +168,40 @@ export default function StructuredAnswer() {
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full md:w-auto bg-[#4f75f2] hover:bg-[#385dd8] text-white px-8 py-3.5 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin text-white" /> Structuring Exam Answer...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5 text-amber-200" /> Generate {markValue}-Mark Topper Answer
-              </>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-1">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full sm:w-auto bg-[#4f75f2] hover:bg-[#385dd8] text-white px-8 py-3.5 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin text-white" /> Structuring Answer ({progress}%)...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5 text-amber-200" /> Generate {markValue}-Mark Topper Answer
+                </>
+              )}
+            </button>
+
+            {loading && (
+              <div className="flex-1 flex items-center gap-3 bg-[#edf3fc] border border-[#d0dcf5] px-4 py-2.5 rounded-2xl">
+                <div className="flex-1 space-y-1">
+                  <div className="flex justify-between items-center text-[11px] font-mono font-bold text-[#4f75f2]">
+                    <span>{generationStage}</span>
+                    <span>{progress}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-[#d0dcf5] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#4f75f2] via-[#6366f1] to-emerald-500 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
             )}
-          </button>
+          </div>
         </form>
       </div>
 

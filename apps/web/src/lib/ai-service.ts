@@ -63,7 +63,7 @@ export async function generateAIResponse(promptText: string, options: AIRequestO
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'command-r-plus',
+          model: 'command-r-plus-08-2024',
           messages: [{ role: 'user', content: promptText }]
         })
       });
@@ -125,7 +125,7 @@ Ensure high technical accuracy, crisp academic tone, and thorough explanation ma
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${cohereKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'command-r-plus', messages: [{ role: 'user', content: systemInstruction }] })
+        body: JSON.stringify({ model: 'command-r-plus-08-2024', messages: [{ role: 'user', content: systemInstruction }] })
       });
       if (res.ok) {
         const data = await res.json();
@@ -287,7 +287,7 @@ Use this exact schema:
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${cohereKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: 'command-r-plus', messages: [{ role: 'user', content: prompt }] })
+        body: JSON.stringify({ model: 'command-r-plus-08-2024', messages: [{ role: 'user', content: prompt }] })
       });
       if (res.ok) {
         const data = await res.json();
@@ -475,11 +475,99 @@ EDA Pairplot successfully saved to 'iris_eda_pairplot.png'.`,
       observation: "Memory Allocated: ~4.2 MB (Process Heap)\nExecution Time: 0.002 seconds\nExit Code: 0 (Success)",
       conclusion: `The "Hello, World!" program was successfully written, compiled, and executed in ${langUpper}. Standard output stream handling and interpreter environment were verified without runtime exceptions.`,
       vivaQuestions: [
-        { question: `What is the core objective of ${topicTitle}?`, answer: "To implement, test, and analyze the computational logic, data structures, and output correctness for this specific workflow." },
+        { question: "What is the core objective of this introductory experiment?", answer: "To implement, test, and analyze the computational logic, standard I/O streams, and runtime environment configuration." },
         { question: "What error-handling mechanisms should be incorporated?", answer: "Boundary condition checking, input validation, memory allocation safeguards, and exception handling blocks." }
       ]
     };
   }
+
+  // 5. General Computer Science / Data Structures / Algorithms (e.g. Binary Search, Sorting, Trees, Graph)
+  return {
+    aim: `Design, Implement, and Analyze Algorithm for ${aim} in ${langUpper}`,
+    apparatus: `Software: ${langUpper} Compiler/Interpreter, Visual Studio Code / Jupyter, Terminal Console, Operating System: Linux / Windows.`,
+    theory: `The experiment focuses on the rigorous implementation and algorithmic analysis of "${aim}". Key aspects include formal mathematical state definition, algorithmic invariant analysis, recursion vs iterative tradeoffs, and asymptotic complexity boundaries. In divide-and-conquer and search structures, partition invariants dictate asymptotic runtime bounds O(log n) to O(n log n). Correct handling of edge cases, array boundaries, and termination predicates is paramount to ensure complete termination without memory leaks.`,
+    diagramAscii: `+-----------------------+     +------------------------+     +------------------------+\n| Input Array / Problem | --> | Divide & Conquer / Loop| --> | Validated Result / Idx |\n| [low ... mid ... high]|     | Compare & Halve Range  |     | Terminal Confirmation  |\n+-----------------------+     +------------------------+     +------------------------+`,
+    algorithm: [
+      `Initialize input collection, target search/key parameters, and low/high boundary indices.`,
+      `Verify preconditions and sort-order or tree-integrity invariants for the target domain.`,
+      `Evaluate loop termination invariant (e.g. while low <= high).`,
+      `Compute mid index = low + (high - low) // 2 to avoid integer overflow issues.`,
+      `Perform target comparison against collection[mid] and re-bound search window.`,
+      `Return optimal result index, display formatted execution trace, and exit cleanly.`
+    ],
+    code: lang === 'python' ?
+`# Implementation: ${aim}
+# Language: Python 3.x
+
+def binary_search(arr, target):
+    """
+    Executes binary search on sorted array.
+    Time Complexity: O(log n)
+    Space Complexity: O(1)
+    """
+    low = 0
+    high = len(arr) - 1
+    
+    while low <= high:
+        mid = (low + high) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+            
+    return -1
+
+def main():
+    sample_data = [11, 23, 34, 45, 56, 67, 78, 89, 90]
+    search_key = 56
+    
+    print("=== Algorithm Execution: ${aim} ===")
+    print(f"Target Array: {sample_data}")
+    print(f"Search Key: {search_key}")
+    
+    idx = binary_search(sample_data, search_key)
+    if idx != -1:
+        print(f"Element found successfully at index: {idx}")
+    else:
+        print("Element not found in dataset.")
+
+if __name__ == "__main__":
+    main()` :
+`// Implementation: ${aim}
+// Language: C++
+#include <iostream>
+#include <vector>
+
+int binarySearch(const std::vector<int>& arr, int target) {
+    int low = 0, high = static_cast<int>(arr.size()) - 1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] < target) low = mid + 1;
+        else high = mid - 1;
+    }
+    return -1;
+}
+
+int main() {
+    std::vector<int> data = {11, 23, 34, 45, 56, 67, 78, 89, 90};
+    int key = 56;
+    int res = binarySearch(data, key);
+    std::cout << "Element found at index: " << res << std::endl;
+    return 0;
+}`,
+    expectedInput: "Sorted list/array of integers: [11, 23, 34, 45, 56, 67, 78, 89, 90], Target Key: 56",
+    expectedOutput: `=== Algorithm Execution: ${aim} ===\nTarget Array: [11, 23, 34, 45, 56, 67, 78, 89, 90]\nSearch Key: 56\nElement found successfully at index: 4`,
+    observation: "1. The algorithm verified asymptotic O(log n) time complexity.\n2. Invariant bounds checked with zero off-by-one errors.\n3. Auxiliary memory verified at O(1) in-place allocation.",
+    conclusion: `The computational experiment for "${aim}" was successfully designed, implemented, and verified in ${langUpper}. Expected outputs and complexity bounds were confirmed.`,
+    vivaQuestions: [
+      { question: `What is the time and space complexity of ${aim}?`, answer: "Time Complexity: Best Case O(1), Average/Worst Case O(log n). Auxiliary Space: O(1) for iterative approach." },
+      { question: "Why is mid calculated as low + (high - low) / 2?", answer: "To prevent potential 32-bit integer overflow that can occur when adding (low + high) directly for massive array sizes." },
+      { question: "What is the prerequisite condition before executing binary search?", answer: "The underlying data collection must be sorted in monotonic order (ascending or descending) with random-access indexing." }
+    ]
+  };
 }
 
 export function getDefaultSubjects() {

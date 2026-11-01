@@ -12,6 +12,7 @@ import { webSearchTool } from "./tools/web-search.tool";
 import { syllabusMapperTool } from "./tools/syllabus-mapper.tool";
 import { temporalMemoryTool } from "./tools/temporal-memory.tool";
 import { headers } from "next/headers";
+import { callOciCohereChat, getOciInferenceClient } from "./oci-client";
 
 const client = postgres(env.DATABASE_URL, { max: 10 });
 const db = drizzle(client);
@@ -177,9 +178,15 @@ export const aiGateway: AIGateway = {
       let activeModel = routeConfig.modelName;
       let apiKey = '';
 
-      if (preferredProvider === 'cohere' && (clientCohereKey || env.COHERE_API_KEY)) {
+      const isOciEnabled = env.OCI_ENABLED && (!!env.OCI_COMPARTMENT_ID || !!process.env["OCI_COMPARTMENT_ID"]);
+      const defaultProvider = process.env.DEFAULT_AI_PROVIDER || 'oci';
+
+      if (preferredProvider === 'oci' || (isOciEnabled && (defaultProvider === 'oci' || (preferredProvider !== 'gemini' && preferredProvider !== 'cohere')))) {
+        activeProvider = 'oci';
+        activeModel = env.OCI_MODEL_ID || 'cohere.command-a-03-2025';
+      } else if (preferredProvider === 'cohere' && (clientCohereKey || env.COHERE_API_KEY)) {
         activeProvider = 'cohere';
-        activeModel = 'command-r-plus';
+        activeModel = 'command-r-plus-08-2024';
         apiKey = clientCohereKey || env.COHERE_API_KEY || '';
       } else if (preferredProvider === 'gemini' && (clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'])) {
         activeProvider = 'gemini';
@@ -187,27 +194,37 @@ export const aiGateway: AIGateway = {
         apiKey = clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'] || '';
       } else {
         // Fallback checks
-        if (clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY']) {
+        if (isOciEnabled) {
+          activeProvider = 'oci';
+          activeModel = env.OCI_MODEL_ID || 'cohere.command-a-03-2025';
+        } else if (clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY']) {
           activeProvider = 'gemini';
           activeModel = 'gemini-2.5-flash';
           apiKey = clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'] || '';
         } else if (clientCohereKey || env.COHERE_API_KEY) {
           activeProvider = 'cohere';
-          activeModel = 'command-r-plus';
+          activeModel = 'command-r-plus-08-2024';
           apiKey = clientCohereKey || env.COHERE_API_KEY || '';
         }
       }
 
-      // Upgrade if was mock but key is available
-      if ((activeProvider === 'mock' || activeProvider.includes('mock')) && apiKey) {
-        activeProvider = preferredProvider === 'cohere' ? 'cohere' : 'gemini';
-        activeModel = activeProvider === 'cohere' ? 'command-r-plus' : 'gemini-2.5-flash';
+      // Upgrade if was mock but key or OCI is available
+      if ((activeProvider === 'mock' || activeProvider.includes('mock')) && (apiKey || isOciEnabled)) {
+        if (isOciEnabled) {
+          activeProvider = 'oci';
+          activeModel = env.OCI_MODEL_ID || 'cohere.command-a-03-2025';
+        } else {
+          activeProvider = preferredProvider === 'cohere' ? 'cohere' : 'gemini';
+          activeModel = activeProvider === 'cohere' ? 'command-r-plus-08-2024' : 'gemini-2.5-flash';
+        }
       }
 
       actualModel = activeModel;
       let result: any;
 
-      if (apiKey && activeProvider === 'cohere') {
+      if (activeProvider === 'oci') {
+        result = await callOciCommandA(activeModel, taskType, input, enrichedContext);
+      } else if (apiKey && activeProvider === 'cohere') {
         result = await callCohereAPI(apiKey, activeModel, taskType, input, enrichedContext);
       } else if (apiKey && activeProvider === 'gemini') {
         if (options.useTools && ['answer_gen', 'quiz_gen', 'viva_gen', 'plan_gen'].includes(taskType)) {
@@ -374,9 +391,45 @@ async function callGeminiAPI(apiKey: string, model: string, taskType: TaskType, 
   return parseTaskOutput(taskType, textResponse);
 }
 
+// ==================== OCI GENERATIVE AI CALL (COHERE COMMAND A) ====================
+async function callOciCommandA(model: string, taskType: TaskType, input: any, context: string): Promise<any> {
+  const ociModel = model || env.OCI_MODEL_ID || 'cohere.command-a-03-2025';
+  const prompt = buildPrompt(taskType, input, context);
+  const expectJson = ['classification', 'knowledge_extraction', 'flashcard_gen', 'quiz_gen', 'prediction_gen'].includes(taskType);
+
+  let systemPrompt = '';
+  if (context) {
+    systemPrompt = `System Context:\n${context}`;
+  }
+
+  if (expectJson) {
+    const jsonDirective = 'You are an academic parser. Respond ONLY with valid JSON. Do not include markdown code block syntax (like ```json), and do not write conversational preambles or explanations.';
+    systemPrompt = systemPrompt ? `${systemPrompt}\n\n${jsonDirective}` : jsonDirective;
+  }
+
+  const textResponse = await callOciCohereChat({
+    modelId: ociModel,
+    message: prompt,
+    systemPrompt: systemPrompt || undefined,
+    temperature: 0.7,
+    maxTokens: 1500,
+  });
+
+  if (expectJson) {
+    try {
+      return cleanAndParseJSON(textResponse);
+    } catch (e) {
+      console.warn('[ai-gateway] OCI Cohere failed to parse JSON:', textResponse.slice(0, 200));
+      throw e;
+    }
+  }
+
+  return parseTaskOutput(taskType, textResponse);
+}
+
 // ==================== COHERE V2 API CALL ====================
 async function callCohereAPI(apiKey: string, model: string, taskType: TaskType, input: any, context: string): Promise<any> {
-  const cohereModel = model && model.includes('command') && !model.includes('2026') ? model : 'command-r-plus';
+  const cohereModel = model && model.includes('command') && !model.includes('2026') && model !== 'command-r-plus' ? model : 'command-r-plus-08-2024';
   const url = `https://api.cohere.com/v2/chat`;
 
   const prompt = buildPrompt(taskType, input, context);
