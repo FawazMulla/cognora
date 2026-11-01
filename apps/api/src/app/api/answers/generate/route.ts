@@ -1,14 +1,12 @@
+import { db, client } from "../../../../db";
 import { NextResponse } from "next/server";
 import { answerGeneratorNode, qualityVerifierNode } from "../../../../lib/agents/answer-agent";
-import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { studentModels, studentTopicProfiles } from "../../../../db/schema";
 import { env } from "../../../../lib/env";
 import { eq, and } from "drizzle-orm";
 import { z } from "zod";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 const AnswerGenerateSchema = z.object({
   question: z.string().min(1, "Question is required"),

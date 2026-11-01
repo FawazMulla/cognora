@@ -1,5 +1,5 @@
+import { db, client } from "../db";
 import { eq } from 'drizzle-orm';
-import { drizzle } from 'drizzle-orm/postgres-js';
 import { headers } from 'next/headers';
 import postgres from 'postgres';
 
@@ -16,8 +16,6 @@ import { temporalMemoryTool } from './tools/temporal-memory.tool';
 import { vectorRetrievalTool } from './tools/vector-retrieval.tool';
 import { webSearchTool } from './tools/web-search.tool';
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export type TaskType =
   | 'classification'
