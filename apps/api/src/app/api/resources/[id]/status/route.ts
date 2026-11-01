@@ -1,13 +1,11 @@
+import { db, client } from "../../../../../db";
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { resources } from "../../../../../db/schema";
 import { env } from "../../../../../lib/env";
 import { eq, and } from "drizzle-orm";
 import Redis from "ioredis";
 
-const client = postgres(env.DATABASE_URL, { max: 5 });
-const db = drizzle(client);
 
 // Helper to create a new Redis instance for subscription
 function createSubscriber() {

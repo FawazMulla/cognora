@@ -1,14 +1,11 @@
+import { db } from "../../../../db";
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { flashcards } from "../../../../db/schema";
 import { env } from "../../../../lib/env";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { calculateSM2 } from "../../../../lib/sm2";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 const SyncEventSchema = z.object({
   card_id: z.string().uuid(),

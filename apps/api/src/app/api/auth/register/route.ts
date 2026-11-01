@@ -1,14 +1,12 @@
+import { db, client } from "../../../../db";
 import { NextResponse } from "next/server";
 import { registerSchema } from "../../../../lib/validators/auth";
 import { supabaseAdmin } from "../../../../lib/supabase";
-import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { users } from "../../../../db/schema";
 import { env } from "../../../../lib/env";
 import { eq } from "drizzle-orm";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export async function POST(request: Request) {
   try {

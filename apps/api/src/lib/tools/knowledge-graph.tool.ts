@@ -1,11 +1,8 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { db } from "../../db";
 import { knowledgeGraphNodes } from "../../db/schema";
 import { env } from "../env";
 import { eq, and, ilike } from "drizzle-orm";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export interface KnowledgeGraphInput {
   userId: string;

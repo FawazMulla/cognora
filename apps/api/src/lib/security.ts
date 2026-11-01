@@ -1,11 +1,8 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { db } from "../db";
 import { env } from "./env";
 import { eq, sql } from "drizzle-orm";
 import * as schema from "../db/schema";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client, { schema });
 
 /**
  * Helper to check ownership of a resource before accessing or mutating it.

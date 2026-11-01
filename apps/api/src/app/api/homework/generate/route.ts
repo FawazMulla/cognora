@@ -1,5 +1,5 @@
+import { db, client } from "../../../../db";
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { homeworkStyleProfiles } from "../../../../db/schema";
 import { env } from "../../../../lib/env";
@@ -7,8 +7,6 @@ import { eq, and } from "drizzle-orm";
 import { homeworkGeneratorNode } from "../../../../lib/agents/homework-agent";
 import { z } from "zod";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 const HomeworkGenerateSchema = z.object({
   question: z.string().min(1, "Question is required"),

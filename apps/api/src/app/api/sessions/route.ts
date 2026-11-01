@@ -1,13 +1,10 @@
+import { db } from "../../../db";
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { studySessions } from "../../../db/schema";
 import { env } from "../../../lib/env";
 import { eq, desc } from "drizzle-orm";
 import { z } from "zod";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 const SessionCreateSchema = z.object({
   subjectId: z.string().uuid("Invalid subject ID"),

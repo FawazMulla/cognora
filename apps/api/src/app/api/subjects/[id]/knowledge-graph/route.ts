@@ -1,12 +1,9 @@
+import { db } from "../../../../../db";
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { knowledgeGraphNodes, pyqQuestions, flashcards } from "../../../../../db/schema";
 import { env } from "../../../../../lib/env";
 import { eq, and } from "drizzle-orm";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export async function GET(
   request: Request,

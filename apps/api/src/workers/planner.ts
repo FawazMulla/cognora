@@ -1,13 +1,10 @@
+import { db } from "../db";
 import { Worker, Job } from "bullmq";
 import { redis } from "../lib/redis";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { env } from "../lib/env";
 import { studySessions, subjects, studentModels, studentTopicProfiles } from "../db/schema";
 import { eq, and, sql } from "drizzle-orm";
 
-const client = postgres(env.DATABASE_URL, { max: 5 });
-const db = drizzle(client);
 
 const connection = redis as unknown as any;
 

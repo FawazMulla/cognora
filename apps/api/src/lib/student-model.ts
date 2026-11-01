@@ -1,12 +1,9 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { db } from "../db";
 import { studentTopicProfiles, studentModels, studySessions, flashcards } from "../db/schema";
 import { env } from "./env";
 import { eq, and, desc } from "drizzle-orm";
 import { getForgettingCurve } from "./sm2";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 /**
  * Flags a topic as weak/improving/strong based on quiz accuracy.

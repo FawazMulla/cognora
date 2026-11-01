@@ -1,14 +1,11 @@
+import { db } from "../db";
 import { Worker, type ConnectionOptions } from "bullmq";
 import { QUEUE_NAMES } from "../lib/queues";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { studentTopicProfiles, subjects } from "../db/schema";
 import { env } from "../lib/env";
 import { eq, and } from "drizzle-orm";
 import { generateDailyPlanNode } from "../lib/agents/planner-agent";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export interface NotificationsJobData {
   userId: string;

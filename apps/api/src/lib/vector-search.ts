@@ -1,12 +1,9 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { db } from "../db";
 import { env } from "./env";
 import { resourceChunks } from "../db/schema";
 import { sql } from "drizzle-orm";
 import { aiGateway } from "./ai-gateway";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export interface VectorSearchResult {
   id: string;

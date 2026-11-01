@@ -1,12 +1,9 @@
+import { db } from "../../../../db";
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { homeworkStyleProfiles } from "../../../../db/schema";
 import { env } from "../../../../lib/env";
 import { extractStyleProfile } from "../../../../lib/agents/homework-agent";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export async function POST(request: Request) {
   try {

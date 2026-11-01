@@ -1,7 +1,6 @@
+import { db } from "../db";
 import { Worker, type ConnectionOptions } from "bullmq";
 import { QUEUE_NAMES, documentPipelineQueue, resourceIntelligenceQueue } from "../lib/queues";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { resources, resourceChunks, knowledgeGraphNodes } from "../db/schema";
 import { env } from "../lib/env";
 import { eq } from "drizzle-orm";
@@ -17,8 +16,6 @@ import type {
   TriggerResourceIntelligenceJob,
 } from "../lib/job-types";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 type DocumentPipelineJobData =
   | ClassifyDocumentJob

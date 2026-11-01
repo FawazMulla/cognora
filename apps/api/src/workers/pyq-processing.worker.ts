@@ -1,14 +1,11 @@
+import { db } from "../db";
 import { Worker, type ConnectionOptions } from "bullmq";
 import { QUEUE_NAMES } from "../lib/queues";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { pyqQuestions, resources } from "../db/schema";
 import { env } from "../lib/env";
 import { eq, inArray } from "drizzle-orm";
 import { aiGateway } from "../lib/ai-gateway";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export interface PyqJobData {
   resourceId?: string;

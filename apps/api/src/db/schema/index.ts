@@ -225,3 +225,72 @@ export const modelInvocationLogs = pgTable('model_invocation_logs', {
   fallbackUsed: boolean('fallback_used').default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 });
+
+
+// 2.7 Bookmarks and Annotation Tables
+export const bookmarkCollections = pgTable('bookmark_collections', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  color: text('color').default('#4f75f2'),
+  icon: text('icon').default('Folder'),
+  description: text('description'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+export const bookmarks = pgTable('bookmarks', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  collectionId: uuid('collection_id').references(() => bookmarkCollections.id, { onDelete: 'set null' }),
+  itemType: text('item_type').notNull(), // 'subject', 'module', 'topic', 'note', 'resource', 'pyq', 'flashcard', 'answer'
+  title: text('title').notNull(),
+  description: text('description'),
+  targetUrl: text('target_url').notNull(),
+  subjectId: uuid('subject_id').references(() => subjects.id, { onDelete: 'set null' }),
+  subjectName: text('subject_name'),
+  moduleNumber: text('module_number'),
+  topicTitle: text('topic_title'),
+  metadata: jsonb('metadata'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+export const annotations = pgTable('annotations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  targetType: text('target_type').notNull(), // 'topic', 'note', 'pdf_page', 'text_selection', 'answer', 'lecture'
+  targetId: text('target_id').notNull(),
+  contentReference: text('content_reference').notNull(),
+  selectedText: text('selected_text'),
+  pageNumber: integer('page_number'),
+  userNote: text('user_note').notNull(),
+  tags: text('tags').array(),
+  color: text('color').default('amber'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+// 2.8 Navigation and Preference State
+export const userNavigationState = pgTable('user_navigation_state', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).unique(),
+  lastPage: text('last_page').notNull().default('/'),
+  subjectId: uuid('subject_id').references(() => subjects.id, { onDelete: 'set null' }),
+  subjectName: text('subject_name'),
+  moduleNumber: text('module_number'),
+  topic: text('topic'),
+  resourceId: text('resource_id'),
+  resourceTitle: text('resource_title'),
+  scrollPercentage: integer('scroll_percentage').default(0),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+export const userPreferences = pgTable('user_preferences', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).unique(),
+  theme: text('theme').notNull().default('system'), // 'light', 'dark', 'system'
+  readingDensity: text('reading_density').notNull().default('standard'), // 'comfortable', 'standard', 'compact'
+  languagePreference: text('language_preference').notNull().default('english'), // 'english', 'hinglish'
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});

@@ -1,13 +1,10 @@
+import { db } from "../../../../db";
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { modelRouting } from "../../../../db/schema";
 import { env } from "../../../../lib/env";
 import { eq } from "drizzle-orm";
 import { redis } from "../../../../lib/redis";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 // For admin routes, we should verify an admin role, but for now we'll assume authorized.
 export async function GET(request: Request) {

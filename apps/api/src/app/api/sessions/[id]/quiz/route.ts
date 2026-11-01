@@ -1,14 +1,11 @@
+import { db } from "../../../../../db";
 import { NextResponse } from "next/server";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { studySessions, studentTopicProfiles } from "../../../../../db/schema";
 import { env } from "../../../../../lib/env";
 import { eq, and } from "drizzle-orm";
 import { aiGateway } from "../../../../../lib/ai-gateway";
 import { updateTopicStatus } from "../../../../../lib/student-model";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export async function POST(
   request: Request,

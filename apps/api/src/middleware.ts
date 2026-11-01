@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   };
 
   // Skip auth routes and public routes
-  if (pathname.startsWith('/api/auth') || pathname === '/api/health') {
+  if (pathname.startsWith('/api/auth') || pathname === '/api/health' || pathname.startsWith('/api/atlas/subjects') || pathname.startsWith('/api/atlas/topic') || pathname.startsWith('/api/intelligence')) {
     return wrapResponse(NextResponse.next());
   }
 
@@ -43,8 +43,8 @@ export async function middleware(request: NextRequest) {
 
   if (accessToken === 'demo-access-token' || accessToken === 'demo-token') {
     const requestHeaders = new Headers(request.headers);
-    requestHeaders.set('x-user-id', 'demo-user-101');
-    requestHeaders.set('x-auth-id', 'demo-user-101');
+    requestHeaders.set('x-user-id', '00000000-0000-0000-0000-000000000101');
+    requestHeaders.set('x-auth-id', '00000000-0000-0000-0000-000000000101');
     return wrapResponse(NextResponse.next({ request: { headers: requestHeaders } }));
   }
 

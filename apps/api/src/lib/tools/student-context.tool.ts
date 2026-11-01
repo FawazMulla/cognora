@@ -1,11 +1,8 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { db } from "../../db";
 import { studentModels, studentTopicProfiles, studySessions } from "../../db/schema";
 import { env } from "../env";
 import { eq, and, desc } from "drizzle-orm";
 
-const client = postgres(env.DATABASE_URL, { max: 10 });
-const db = drizzle(client);
 
 export interface StudentContextInput {
   userId: string;
