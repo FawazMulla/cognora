@@ -1,13 +1,28 @@
-import { NextResponse } from "next/server";
-import { env } from "../../../../lib/env";
+interface ParsedPractical {
+  aim?: string | undefined;
+  theory?: string | undefined;
+  code?: string | undefined;
+  apparatus?: string | undefined;
+  diagramAscii?: string | undefined;
+  algorithm?: string[] | string | undefined;
+  expectedInput?: string | undefined;
+  expectedOutput?: string | undefined;
+  observation?: string | undefined;
+  conclusion?: string | undefined;
+  vivaQuestions?: Array<{ question: string; answer: string }> | undefined;
+}
+
+import { NextResponse } from 'next/server';
+
+import { env } from '../../../../lib/env';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { aim, codeLanguage = "python" } = body;
+    const { aim, codeLanguage = 'python' } = body;
 
     if (!aim || !aim.trim()) {
-      return NextResponse.json({ error: "aim is required" }, { status: 400 });
+      return NextResponse.json({ error: 'aim is required' }, { status: 400 });
     }
 
     const cleanAim = aim.trim();
@@ -54,12 +69,13 @@ You MUST respond ONLY with a valid JSON object matching this schema:
 
     // 1. Try OCI Command A via aiGateway or callOciCohereChat if OCI is configured
     try {
-      const { callOciCohereChat } = await import("../../../../lib/oci-client");
+      const { callOciCohereChat } = await import('../../../../lib/oci-client');
       aiText = await callOciCohereChat({
         message: prompt,
-        systemPrompt: "You are an academic lab instructor. Always respond ONLY with valid JSON. No markdown fences, no conversational preambles.",
+        systemPrompt:
+          'You are an academic lab instructor. Always respond ONLY with valid JSON. No markdown fences, no conversational preambles.',
         maxTokens: 2500,
-        temperature: 0.7
+        temperature: 0.7,
       });
     } catch (ociErr) {
       console.warn('[practical/generate] OCI call failed, falling back:', ociErr);
@@ -73,7 +89,7 @@ You MUST respond ONLY with a valid JSON object matching this schema:
           const res = await fetch('https://api.cohere.com/v2/chat', {
             method: 'POST',
             headers: {
-              'Authorization': `Bearer ${cohereKey}`,
+              Authorization: `Bearer ${cohereKey}`,
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -81,17 +97,18 @@ You MUST respond ONLY with a valid JSON object matching this schema:
               messages: [
                 {
                   role: 'system',
-                  content: 'You are an academic lab instructor. Always respond ONLY with valid JSON. No markdown fences, no explanation.'
+                  content:
+                    'You are an academic lab instructor. Always respond ONLY with valid JSON. No markdown fences, no explanation.',
                 },
-                { role: 'user', content: prompt }
-              ]
-            })
+                { role: 'user', content: prompt },
+              ],
+            }),
           });
           if (res.ok) {
             const data = await res.json();
             const content = data.message?.content;
             if (Array.isArray(content)) {
-              aiText = content.map((c: any) => c.text || '').join('');
+              aiText = content.map((c: { text?: string }) => c.text || '').join('');
             } else if (typeof content === 'string') {
               aiText = content;
             } else if (data.message?.content?.[0]?.text) {
@@ -118,8 +135,8 @@ You MUST respond ONLY with a valid JSON object matching this schema:
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{ parts: [{ text: prompt }] }],
-              generationConfig: { temperature: 0.7, maxOutputTokens: 4096 }
-            })
+              generationConfig: { temperature: 0.7, maxOutputTokens: 4096 },
+            }),
           });
           if (res.ok) {
             const data = await res.json();
@@ -143,9 +160,9 @@ You MUST respond ONLY with a valid JSON object matching this schema:
         const startIdx = cleaned.indexOf('{');
         const endIdx = cleaned.lastIndexOf('}');
         if (startIdx !== -1 && endIdx !== -1) {
-          let jsonStr = cleaned.substring(startIdx, endIdx + 1);
+          const jsonStr = cleaned.substring(startIdx, endIdx + 1);
           // If the model truncated mid-JSON, attempt repairing
-          let parsed: any;
+          let parsed: ParsedPractical | null = null;
           try {
             parsed = JSON.parse(jsonStr);
           } catch (innerErr) {
@@ -153,14 +170,17 @@ You MUST respond ONLY with a valid JSON object matching this schema:
             const fixedJson = jsonStr.replace(/,\s*([\]}])/g, '$1');
             try {
               parsed = JSON.parse(fixedJson);
-            } catch (e2) {
+            } catch {
               // try finding inner string values
               const theoryMatch = jsonStr.match(/"theory"\s*:\s*"([\s\S]*?)(?:"\s*,\s*"|"\s*})/);
               const codeMatch = jsonStr.match(/"code"\s*:\s*"([\s\S]*?)(?:"\s*,\s*"|"\s*})/);
-              if (theoryMatch) {
+              if (theoryMatch && theoryMatch[1]) {
                 parsed = {
                   theory: theoryMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"'),
-                  code: codeMatch ? codeMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"') : undefined
+                  code:
+                    codeMatch && codeMatch[1]
+                      ? codeMatch[1].replace(/\\n/g, '\n').replace(/\\"/g, '"')
+                      : undefined,
                 };
               } else {
                 throw innerErr;
@@ -181,24 +201,36 @@ You MUST respond ONLY with a valid JSON object matching this schema:
             }
             // Always preserve user's exact aim as the document title / aim
             parsed.aim = cleanAim;
-            if (!parsed.theory) parsed.theory = `${cleanAim} implementation and theoretical analysis.`;
+            if (!parsed.theory)
+              parsed.theory = `${cleanAim} implementation and theoretical analysis.`;
             if (!parsed.algorithm) {
               parsed.algorithm = [
                 'Initialize required input data structures and variables.',
                 'Process input according to the computational invariants.',
                 'Compute and validate output results.',
-                'Display results and terminate execution.'
+                'Display results and terminate execution.',
               ];
             } else if (typeof parsed.algorithm === 'string') {
-              parsed.algorithm = parsed.algorithm.split('\n').filter((s: string) => s.trim().length > 0);
+              parsed.algorithm = parsed.algorithm
+                .split('\n')
+                .filter((s: string) => s.trim().length > 0);
             }
-            if (!parsed.expectedInput) parsed.expectedInput = `Sample input dataset for ${cleanAim}`;
-            if (!parsed.expectedOutput) parsed.expectedOutput = 'Verified output generated with zero runtime errors.';
-            if (!parsed.conclusion) parsed.conclusion = `The experiment for ${cleanAim} was implemented and executed successfully.`;
+            if (!parsed.expectedInput)
+              parsed.expectedInput = `Sample input dataset for ${cleanAim}`;
+            if (!parsed.expectedOutput)
+              parsed.expectedOutput = 'Verified output generated with zero runtime errors.';
+            if (!parsed.conclusion)
+              parsed.conclusion = `The experiment for ${cleanAim} was implemented and executed successfully.`;
             if (!parsed.vivaQuestions || !Array.isArray(parsed.vivaQuestions)) {
               parsed.vivaQuestions = [
-                { question: `What is the core working principle of ${cleanAim}?`, answer: `It executes algorithmic traversal with optimal space and time guarantees.` },
-                { question: `What is the time complexity of this implementation?`, answer: `Optimal bounds depending on input scale.` }
+                {
+                  question: `What is the core working principle of ${cleanAim}?`,
+                  answer: `It executes algorithmic traversal with optimal space and time guarantees.`,
+                },
+                {
+                  question: `What is the time complexity of this implementation?`,
+                  answer: `Optimal bounds depending on input scale.`,
+                },
               ];
             }
             return NextResponse.json(parsed);
@@ -207,41 +239,48 @@ You MUST respond ONLY with a valid JSON object matching this schema:
       } catch (parseErr) {
         console.error('[practical/generate] JSON parse failed:', parseErr);
         console.error('[practical/generate] Raw text:', aiText.slice(0, 500));
-        
+
         // Robust fallback: if OCI returned text instead of pure JSON, convert text to structured sections
-        const lines = aiText.split('\n');
         return NextResponse.json({
           aim: cleanAim,
-          apparatus: "Python 3.10+, VS Code, Windows/Linux OS, RAM 8GB+",
-          theory: aiText.length > 300 ? aiText.slice(0, 1200) : `${cleanAim} represents fundamental computational principles with rigorous algorithmic proofs.`,
+          apparatus: 'Python 3.10+, VS Code, Windows/Linux OS, RAM 8GB+',
+          theory:
+            aiText.length > 300
+              ? aiText.slice(0, 1200)
+              : `${cleanAim} represents fundamental computational principles with rigorous algorithmic proofs.`,
           diagramAscii: `[Start] --> [Initialize ${cleanAim}] --> [Compute/Process] --> [Validate Invariants] --> [Output & Terminate]`,
           algorithm: [
             `Initialize required variables and allocate memory for ${cleanAim}.`,
-            "Check boundary conditions and handle edge cases.",
-            "Traverse or manipulate computational nodes/state sequentially.",
-            "Return computed state or terminate."
+            'Check boundary conditions and handle edge cases.',
+            'Traverse or manipulate computational nodes/state sequentially.',
+            'Return computed state or terminate.',
           ],
           code: `# Practical: ${cleanAim}\n# Language: ${lang.toUpperCase()}\n\ndef main():\n    print("Executing ${cleanAim}...")\n\nif __name__ == "__main__":\n    main()`,
           expectedInput: `Standard dataset for ${cleanAim}`,
-          expectedOutput: "Execution completed successfully with exit code 0.",
+          expectedOutput: 'Execution completed successfully with exit code 0.',
           observation: `Verified execution time and memory footprint for ${cleanAim}.`,
           conclusion: `The ${cleanAim} experiment was successfully implemented and evaluated.`,
           vivaQuestions: [
-            { question: `What is the significance of ${cleanAim}?`, answer: `It provides foundational structure for efficient computation and memory access.` },
-            { question: "What is its computational complexity?", answer: "Depends on implementation, typically O(1) or O(n)." }
-          ]
+            {
+              question: `What is the significance of ${cleanAim}?`,
+              answer: `It provides foundational structure for efficient computation and memory access.`,
+            },
+            {
+              question: 'What is its computational complexity?',
+              answer: 'Depends on implementation, typically O(1) or O(n).',
+            },
+          ],
         });
       }
     }
 
     // 5. If AI failed to return valid JSON
     return NextResponse.json(
-      { error: "AI generation failed to produce valid journal entry." },
-      { status: 502 }
+      { error: 'AI generation failed to produce valid journal entry.' },
+      { status: 502 },
     );
-
   } catch (error) {
-    console.error("POST /api/practicals/generate error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error('POST /api/practicals/generate error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

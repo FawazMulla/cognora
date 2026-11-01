@@ -1,6 +1,7 @@
 # Deploying Cognora on Render (Unified Monolith Service)
 
 Cognora is configured to deploy as a **single unified monolith service** on Render:
+
 - **1 Web Service**: Next.js API server handles all backend routes (`/api/*`) and serves the Vite React frontend SPA (`apps/web/dist`) for all pages (`/`, `/viva`, `/smart-revision`, etc.).
 - **1 Port & 1 URL**: Zero CORS issues, instant same-origin routing, simplified environment variable management, and cost-effective single-service hosting.
 
@@ -42,7 +43,7 @@ If you prefer to configure the service manually in the Render dashboard:
    - **Root Directory**: leave blank (monorepo root)
    - **Build Command**:
      ```bash
-     pnpm install --no-frozen-lockfile && pnpm run build
+     pnpm install --no-frozen-lockfile --prod=false && pnpm run build
      ```
    - **Start Command**:
      ```bash
@@ -67,7 +68,9 @@ If you prefer to configure the service manually in the Render dashboard:
 ---
 
 ## Verification
+
 Running `pnpm run build` runs:
+
 1. `pnpm --filter web run build` (Builds Vite React frontend into `apps/web/dist`)
 2. `node scripts/copy-web-dist.mjs` (Copies frontend build into Next.js `apps/api/public`)
 3. `pnpm --filter @workspace/api run build` (Builds Next.js API & catch-all static server)

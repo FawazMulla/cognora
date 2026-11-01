@@ -1,8 +1,28 @@
+import {
+  AlertTriangle,
+  Check,
+  Cloud,
+  Copy,
+  FileText,
+  Filter,
+  Loader2,
+  Sparkles,
+  TrendingUp,
+  X,
+  Zap,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { BookOpen, FileText, TrendingUp, Filter, AlertTriangle, Sparkles, Loader2, X, GraduationCap, Award, Copy, Check } from 'lucide-react';
-import { fetchApi } from '../lib/api';
-import { getDefaultSubjects, generatePYQDataAI, generateStructuredAnswerAI } from '../lib/ai-service';
+
 import { FormattedAnswer } from '../components/FormattedAnswer';
+import { QuickPickSelector } from '../components/QuickPickSelector';
+import {
+  getDefaultSubjects,
+  generatePYQDataAI,
+  generateStructuredAnswerAI,
+} from '../lib/ai-service';
+import { fetchApi } from '../lib/api';
+import { executeHybridQuery } from '../lib/hybrid-router';
+import type { QuickPickItem } from '../lib/quick-picks-data';
 
 type Subject = {
   id: string;
@@ -35,15 +55,23 @@ export default function PYQIntelligence() {
   const [heatmap, setHeatmap] = useState<HeatmapItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingAnswers, setLoadingAnswers] = useState<Record<string, boolean>>({});
-  const [activeAnswer, setActiveAnswer] = useState<{ question: string; answer: string } | null>(null);
+  const [activeAnswer, setActiveAnswer] = useState<{ question: string; answer: string } | null>(
+    null,
+  );
   const [copied, setCopied] = useState(false);
+  const [responseSource, setResponseSource] = useState<
+    'quick_pick_cache' | 'oci_genai_live' | null
+  >(null);
+  const [activeQuickPickId, setActiveQuickPickId] = useState<string | undefined>(
+    'qp-pyq-confusion-matrix',
+  );
 
   // Load subjects
   useEffect(() => {
     async function loadSubjects() {
       // Helper: keep only theory subjects (exclude labs)
       const theoryOnly = (list: Subject[]) =>
-        list.filter(s => s.type !== 'Lab' && !s.name.toLowerCase().includes('lab'));
+        list.filter((s) => s.type !== 'Lab' && !s.name.toLowerCase().includes('lab'));
 
       const defaults = theoryOnly(getDefaultSubjects());
       try {
@@ -57,12 +85,12 @@ export default function PYQIntelligence() {
           }
         }
       } catch (err) {
-        console.warn("Backend subjects lookup warning:", err);
+        console.warn('Backend subjects lookup warning:', err);
       }
       setSubjects(defaults);
       setSelectedSubjectId(defaults[0]?.id || '');
     }
-    loadSubjects();
+    void loadSubjects();
   }, []);
 
   // Load subject-specific PYQ details
@@ -71,15 +99,17 @@ export default function PYQIntelligence() {
 
     async function loadSubjectData() {
       setLoading(true);
-      const selectedSub = subjects.find(s => s.id === selectedSubjectId);
+      const selectedSub = subjects.find((s) => s.id === selectedSubjectId);
       const defaultData = generatePYQDataAI(selectedSub?.name || 'Computer Science');
 
       try {
         const [predRes, heatRes] = await Promise.all([
           fetchApi(`/api/subjects/${selectedSubjectId}/pyqs/predicted`),
-          fetchApi(`/api/subjects/${selectedSubjectId}/pyqs/heatmap`)
+          fetchApi(`/api/subjects/${selectedSubjectId}/pyqs/heatmap`),
         ]);
-        setPredictions(predRes.predictions?.length > 0 ? predRes.predictions : defaultData.predictions);
+        setPredictions(
+          predRes.predictions?.length > 0 ? predRes.predictions : defaultData.predictions,
+        );
         setHeatmap(heatRes.heatmap?.length > 0 ? heatRes.heatmap : defaultData.heatmap);
       } catch {
         setPredictions(defaultData.predictions);
@@ -89,47 +119,73 @@ export default function PYQIntelligence() {
       }
     }
 
-    loadSubjectData();
+    void loadSubjectData();
   }, [selectedSubjectId, subjects]);
 
-  const handleGenerateAnswer = async (q: Prediction) => {
-    setLoadingAnswers(prev => ({ ...prev, [q.id]: true }));
-    const selectedSub = subjects.find(s => s.id === selectedSubjectId);
+  const handleQuickPickSelect = (item: QuickPickItem) => {
+    setActiveQuickPickId(item.id);
+    setActiveAnswer({
+      question: item.title,
+      answer: item.answerMarkdown,
+    });
+    setResponseSource('quick_pick_cache');
+  };
+
+  const handleGenerateAnswer = async (q: Prediction, forceLiveOci: boolean = false) => {
+    setLoadingAnswers((prev) => ({ ...prev, [q.id]: true }));
+    const selectedSub = subjects.find((s) => s.id === selectedSubjectId);
 
     try {
-      const res = await fetchApi('/api/answers/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      const res = await executeHybridQuery(q.questionText, {
+        category: 'pyq',
+        endpoint: '/api/answers/generate',
+        payload: {
           question: q.questionText,
           markValue: q.marks,
           format: 'Topper Standard',
           subjectId: selectedSubjectId,
-          topic: q.unit
-        })
+          topic: q.unit,
+        },
+        forceLiveOci,
+        minDelayMs: 900,
+        maxDelayMs: 1800,
       });
-      if (res && res.answer) {
-        setActiveAnswer({ question: q.questionText, answer: res.answer });
-        setLoadingAnswers(prev => ({ ...prev, [q.id]: false }));
+
+      if (res && res.data) {
+        const answerText = res.data.answer || res.matchedItem?.answerMarkdown || '';
+        setActiveAnswer({ question: q.questionText, answer: answerText });
+        setResponseSource(res.source);
+        setLoadingAnswers((prev) => ({ ...prev, [q.id]: false }));
         return;
       }
-    } catch {
-      // fallback to AI generator
+    } catch (err) {
+      console.warn('Hybrid execution fallback:', err);
     }
 
-    const answer = await generateStructuredAnswerAI(q.questionText, q.marks, 'Topper Standard', selectedSub?.name || '');
-    setActiveAnswer({
-      question: q.questionText,
-      answer: answer
-    });
-    setLoadingAnswers(prev => ({ ...prev, [q.id]: false }));
+    try {
+      const answer = await generateStructuredAnswerAI(
+        q.questionText,
+        q.marks,
+        'Topper Standard',
+        selectedSub?.name || '',
+      );
+      setActiveAnswer({
+        question: q.questionText,
+        answer: answer,
+      });
+      setResponseSource('oci_genai_live');
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingAnswers((prev) => ({ ...prev, [q.id]: false }));
+    }
   };
 
-  const selectedSubject = subjects.find(s => s.id === selectedSubjectId);
+  const selectedSubject = subjects.find((s) => s.id === selectedSubjectId);
 
   const handleCopy = () => {
     if (!activeAnswer) return;
-    navigator.clipboard.writeText(activeAnswer.answer);
+    void navigator.clipboard.writeText(activeAnswer.answer);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -148,10 +204,11 @@ export default function PYQIntelligence() {
             PYQ Intelligence
           </h1>
           <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans">
-            AI-driven paper analysis, prediction probability mapping, and topper-standard answer generation.
+            AI-driven paper analysis, prediction probability mapping, and topper-standard answer
+            generation.
           </p>
         </div>
-        
+
         {subjects.length > 0 && (
           <div className="flex items-center gap-2 bg-white border border-[#e3e6ed] rounded-2xl p-1.5 shadow-xs">
             <Filter className="w-3.5 h-3.5 text-[#8c8fa1] ml-2" />
@@ -160,7 +217,7 @@ export default function PYQIntelligence() {
               onChange={(e) => setSelectedSubjectId(e.target.value)}
               className="bg-transparent text-[#121217] outline-none text-xs font-bold pr-3 cursor-pointer"
             >
-              {subjects.map(s => (
+              {subjects.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
                 </option>
@@ -169,6 +226,12 @@ export default function PYQIntelligence() {
           </div>
         )}
       </header>
+
+      <QuickPickSelector
+        category="pyq"
+        onSelect={handleQuickPickSelect}
+        activeId={activeQuickPickId}
+      />
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 gap-3 text-[#6b6f82] font-mono text-xs uppercase">
@@ -186,7 +249,9 @@ export default function PYQIntelligence() {
                     <TrendingUp className="w-4 h-4 text-[#4f75f2]" />
                     Upcoming Exam Predictions
                   </h2>
-                  <p className="text-xs text-[#6b6f82] font-sans mt-0.5">High probability questions ranked by recurrence and syllabus weightage.</p>
+                  <p className="text-xs text-[#6b6f82] font-sans mt-0.5">
+                    High probability questions ranked by recurrence and syllabus weightage.
+                  </p>
                 </div>
                 <span className="text-[10px] font-mono font-bold bg-[#edf3fc] text-[#4f75f2] px-3 py-1 rounded-xl border border-[#d0dcf5] uppercase">
                   {selectedSubject?.code || 'CS-701'} Model
@@ -194,11 +259,16 @@ export default function PYQIntelligence() {
               </div>
 
               {predictions.length === 0 ? (
-                <div className="text-center py-10 text-[#8c8fa1] text-xs font-mono">No predictions computed.</div>
+                <div className="text-center py-10 text-[#8c8fa1] text-xs font-mono">
+                  No predictions computed.
+                </div>
               ) : (
                 <div className="space-y-4">
                   {predictions.map((item) => (
-                    <div key={item.id} className="p-5 bg-[#f8f9fc] rounded-2xl border border-[#e3e6ed] hover:border-[#4f75f2] transition-all">
+                    <div
+                      key={item.id}
+                      className="p-5 bg-[#f8f9fc] rounded-2xl border border-[#e3e6ed] hover:border-[#4f75f2] transition-all"
+                    >
                       <div className="flex justify-between items-start gap-4 mb-3">
                         <p className="text-[#121217] font-bold text-xs md:text-sm leading-relaxed">
                           {item.questionText}
@@ -207,7 +277,7 @@ export default function PYQIntelligence() {
                           {Math.round(item.probability * 100)}% Probability
                         </div>
                       </div>
-                      
+
                       <div className="bg-white px-3.5 py-2.5 rounded-xl border border-[#e3e6ed] mb-3 text-[11px] text-[#6b6f82] flex items-start gap-2 font-sans">
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
                         <span>{item.reason}</span>
@@ -217,11 +287,15 @@ export default function PYQIntelligence() {
                         <span className="text-[10px] font-mono text-[#121217] font-bold flex items-center gap-1">
                           <FileText className="w-3.5 h-3.5 text-[#4f75f2]" /> {item.marks} Marks
                         </span>
-                        <span className="bg-[#edf3fc] border border-[#d0dcf5] text-[#4f75f2] px-2 py-0.5 rounded-lg text-[9px] font-mono uppercase font-bold">{item.unit}</span>
-                        
+                        <span className="bg-[#edf3fc] border border-[#d0dcf5] text-[#4f75f2] px-2 py-0.5 rounded-lg text-[9px] font-mono uppercase font-bold">
+                          {item.unit}
+                        </span>
+
                         <button
                           disabled={loadingAnswers[item.id]}
-                          onClick={() => handleGenerateAnswer(item)}
+                          onClick={() => {
+                            void handleGenerateAnswer(item);
+                          }}
                           className="ml-auto bg-[#4f75f2] hover:bg-[#385dd8] text-white px-4 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
                         >
                           {loadingAnswers[item.id] ? (
@@ -252,32 +326,42 @@ export default function PYQIntelligence() {
                   <Sparkles className="w-4 h-4 text-[#4f75f2]" />
                   Syllabus Heatmap
                 </h3>
-                <p className="text-xs text-[#6b6f82] mt-0.5 font-sans">Weightage metrics aggregated across 5 years of exam papers.</p>
+                <p className="text-xs text-[#6b6f82] mt-0.5 font-sans">
+                  Weightage metrics aggregated across 5 years of exam papers.
+                </p>
               </div>
 
               {heatmap.length === 0 ? (
-                <div className="text-center py-10 text-[#8c8fa1] text-xs font-mono">No frequency data calculated.</div>
+                <div className="text-center py-10 text-[#8c8fa1] text-xs font-mono">
+                  No frequency data calculated.
+                </div>
               ) : (
                 <div className="space-y-5">
                   {heatmap.map((topic, i) => (
                     <div key={i} className="space-y-1.5">
                       <div className="flex justify-between text-xs">
-                        <span className="text-[#121217] font-bold truncate max-w-[180px]">{topic.topic}</span>
+                        <span className="text-[#121217] font-bold truncate max-w-[180px]">
+                          {topic.topic}
+                        </span>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-lg uppercase border ${
-                            topic.priority === 'High Yield' || topic.priority === 'High'
-                              ? 'bg-[#fbf5e6] text-[#967018] border-[#f4e8cc]'
-                              : 'bg-[#edf3fc] text-[#4f75f2] border-[#d0dcf5]'
-                          }`}>
+                          <span
+                            className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-lg uppercase border ${
+                              topic.priority === 'High Yield' || topic.priority === 'High'
+                                ? 'bg-[#fbf5e6] text-[#967018] border-[#f4e8cc]'
+                                : 'bg-[#edf3fc] text-[#4f75f2] border-[#d0dcf5]'
+                            }`}
+                          >
                             {topic.priority}
                           </span>
-                          <span className="text-[#121217] font-mono font-bold">{topic.percentage}%</span>
+                          <span className="text-[#121217] font-mono font-bold">
+                            {topic.percentage}%
+                          </span>
                         </div>
                       </div>
                       <div className="h-2 bg-[#f0f2f7] rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-gradient-to-r from-[#4f75f2] to-[#713fb8] rounded-full transition-all duration-700"
-                          style={{ width: `${topic.percentage}%` }} 
+                          style={{ width: `${topic.percentage}%` }}
                         />
                       </div>
                       <div className="flex justify-between text-[10px] font-mono text-[#8c8fa1]">
@@ -299,19 +383,32 @@ export default function PYQIntelligence() {
           <div className="bg-white border border-[#e3e6ed] w-full max-w-3xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] relative animate-in fade-in zoom-in duration-200">
             <header className="p-6 border-b border-[#e3e6ed] bg-[#f8f9fc] flex justify-between items-start gap-4">
               <div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#3b52c4] bg-[#e4e7fd] border border-[#d0d8fb] px-3 py-1 rounded-full mb-2 inline-block">
-                  Topper Model Answer
-                </span>
-                <h3 className="text-base font-extrabold text-[#121217] leading-snug">{activeAnswer.question}</h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#3b52c4] bg-[#e4e7fd] border border-[#d0d8fb] px-3 py-1 rounded-full inline-block">
+                    Topper Model Answer
+                  </span>
+                  {responseSource === 'quick_pick_cache' ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                      <Zap className="w-3 h-3 text-emerald-600" /> Pre-computed Quick Pick
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
+                      <Cloud className="w-3 h-3 text-blue-600" /> Live OCI GenAI
+                    </span>
+                  )}
+                </div>
+                <h3 className="text-base font-extrabold text-[#121217] leading-snug">
+                  {activeAnswer.question}
+                </h3>
               </div>
-              <button 
+              <button
                 onClick={() => setActiveAnswer(null)}
                 className="text-[#6b6f82] hover:text-[#121217] p-2 rounded-xl hover:bg-[#edf3fc] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </header>
-            
+
             <div className="p-6 md:p-8 overflow-y-auto space-y-4 select-text bg-[#ffffff]">
               <FormattedAnswer content={activeAnswer.answer} />
             </div>
@@ -321,10 +418,14 @@ export default function PYQIntelligence() {
                 onClick={handleCopy}
                 className="flex items-center gap-1.5 text-xs font-bold text-[#4f75f2] hover:text-[#385dd8] cursor-pointer bg-white px-4 py-2 rounded-xl border border-[#d0dcf5] shadow-xs"
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                {copied ? (
+                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                ) : (
+                  <Copy className="w-3.5 h-3.5" />
+                )}
                 <span>{copied ? 'Copied' : 'Copy Answer'}</span>
               </button>
-              <button 
+              <button
                 onClick={() => setActiveAnswer(null)}
                 className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-6 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
               >
