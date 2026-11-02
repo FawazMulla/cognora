@@ -1,4 +1,4 @@
-import { Bookmark, Check, FolderPlus, Loader2 } from 'lucide-react';
+import { Bookmark, Check, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { fetchApi } from '../lib/api';

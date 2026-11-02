@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ZoomIn, ZoomOut, Moon, Sun, BookOpen, Coffee, Maximize2 } from 'lucide-react';
+import { X, Moon, Sun, BookOpen, Coffee } from 'lucide-react';
 import { usePreferences } from '../context/PreferencesContext';
 
 interface FocusReadingModeProps {
@@ -19,7 +19,7 @@ export const FocusReadingMode: React.FC<FocusReadingModeProps> = ({
   topic,
   children,
 }) => {
-  const { theme, setTheme, density, setDensity, isDark } = usePreferences();
+  const { setTheme, setDensity, isDark } = usePreferences();
   const [fontSize, setFontSize] = useState<number>(18); // px
   const [readingTheme, setReadingTheme] = useState<'light' | 'dark' | 'sepia'>('light');
   const [scrollProgress, setScrollProgress] = useState<number>(0);

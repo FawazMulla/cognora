@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrainCircuit, Calendar, Flame, CheckCircle, Clock, Zap, RotateCcw, Loader2, Plus, X } from 'lucide-react';
+import { Calendar, Flame, CheckCircle, Clock, Zap, RotateCcw, Loader2, Plus, X } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { getDefaultSubjects } from '../lib/ai-service';
 

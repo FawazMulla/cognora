@@ -3,7 +3,6 @@ import {
   Award,
   BookOpen,
   Bookmark,
-  Calendar,
   Clock,
   Compass,
   CornerDownLeft,

@@ -48,7 +48,10 @@ export default function Dashboard() {
     let dominant = 'O(1)';
     let explanation = '';
 
-    if (expr.includes('n^3')) {
+    if (expr.includes('2^n')) {
+      dominant = 'O(2^n)';
+      explanation = 'The exponential term 2^n dominates polynomial terms.';
+    } else if (expr.includes('n^3')) {
       dominant = 'O(n^3)';
       explanation = 'The cubic term n^3 dominates quadratic, linear, and constant terms.';
     } else if (expr.includes('n^2')) {
@@ -57,9 +60,6 @@ export default function Dashboard() {
     } else if (expr.includes('n log n') || (expr.includes('n') && expr.includes('log'))) {
       dominant = 'O(n log n)';
       explanation = 'The linearithmic term n log n dominates linear and log terms.';
-    } else if (expr.includes('2^n')) {
-      dominant = 'O(2^n)';
-      explanation = 'The exponential term 2^n dominates polynomial terms.';
     } else if (expr.includes('n')) {
       dominant = 'O(n)';
       explanation = 'The linear term n dominates constant terms.';

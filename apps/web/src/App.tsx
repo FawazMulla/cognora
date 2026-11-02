@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, Link } from 'react-router-dom';
-import { Sparkles, LogOut, Menu, X, Settings, Loader2, Search, Sun, Moon, Bookmark, Layers, Sliders } from 'lucide-react';
+import { Sparkles, LogOut, Menu, X, Settings, Loader2, Search, Sun, Moon, Bookmark, Sliders } from 'lucide-react';
 import { useAuth, supabase } from './context/AuthContext';
 import { usePreferences } from './context/PreferencesContext';
 import { CommandPalette } from './components/CommandPalette';
