@@ -3,6 +3,7 @@ import { db } from "../../../../db";
 import { studentTopicProfiles, subjects } from "../../../../db/schema";
 import { eq, and } from "drizzle-orm";
 import { getTopicById } from "../../../../lib/atlasCatalogue";
+import { AcademicEventBus } from "../../../../lib/cic/cross-feature/event-bus";
 
 export async function POST(request: Request) {
   try {
@@ -76,12 +77,44 @@ export async function POST(request: Request) {
       console.warn("Atlas DB persistence non-fatal notice:", dbErr);
     }
 
+    // Trigger cross-feature academic event
+    let generatedOpportunities: any[] = [];
+    try {
+      if (activityType === 'quiz' || typeof score === 'number') {
+        const ev = await AcademicEventBus.emit({
+          userId,
+          eventType: 'quiz.completed',
+          data: {
+            topicId,
+            topicTitle: topicData.topic.title,
+            score: typeof score === 'number' ? score : mastery,
+            subjectCode: topicData.subject.code,
+          },
+        });
+        generatedOpportunities = ev.opportunitiesGenerated;
+      } else if (videoWatched) {
+        const ev = await AcademicEventBus.emit({
+          userId,
+          eventType: 'video.completed',
+          data: {
+            topicId,
+            topicTitle: topicData.topic.title,
+            subjectCode: topicData.subject.code,
+          },
+        });
+        generatedOpportunities = ev.opportunitiesGenerated;
+      }
+    } catch (evErr) {
+      console.warn("Event bus dispatch non-fatal notice:", evErr);
+    }
+
     return NextResponse.json({
       success: true,
       topicId,
       mastery,
       status,
-      calculatedAt: new Date().toISOString()
+      calculatedAt: new Date().toISOString(),
+      crossFeatureOpportunities: generatedOpportunities,
     }, { status: 200 });
   } catch (error) {
     console.error("Atlas activity POST error:", error);

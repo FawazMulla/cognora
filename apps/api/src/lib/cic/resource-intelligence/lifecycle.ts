@@ -136,6 +136,23 @@ export class DocumentLifecycleManager {
 
     const durationMs = Date.now() - startTime;
 
+    // Trigger cross-feature intelligence workflow (Document mapped -> Atlas & Smart Revision)
+    try {
+      const { AcademicEventBus } = await import('../cross-feature/event-bus');
+      await AcademicEventBus.emit({
+        userId,
+        eventType: 'resource.processed',
+        data: {
+          resourceId,
+          filename,
+          subjectCode: classification.subjectCode,
+          chunksCount: chunks.length,
+        },
+      });
+    } catch (evErr) {
+      console.warn('[DocumentLifecycle] Event bus trigger notice:', evErr);
+    }
+
     return {
       resourceId,
       status: finalStatus,

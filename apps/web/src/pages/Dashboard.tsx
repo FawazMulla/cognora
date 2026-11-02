@@ -18,6 +18,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'All' | 'Theory' | 'Labs'>('All');
+  const [recommendations, setRecommendations] = useState<any[]>([]);
 
 
 
@@ -198,6 +199,9 @@ export default function Dashboard() {
     ];
     setAiTip(tips[Math.floor(Math.random() * tips.length)]);
     getLastNavigationState().then(nav => { if (nav && nav.pagePath && nav.pagePath !== '/') setLastNav(nav); });
+    fetchApi('/api/intelligence/recommendations').then((res: any) => {
+      if (res && res.opportunities) setRecommendations(res.opportunities);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -318,6 +322,48 @@ export default function Dashboard() {
         </div>
       )}
 
+
+      {/* Cross-Feature Intelligence Opportunities Feed */}
+      {recommendations.length > 0 && (
+        <div className="bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-blue-50/80 dark:from-indigo-950/40 dark:via-purple-950/30 dark:to-slate-900/60 border border-indigo-100 dark:border-indigo-900/60 rounded-3xl p-5 shadow-xs space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <h2 className="text-sm font-extrabold text-[#121217] dark:text-white">
+                Academic Ecosystem Next Steps
+              </h2>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-300 bg-indigo-100/70 dark:bg-indigo-900/60 px-2.5 py-0.5 rounded-full">
+              {recommendations.length} Active Next Steps
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {recommendations.slice(0, 4).map((op, i) => (
+              <Link
+                key={op.id || i}
+                to={op.actionUrl}
+                className="bg-white/90 dark:bg-slate-900/90 border border-indigo-100/80 dark:border-slate-800 p-3.5 rounded-2xl hover:border-indigo-500 dark:hover:border-indigo-400 transition-all shadow-xs flex items-start justify-between gap-3 group"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[9px] font-bold font-mono px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800">
+                      {op.badge || 'Academic Link'}
+                    </span>
+                    <h3 className="text-xs font-bold text-[#121217] dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {op.title}
+                    </h3>
+                  </div>
+                  <p className="text-[11px] text-[#5d6175] dark:text-slate-300 line-clamp-2">
+                    {op.description}
+                  </p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all shrink-0 mt-1" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main Peaceful Grid Layout (Left: Courses/Subjects | Right: Performance Chart & Homework) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

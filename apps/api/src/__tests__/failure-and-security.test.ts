@@ -96,3 +96,4 @@ describe('SECURITY TESTING: Authentication & Authorization Boundaries', () => {
     expect(data.success).toBe(true);
   });
 });
+
