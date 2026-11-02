@@ -5,6 +5,7 @@ import {
   Copy, Check, RefreshCw, BarChart2, Layers, Cpu, Database, Eye
 } from 'lucide-react';
 import { FormattedAnswer } from '../components/FormattedAnswer';
+import { fetchApi } from '../lib/api';
 
 interface Citation {
   sourceId: string;
@@ -160,9 +161,8 @@ export default function AcademicIntelligence() {
 
   const fetchDocuments = async () => {
     try {
-      const res = await fetch('/api/intelligence/documents');
-      const data = await res.json();
-      if (data.documents) {
+      const data = await fetchApi('/api/intelligence/documents');
+      if (data && data.documents) {
         setDocuments(data.documents);
       }
     } catch (e) {
@@ -178,7 +178,7 @@ export default function AcademicIntelligence() {
     setResponse(null);
 
     try {
-      const res = await fetch('/api/intelligence/ask', {
+      const json = await fetchApi('/api/intelligence/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -191,8 +191,7 @@ export default function AcademicIntelligence() {
         }),
       });
 
-      const json = await res.json();
-      if (json.success && json.data) {
+      if (json && json.success && json.data) {
         setResponse(json.data);
       }
     } catch (err) {
@@ -208,7 +207,7 @@ export default function AcademicIntelligence() {
 
     setSearchLoading(true);
     try {
-      const res = await fetch('/api/intelligence/search', {
+      const data = await fetchApi('/api/intelligence/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -218,8 +217,7 @@ export default function AcademicIntelligence() {
           limit: 8,
         }),
       });
-      const data = await res.json();
-      if (data.success && data.chunks) {
+      if (data && data.success && data.chunks) {
         setSearchResults(data.chunks);
       }
     } catch (err) {
@@ -237,7 +235,7 @@ export default function AcademicIntelligence() {
     setIngestStatus('Executing 10-stage Academic Resource Intelligence pipeline...');
 
     try {
-      const res = await fetch('/api/intelligence/documents', {
+      const data = await fetchApi('/api/intelligence/documents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -249,14 +247,13 @@ export default function AcademicIntelligence() {
         }),
       });
 
-      const data = await res.json();
-      if (data.success) {
+      if (data && data.success) {
         setIngestStatus(`Document indexed! ${data.chunkCount} semantic chunks generated with ${data.qualityScore}% quality score.`);
         setUploadText('');
         setUploadFilename('');
         fetchDocuments();
       } else {
-        setIngestStatus(`Error: ${data.error || 'Failed to index document'}`);
+        setIngestStatus(`Error: ${data?.error || 'Failed to index document'}`);
       }
     } catch (err: any) {
       setIngestStatus(`Pipeline Error: ${err.message}`);
@@ -267,7 +264,7 @@ export default function AcademicIntelligence() {
 
   const handleDeleteDocument = async (id: string) => {
     try {
-      await fetch(`/api/intelligence/documents/${id}`, { method: 'DELETE' });
+      await fetchApi(`/api/intelligence/documents/${id}`, { method: 'DELETE' });
       fetchDocuments();
     } catch (err) {
       console.warn('Delete error', err);
@@ -277,9 +274,8 @@ export default function AcademicIntelligence() {
   const handleRunBenchmark = async () => {
     setBenchmarkLoading(true);
     try {
-      const res = await fetch('/api/intelligence/evaluation/benchmark');
-      const data = await res.json();
-      if (data.success && data.report) {
+      const data = await fetchApi('/api/intelligence/evaluation/benchmark');
+      if (data && data.success && data.report) {
         setBenchmarkReport(data.report);
       }
     } catch (err) {

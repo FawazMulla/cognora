@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Activity, Search, Flame, Target, Clock, Sparkles, BrainCircuit, Loader2, ChevronRight, Zap, PlayCircle, X, Layers, FileText, HelpCircle, Award, Edit3, Check, Compass } from 'lucide-react';
+import { BookOpen, Activity, Search, Flame, Target, Clock, Sparkles, BrainCircuit, Loader2, ChevronRight, Zap, PlayCircle, X, Layers, FileText, HelpCircle, Award, Edit3, Check, Compass, Calculator } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { getDefaultSubjects } from '../lib/ai-service';
 import { getLastNavigationState, type NavigationState } from '../lib/navigation-tracker';
@@ -29,6 +29,7 @@ export default function Dashboard() {
   const [addSubjectError, setAddSubjectError] = useState('');
 
   // Offline Solvers State
+  const [showSolvers, setShowSolvers] = useState(true);
   const [solverType, setSolverType] = useState<'complexity' | 'bayes' | 'spaced'>('complexity');
   const [complexityExpr, setComplexityExpr] = useState('3n^2 + 5n + 12');
   const [complexityResult, setComplexityResult] = useState<{ dominant: string, explanation: string, expression: string } | null>(null);
@@ -266,18 +267,18 @@ export default function Dashboard() {
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 font-sans text-[#2d2d34] dark:text-slate-100 min-h-screen bg-[#f8f9fc] dark:bg-slate-950 transition-colors">
       {/* Top Bar */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed]">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed] dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
-            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] uppercase font-bold">
+            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] dark:text-slate-400 uppercase font-bold">
               COGNORA WORKSPACE
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#121217] tracking-tight">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#121217] dark:text-white tracking-tight">
             Your Learning Space
           </h1>
-          <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans">
+          <p className="text-xs md:text-sm text-[#6b6f82] dark:text-slate-400 mt-1 font-sans">
             A smarter space to learn, track progress, and stay ahead.
           </p>
         </div>
@@ -637,6 +638,252 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+      </div>
+
+            {/* Interactive Academic Solvers & Formula Calculators */}
+      <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-xs transition-colors space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+              <Calculator className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-extrabold text-[#121217] dark:text-white flex items-center gap-2">
+                Offline Academic Solvers &amp; Calculators
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-bold">
+                  Instant
+                </span>
+              </h2>
+              <p className="text-xs text-[#6b6f82] dark:text-slate-400">
+                Verify asymptotic complexities, Bayes posterior probabilities, and SM-2 spaced repetition intervals.
+              </p>
+            </div>
+          </div>
+
+          {/* Solver Tabs */}
+          <div className="flex items-center gap-1.5 bg-[#f2f3f7] dark:bg-slate-800/80 p-1 rounded-2xl text-xs font-mono font-bold">
+            <button
+              type="button"
+              onClick={() => setSolverType('complexity')}
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                solverType === 'complexity'
+                  ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              Time Complexity
+            </button>
+            <button
+              type="button"
+              onClick={() => setSolverType('bayes')}
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                solverType === 'bayes'
+                  ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              Bayes Theorem
+            </button>
+            <button
+              type="button"
+              onClick={() => setSolverType('spaced')}
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                solverType === 'spaced'
+                  ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              SM-2 Spaced
+            </button>
+          </div>
+        </div>
+
+        {/* Tab 1: Asymptotic Complexity Solver */}
+        {solverType === 'complexity' && (
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 pt-2">
+            <div className="md:col-span-7 space-y-3">
+              <label className="text-[11px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold block">
+                Algebraic Runtime Function T(n)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={complexityExpr}
+                  onChange={(e) => setComplexityExpr(e.target.value)}
+                  placeholder="e.g. 5n^2 + 10n log n + 45"
+                  className="flex-1 bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-indigo-600"
+                />
+                <button
+                  type="button"
+                  onClick={solveComplexity}
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold font-mono transition-all shadow-xs cursor-pointer"
+                >
+                  Analyze
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                <span>Presets:</span>
+                {['3n^2 + 5n + 12', 'n log n + 8n', '2^n + n^3', 'log n + 100'].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => {
+                      setComplexityExpr(preset);
+                    }}
+                    className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-indigo-600 dark:text-indigo-400 transition-colors"
+                  >
+                    {preset}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="md:col-span-5 bg-[#f8f9fc] dark:bg-slate-800/80 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl p-4 flex flex-col justify-center">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+                Dominant Asymptotic Class
+              </div>
+              <div className="text-2xl font-mono font-extrabold text-indigo-600 dark:text-indigo-400">
+                {complexityResult?.dominant || 'O(n^2)'}
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                {complexityResult?.explanation || 'The quadratic term n^2 dominates linear and constant terms.'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 2: Bayes Theorem Calculator */}
+        {solverType === 'bayes' && (
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 pt-2">
+            <div className="md:col-span-7 grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block mb-1">
+                  Prior P(H)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={bayesPrior}
+                  onChange={(e) => setBayesPrior(e.target.value)}
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-indigo-600"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block mb-1">
+                  Sensitivity P(E|H)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={bayesSensitivity}
+                  onChange={(e) => setBayesSensitivity(e.target.value)}
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-indigo-600"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block mb-1">
+                  False Alarm P(E|¬H)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={bayesFalseAlarm}
+                  onChange={(e) => setBayesFalseAlarm(e.target.value)}
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-indigo-600"
+                />
+              </div>
+              <div className="col-span-3">
+                <button
+                  type="button"
+                  onClick={solveBayes}
+                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold font-mono transition-all shadow-xs cursor-pointer"
+                >
+                  Compute Posterior P(H|E)
+                </button>
+              </div>
+            </div>
+
+            <div className="md:col-span-5 bg-[#f8f9fc] dark:bg-slate-800/80 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl p-4 flex flex-col justify-center">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+                Posterior Probability
+              </div>
+              <div className="text-2xl font-mono font-extrabold text-emerald-600 dark:text-emerald-400">
+                {bayesResult?.posterior || '16.10%'}
+              </div>
+              <div className="text-[11px] font-mono text-indigo-600 dark:text-indigo-300 mt-1">
+                {bayesResult?.formula || 'P(H|E) = (0.95 * 0.01) / (0.95 * 0.01 + 0.05 * 0.99)'}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 3: Spaced Repetition (SM-2) Calculator */}
+        {solverType === 'spaced' && (
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 pt-2">
+            <div className="md:col-span-7 grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block mb-1">
+                  Prev Interval (d)
+                </label>
+                <input
+                  type="number"
+                  value={spacedInterval}
+                  onChange={(e) => setSpacedInterval(e.target.value)}
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-indigo-600"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block mb-1">
+                  Ease Factor
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={spacedEase}
+                  onChange={(e) => setSpacedEase(e.target.value)}
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-indigo-600"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase font-bold block mb-1">
+                  Recall Rating (1-5)
+                </label>
+                <select
+                  value={spacedRating}
+                  onChange={(e) => setSpacedRating(e.target.value)}
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white outline-none focus:border-indigo-600"
+                >
+                  <option value="1">1 - Total Blackout</option>
+                  <option value="2">2 - Incorrect</option>
+                  <option value="3">3 - Difficult Recall</option>
+                  <option value="4">4 - Good Recall</option>
+                  <option value="5">5 - Perfect Recall</option>
+                </select>
+              </div>
+              <div className="col-span-3">
+                <button
+                  type="button"
+                  onClick={solveSpaced}
+                  className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold font-mono transition-all shadow-xs cursor-pointer"
+                >
+                  Compute Next Review Schedule
+                </button>
+              </div>
+            </div>
+
+            <div className="md:col-span-5 bg-[#f8f9fc] dark:bg-slate-800/80 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl p-4 flex flex-col justify-center">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-bold mb-1">
+                Next Scheduled Review
+              </div>
+              <div className="text-2xl font-mono font-extrabold text-indigo-600 dark:text-indigo-400">
+                {spacedResult?.nextInterval || '10 days'}
+              </div>
+              <div className="text-[11px] font-mono text-slate-600 dark:text-slate-300 mt-1">
+                New Ease Factor: {spacedResult?.newEase || '2.50'}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick Action Navigation Grid */}

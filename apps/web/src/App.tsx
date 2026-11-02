@@ -230,7 +230,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
               <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-mono text-slate-500 dark:text-slate-400 uppercase">Primary Model:</span>
-                  <span className="font-bold text-slate-900 dark:text-white">Google Gemini 2.5 Flash</span>
+                  <span className="font-bold text-slate-900 dark:text-white">Google Gemini 1.5 Flash</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-mono text-slate-500 dark:text-slate-400 uppercase">Secondary Model:</span>
@@ -246,16 +246,48 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase font-display">Active User Preferences:</h4>
-                <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                  <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                    <span className="text-slate-400 block text-[10px]">THEME:</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200 capitalize">{theme}</span>
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase font-display">Appearance &amp; Preferences:</h4>
+                
+                {/* Theme Selector */}
+                <div>
+                  <span className="text-[10px] font-mono text-slate-400 uppercase block mb-1.5 font-bold">Theme Mode:</span>
+                  <div className="grid grid-cols-3 gap-2 text-xs font-mono">
+                    {(['light', 'dark', 'system'] as const).map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setTheme(t)}
+                        className={`py-2 px-3 rounded-xl border text-center transition-all capitalize font-bold ${
+                          theme === t
+                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-indigo-400'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
                   </div>
-                  <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                    <span className="text-slate-400 block text-[10px]">DENSITY:</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200 capitalize">{density}</span>
+                </div>
+
+                {/* Density Selector */}
+                <div>
+                  <span className="text-[10px] font-mono text-slate-400 uppercase block mb-1.5 font-bold">Reading Density:</span>
+                  <div className="grid grid-cols-3 gap-2 text-xs font-mono">
+                    {(['standard', 'compact', 'comfortable'] as const).map((d) => (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => setDensity(d)}
+                        className={`py-2 px-3 rounded-xl border text-center transition-all capitalize font-bold ${
+                          density === d
+                            ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-indigo-400'
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>

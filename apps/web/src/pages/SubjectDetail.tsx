@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { BookOpen, FileText, LayoutDashboard, BrainCircuit, ArrowLeft, Play, BarChart3, Clock, Loader2, AlertTriangle, FileDown, Plus, HelpCircle, Compass } from 'lucide-react';
+import { BookOpen, FileText, LayoutDashboard, BrainCircuit, ArrowLeft, Play, BarChart3, Clock, Loader2, AlertTriangle, FileDown, Plus, HelpCircle, Compass, X } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { trackNavigation } from '../lib/navigation-tracker';
 import { getDefaultSubjects, generatePYQDataAI } from '../lib/ai-service';
@@ -58,6 +58,8 @@ export default function SubjectDetail() {
   const [weakTopics, setWeakTopics] = useState<Topic[]>([]);
   const [subjectHealth, setSubjectHealth] = useState<number>(75);
   const [estimatedReadiness, setEstimatedReadiness] = useState<number>(70);
+  const [showAddResourceModal, setShowAddResourceModal] = useState(false);
+  const [newResourceTitle, setNewResourceTitle] = useState('');
 
   useEffect(() => {
     async function loadData() {
@@ -461,6 +463,74 @@ This reference guide outlines high-frequency syllabus invariants, core algorithm
           </div>
         )}
       </div>
+      {/* Add Resource Modal */}
+      {showAddResourceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 w-full max-w-md rounded-3xl overflow-hidden shadow-xl animate-in fade-in zoom-in duration-200">
+            <header className="p-6 border-b border-[#e3e6ed] dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900">
+              <h3 className="text-sm font-bold text-[#121217] dark:text-white uppercase tracking-wider flex items-center gap-2">
+                <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                Add Study Reference Note
+              </h3>
+              <button
+                onClick={() => {
+                  setShowAddResourceModal(false);
+                  setNewResourceTitle('');
+                }}
+                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </header>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (newResourceTitle.trim()) {
+                  setResources(prev => [
+                    { id: `res-${Date.now()}`, name: newResourceTitle.trim(), fileType: 'pdf', createdAt: new Date().toISOString() },
+                    ...prev
+                  ]);
+                  setNewResourceTitle('');
+                  setShowAddResourceModal(false);
+                }
+              }}
+              className="p-6 space-y-4"
+            >
+              <div>
+                <label className="block text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 font-bold">
+                  Resource Title / Filename
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newResourceTitle}
+                  onChange={(e) => setNewResourceTitle(e.target.value)}
+                  placeholder="e.g. Unit 3 Architectural Patterns & Notes.pdf"
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs text-[#121217] dark:text-white outline-none focus:border-indigo-600"
+                />
+              </div>
+              <div className="flex justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddResourceModal(false);
+                    setNewResourceTitle('');
+                  }}
+                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors"
+                >
+                  Save Note
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -80,16 +80,12 @@ export default function Bookmarks() {
       setLoading(true);
       setError(null);
       const [bmRes, colRes] = await Promise.all([
-        fetch('http://localhost:3001/api/bookmarks', {
-          headers: { 'x-user-id': 'dev-user-local' },
-        }).then((r) => r.json()),
-        fetch('http://localhost:3001/api/bookmarks/collections', {
-          headers: { 'x-user-id': 'dev-user-local' },
-        }).then((r) => r.json()),
+        fetchApi('/api/bookmarks').catch(() => ({ bookmarks: [] })),
+        fetchApi('/api/bookmarks/collections').catch(() => ({ collections: [] })),
       ]);
 
-      setBookmarks(bmRes.bookmarks || []);
-      setCollections(colRes.collections || []);
+      setBookmarks(bmRes?.bookmarks || []);
+      setCollections(colRes?.collections || []);
     } catch (err: any) {
       setError(err.message || 'Failed to load bookmarks');
     } finally {
@@ -106,19 +102,17 @@ export default function Bookmarks() {
     if (!newColName.trim()) return;
 
     try {
-      const res = await fetch('http://localhost:3001/api/bookmarks/collections', {
+      const data = await fetchApi('/api/bookmarks/collections', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': 'dev-user-local',
         },
         body: JSON.stringify({
           name: newColName.trim(),
           color: newColColor,
         }),
       });
-      if (res.ok) {
-        const data = await res.json();
+      if (data?.collection) {
         setCollections((prev) => [data.collection, ...prev]);
         setNewColName('');
         setShowNewCollection(false);
@@ -131,13 +125,10 @@ export default function Bookmarks() {
   const handleDeleteBookmark = async (id: string) => {
     if (!window.confirm('Remove this bookmark?')) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/bookmarks?id=${id}`, {
+      await fetchApi(`/api/bookmarks?id=${id}`, {
         method: 'DELETE',
-        headers: { 'x-user-id': 'dev-user-local' },
       });
-      if (res.ok) {
-        setBookmarks((prev) => prev.filter((b) => b.id !== id));
-      }
+      setBookmarks((prev) => prev.filter((b) => b.id !== id));
     } catch (err) {
       console.error('Error deleting bookmark:', err);
     }

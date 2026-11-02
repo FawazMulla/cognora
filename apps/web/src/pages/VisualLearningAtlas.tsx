@@ -359,18 +359,29 @@ export default function VisualLearningAtlas() {
                   {currentProgress.status}
                 </span>
               </div>
-              <div className="w-14 h-14 rounded-full border-4 border-slate-200 dark:border-slate-800 relative flex items-center justify-center">
-                <div
-                  className="absolute inset-0 rounded-full border-4 border-indigo-500 transition-all duration-500"
-                  style={{
-                    clipPath: `polygon(50% 50%, 50% 0%, ${masteryScore >= 25 ? '100% 0%,' : ''} ${
-                      masteryScore >= 50 ? '100% 100%,' : ''
-                    } ${masteryScore >= 75 ? '0% 100%,' : ''} ${
-                      masteryScore >= 100 ? '0% 0%,' : ''
-                    } 50% 50%)`
-                  }}
-                />
-                <Award className="w-5 h-5 text-indigo-500" />
+              <div className="relative w-14 h-14 flex items-center justify-center shrink-0">
+                <svg className="w-14 h-14 -rotate-90 transform" viewBox="0 0 56 56">
+                  <circle
+                    cx="28"
+                    cy="28"
+                    r="22"
+                    className="stroke-slate-200 dark:stroke-slate-800"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <circle
+                    cx="28"
+                    cy="28"
+                    r="22"
+                    className="stroke-indigo-600 dark:stroke-indigo-400 transition-all duration-700 ease-out"
+                    strokeWidth="4"
+                    strokeDasharray={138.2}
+                    strokeDashoffset={138.2 - (138.2 * masteryScore) / 100}
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                </svg>
+                <Award className="w-5 h-5 text-indigo-600 dark:text-indigo-400 absolute" />
               </div>
             </div>
           </div>
