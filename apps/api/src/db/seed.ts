@@ -79,11 +79,11 @@ async function seed() {
   await db.delete(subjects).where(eq(subjects.userId, user.id));
 
   const subjectData = [
-    { name: "AI and DS – II",                     code: "AIDS-701" },
-    { name: "Internet of Everything",              code: "IOE-702"  },
-    { name: "Secure Application Development",      code: "SAD-703"  },
-    { name: "Elective I: Deep Learning",           code: "DL-704"   },
-    { name: "Mini Project / Seminar",              code: "MP-705"   },
+    { name: "AI and DS – II",                                 code: "ITC701"   },
+    { name: "Internet of Everything (IOE)",                   code: "ITC702"   },
+    { name: "Information Retrieval System (IRS)",             code: "ITD07024" },
+    { name: "Software Testing and Quality Assurance (STQA)",  code: "ITD07014" },
+    { name: "Cyber Security and Laws (CSL)",                  code: "ILO7016"  },
   ];
 
   const examBase = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);

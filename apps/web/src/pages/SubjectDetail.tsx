@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { BookOpen, FileText, LayoutDashboard, BrainCircuit, ArrowLeft, Play, BarChart3, Clock, Loader2, AlertTriangle, FileDown, Plus, HelpCircle, Compass, X } from 'lucide-react';
+import { BookOpen, FileText, LayoutDashboard, BrainCircuit, ArrowLeft, Play, BarChart3, Clock, Loader2, AlertTriangle, FileDown, Plus, HelpCircle, Compass } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { trackNavigation } from '../lib/navigation-tracker';
 import { getDefaultSubjects, generatePYQDataAI } from '../lib/ai-service';
@@ -58,8 +58,6 @@ export default function SubjectDetail() {
   const [weakTopics, setWeakTopics] = useState<Topic[]>([]);
   const [subjectHealth, setSubjectHealth] = useState<number>(75);
   const [estimatedReadiness, setEstimatedReadiness] = useState<number>(70);
-  const [showAddResourceModal, setShowAddResourceModal] = useState(false);
-  const [newResourceTitle, setNewResourceTitle] = useState('');
 
   useEffect(() => {
     async function loadData() {
@@ -267,7 +265,7 @@ This reference guide outlines high-frequency syllabus invariants, core algorithm
             <Compass className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <span>Visual Learning Atlas</span>
           </Link>
-          <button 
+          <button
             onClick={handleStartSession}
             className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-6 py-3 rounded-2xl font-bold text-xs transition-all flex items-center gap-2 cursor-pointer shadow-xs"
           >
@@ -288,11 +286,10 @@ This reference guide outlines high-frequency syllabus invariants, core algorithm
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-2xl transition-all cursor-pointer ${
-              activeTab === tab.id 
-                ? 'bg-[#edf3fc] dark:bg-indigo-950/60 text-[#4f75f2] dark:text-indigo-400 border border-[#d0dcf5] dark:border-indigo-800 shadow-xs' 
+            className={`flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-2xl transition-all cursor-pointer ${activeTab === tab.id
+                ? 'bg-[#edf3fc] dark:bg-indigo-950/60 text-[#4f75f2] dark:text-indigo-400 border border-[#d0dcf5] dark:border-indigo-800 shadow-xs'
                 : 'text-[#6b6f82] dark:text-slate-400 hover:text-[#121217] dark:hover:text-white hover:bg-white dark:hover:bg-slate-800'
-            }`}
+              }`}
           >
             <tab.icon className="w-3.5 h-3.5" />
             {tab.label}
@@ -314,7 +311,7 @@ This reference guide outlines high-frequency syllabus invariants, core algorithm
                 <h3 className="text-xs font-bold text-[#121217] dark:text-white mb-4 uppercase tracking-wider flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-[#f59e0b]" /> Syllabus Focus Areas
                 </h3>
-                
+
                 {weakTopics.length === 0 ? (
                   <p className="text-xs text-[#6b6f82] dark:text-slate-400 py-4">All topics are currently scoring on-track. Start a quiz session to evaluate weak areas.</p>
                 ) : (
@@ -334,13 +331,13 @@ This reference guide outlines high-frequency syllabus invariants, core algorithm
                 )}
               </div>
             </div>
-            
+
             <div className="space-y-6">
               <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 text-[#121217] dark:text-white p-6 md:p-8 rounded-3xl relative overflow-hidden shadow-xs transition-colors">
                 <h3 className="text-xs font-bold text-[#6b6f82] dark:text-slate-400 mb-2 uppercase tracking-wider">Subject Health</h3>
                 <div className="text-4xl font-mono font-bold text-[#1e784f] dark:text-emerald-400 mb-2">{Math.round(subjectHealth)}%</div>
                 <p className="text-xs text-[#6b6f82] dark:text-slate-400 leading-relaxed mb-5 font-sans">Aggregate learning index combining topic mastery, review streaks, and mock quiz outputs.</p>
-                
+
                 <Link to="/revision" className="w-full bg-[#4f75f2] hover:bg-[#385dd8] text-white py-3 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 cursor-pointer text-xs shadow-xs">
                   <Play className="w-3.5 h-3.5 fill-current text-white" />
                   <span>Smart Flashcards</span>
@@ -352,7 +349,7 @@ This reference guide outlines high-frequency syllabus invariants, core algorithm
           <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-xs transition-colors">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xs font-bold text-[#121217] dark:text-white uppercase tracking-wider">Academic Reference Files</h3>
-              <button 
+              <button
                 onClick={() => {
                   const newName = prompt('Enter resource title / filename (e.g. Unit 4 Notes.pdf):');
                   if (newName) {
@@ -384,7 +381,7 @@ This reference guide outlines high-frequency syllabus invariants, core algorithm
                         <div className="text-[10px] font-mono text-[#6b6f82] dark:text-slate-400 mt-0.5 uppercase">{file.fileType?.toUpperCase() || 'DOCUMENT'} • {new Date(file.createdAt).toLocaleDateString()}</div>
                       </div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleDownloadResource(file)}
                       title={`Download reference notes for ${file.name}`}
                       className="p-2 bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-700 hover:border-[#4f75f2] dark:hover:border-indigo-400 rounded-xl text-[#121217] dark:text-white transition-colors cursor-pointer shadow-xs"
@@ -463,74 +460,6 @@ This reference guide outlines high-frequency syllabus invariants, core algorithm
           </div>
         )}
       </div>
-      {/* Add Resource Modal */}
-      {showAddResourceModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 w-full max-w-md rounded-3xl overflow-hidden shadow-xl animate-in fade-in zoom-in duration-200">
-            <header className="p-6 border-b border-[#e3e6ed] dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900">
-              <h3 className="text-sm font-bold text-[#121217] dark:text-white uppercase tracking-wider flex items-center gap-2">
-                <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                Add Study Reference Note
-              </h3>
-              <button
-                onClick={() => {
-                  setShowAddResourceModal(false);
-                  setNewResourceTitle('');
-                }}
-                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </header>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (newResourceTitle.trim()) {
-                  setResources(prev => [
-                    { id: `res-${Date.now()}`, name: newResourceTitle.trim(), fileType: 'pdf', createdAt: new Date().toISOString() },
-                    ...prev
-                  ]);
-                  setNewResourceTitle('');
-                  setShowAddResourceModal(false);
-                }
-              }}
-              className="p-6 space-y-4"
-            >
-              <div>
-                <label className="block text-[11px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5 font-bold">
-                  Resource Title / Filename
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newResourceTitle}
-                  onChange={(e) => setNewResourceTitle(e.target.value)}
-                  placeholder="e.g. Unit 3 Architectural Patterns & Notes.pdf"
-                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs text-[#121217] dark:text-white outline-none focus:border-indigo-600"
-                />
-              </div>
-              <div className="flex justify-end gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddResourceModal(false);
-                    setNewResourceTitle('');
-                  }}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors"
-                >
-                  Save Note
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

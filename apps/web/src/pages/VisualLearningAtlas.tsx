@@ -263,21 +263,19 @@ export default function VisualLearningAtlas() {
             <div className="flex items-center bg-slate-200 dark:bg-slate-800 p-0.5 rounded-xl text-[11px] font-mono">
               <button
                 onClick={() => setLanguageMode('english')}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                  languageMode === 'english'
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all ${languageMode === 'english'
                     ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
                     : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                }`}
+                  }`}
               >
                 EN
               </button>
               <button
                 onClick={() => setLanguageMode('hinglish')}
-                className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                  languageMode === 'hinglish'
+                className={`px-2.5 py-1 rounded-lg font-bold transition-all ${languageMode === 'hinglish'
                     ? 'bg-white dark:bg-slate-900 text-indigo-600 dark:text-indigo-400 shadow-xs'
                     : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                }`}
+                  }`}
               >
                 Hinglish
               </button>
@@ -286,11 +284,10 @@ export default function VisualLearningAtlas() {
             {/* Bookmark button */}
             <button
               onClick={() => updateTopicProgress(selectedTopic.id, { isBookmarked: !currentProgress.isBookmarked })}
-              className={`p-2 rounded-xl border text-xs font-mono transition-colors ${
-                currentProgress.isBookmarked
+              className={`p-2 rounded-xl border text-xs font-mono transition-colors ${currentProgress.isBookmarked
                   ? 'bg-amber-50 dark:bg-amber-950/50 border-amber-300 dark:border-amber-800 text-amber-600'
                   : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white'
-              }`}
+                }`}
               title="Bookmark Topic"
             >
               <Bookmark className="w-4 h-4 fill-current" />
@@ -353,35 +350,21 @@ export default function VisualLearningAtlas() {
               <div className="text-right font-mono">
                 <span className="text-[10px] text-slate-400 uppercase font-bold block">Topic Mastery</span>
                 <span className="text-2xl font-bold text-slate-900 dark:text-white">{masteryScore}%</span>
-                <span className={`text-[10px] font-bold block ${
-                  masteryScore >= 75 ? 'text-emerald-500' : masteryScore >= 40 ? 'text-amber-500' : 'text-slate-400'
-                }`}>
+                <span className={`text-[10px] font-bold block ${masteryScore >= 75 ? 'text-emerald-500' : masteryScore >= 40 ? 'text-amber-500' : 'text-slate-400'
+                  }`}>
                   {currentProgress.status}
                 </span>
               </div>
-              <div className="relative w-14 h-14 flex items-center justify-center shrink-0">
-                <svg className="w-14 h-14 -rotate-90 transform" viewBox="0 0 56 56">
-                  <circle
-                    cx="28"
-                    cy="28"
-                    r="22"
-                    className="stroke-slate-200 dark:stroke-slate-800"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <circle
-                    cx="28"
-                    cy="28"
-                    r="22"
-                    className="stroke-indigo-600 dark:stroke-indigo-400 transition-all duration-700 ease-out"
-                    strokeWidth="4"
-                    strokeDasharray={138.2}
-                    strokeDashoffset={138.2 - (138.2 * masteryScore) / 100}
-                    strokeLinecap="round"
-                    fill="none"
-                  />
-                </svg>
-                <Award className="w-5 h-5 text-indigo-600 dark:text-indigo-400 absolute" />
+              <div className="w-14 h-14 rounded-full border-4 border-slate-200 dark:border-slate-800 relative flex items-center justify-center">
+                <div
+                  className="absolute inset-0 rounded-full border-4 border-indigo-500 transition-all duration-500"
+                  style={{
+                    clipPath: `polygon(50% 50%, 50% 0%, ${masteryScore >= 25 ? '100% 0%,' : ''} ${masteryScore >= 50 ? '100% 100%,' : ''
+                      } ${masteryScore >= 75 ? '0% 100%,' : ''} ${masteryScore >= 100 ? '0% 0%,' : ''
+                      } 50% 50%)`
+                  }}
+                />
+                <Award className="w-5 h-5 text-indigo-500" />
               </div>
             </div>
           </div>
@@ -390,15 +373,13 @@ export default function VisualLearningAtlas() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 text-[11px] font-mono">
             <button
               onClick={() => updateTopicProgress(selectedTopic.id, { videoWatched: !currentProgress.videoWatched })}
-              className={`p-2 rounded-lg border text-left flex items-center gap-2 transition-all ${
-                currentProgress.videoWatched
+              className={`p-2 rounded-lg border text-left flex items-center gap-2 transition-all ${currentProgress.videoWatched
                   ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200'
                   : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-              }`}
+                }`}
             >
-              <div className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${
-                currentProgress.videoWatched ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-400'
-              }`}>
+              <div className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${currentProgress.videoWatched ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-400'
+                }`}>
                 {currentProgress.videoWatched && '✓'}
               </div>
               <span>Video (+25%)</span>
@@ -406,28 +387,24 @@ export default function VisualLearningAtlas() {
 
             <button
               onClick={() => updateTopicProgress(selectedTopic.id, { readingDone: !currentProgress.readingDone })}
-              className={`p-2 rounded-lg border text-left flex items-center gap-2 transition-all ${
-                currentProgress.readingDone
+              className={`p-2 rounded-lg border text-left flex items-center gap-2 transition-all ${currentProgress.readingDone
                   ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200'
                   : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-              }`}
+                }`}
             >
-              <div className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${
-                currentProgress.readingDone ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-400'
-              }`}>
+              <div className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${currentProgress.readingDone ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-400'
+                }`}>
                 {currentProgress.readingDone && '✓'}
               </div>
               <span>Notes (+25%)</span>
             </button>
 
-            <div className={`p-2 rounded-lg border text-left flex items-center gap-2 ${
-              currentProgress.quizScore !== null
+            <div className={`p-2 rounded-lg border text-left flex items-center gap-2 ${currentProgress.quizScore !== null
                 ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200'
                 : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-            }`}>
-              <div className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${
-                currentProgress.quizScore !== null ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-400'
               }`}>
+              <div className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${currentProgress.quizScore !== null ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-400'
+                }`}>
                 {currentProgress.quizScore !== null && '✓'}
               </div>
               <span>Quiz ({currentProgress.quizScore !== null ? `${currentProgress.quizScore}%` : '+30%'})</span>
@@ -435,15 +412,13 @@ export default function VisualLearningAtlas() {
 
             <button
               onClick={() => updateTopicProgress(selectedTopic.id, { pyqExplored: !currentProgress.pyqExplored })}
-              className={`p-2 rounded-lg border text-left flex items-center gap-2 transition-all ${
-                currentProgress.pyqExplored
+              className={`p-2 rounded-lg border text-left flex items-center gap-2 transition-all ${currentProgress.pyqExplored
                   ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200'
                   : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
-              }`}
+                }`}
             >
-              <div className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${
-                currentProgress.pyqExplored ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-400'
-              }`}>
+              <div className={`w-4 h-4 rounded-full border flex items-center justify-center text-[10px] ${currentProgress.pyqExplored ? 'bg-emerald-500 text-white border-emerald-500' : 'border-slate-400'
+                }`}>
                 {currentProgress.pyqExplored && '✓'}
               </div>
               <span>PYQs (+20%)</span>
@@ -455,11 +430,10 @@ export default function VisualLearningAtlas() {
         <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6 text-xs font-mono font-bold">
           <button
             onClick={() => setActiveTab('video')}
-            className={`pb-3 flex items-center gap-2 transition-all relative ${
-              activeTab === 'video'
+            className={`pb-3 flex items-center gap-2 transition-all relative ${activeTab === 'video'
                 ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400'
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
+              }`}
           >
             <Video className="w-4 h-4" />
             <span>Lecture & Notes ({selectedTopic.videos.length})</span>
@@ -467,11 +441,10 @@ export default function VisualLearningAtlas() {
 
           <button
             onClick={() => setActiveTab('visualizer')}
-            className={`pb-3 flex items-center gap-2 transition-all relative ${
-              activeTab === 'visualizer'
+            className={`pb-3 flex items-center gap-2 transition-all relative ${activeTab === 'visualizer'
                 ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400'
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
+              }`}
           >
             <Sparkles className="w-4 h-4 text-amber-500" />
             <span>Interactive Visualizer</span>
@@ -479,11 +452,10 @@ export default function VisualLearningAtlas() {
 
           <button
             onClick={() => setActiveTab('notes')}
-            className={`pb-3 flex items-center gap-2 transition-all relative ${
-              activeTab === 'notes'
+            className={`pb-3 flex items-center gap-2 transition-all relative ${activeTab === 'notes'
                 ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400'
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
+              }`}
           >
             <BookOpen className="w-4 h-4" />
             <span>Academic Reading & Notes</span>
@@ -491,11 +463,10 @@ export default function VisualLearningAtlas() {
 
           <button
             onClick={() => setActiveTab('pyq-quiz')}
-            className={`pb-3 flex items-center gap-2 transition-all relative ${
-              activeTab === 'pyq-quiz'
+            className={`pb-3 flex items-center gap-2 transition-all relative ${activeTab === 'pyq-quiz'
                 ? 'text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-600 dark:border-indigo-400'
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-            }`}
+              }`}
           >
             <HelpCircle className="w-4 h-4" />
             <span>PYQs & Quiz ({selectedTopic.pyqs.length + selectedTopic.quiz.length})</span>
@@ -531,11 +502,10 @@ export default function VisualLearningAtlas() {
                           </a>
                           <button
                             onClick={() => updateTopicProgress(selectedTopic.id, { videoWatched: !currentProgress.videoWatched })}
-                            className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${
-                              currentProgress.videoWatched
+                            className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${currentProgress.videoWatched
                                 ? 'bg-emerald-600 text-white'
                                 : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                            }`}
+                              }`}
                           >
                             {currentProgress.videoWatched ? '✓ Watched' : 'Mark Watched'}
                           </button>
@@ -906,21 +876,19 @@ export default function VisualLearningAtlas() {
             <div className="flex items-center bg-slate-200 dark:bg-slate-800 p-0.5 rounded-xl text-xs font-mono">
               <button
                 onClick={() => setViewMode('map')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
-                  viewMode === 'map'
+                className={`px-3 py-1.5 rounded-lg font-bold transition-all ${viewMode === 'map'
                     ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
                     : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                }`}
+                  }`}
               >
                 Visual Map
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-3 py-1.5 rounded-lg font-bold transition-all ${
-                  viewMode === 'list'
+                className={`px-3 py-1.5 rounded-lg font-bold transition-all ${viewMode === 'list'
                     ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
                     : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-                }`}
+                  }`}
               >
                 Structured List
               </button>
@@ -1031,13 +999,12 @@ export default function VisualLearningAtlas() {
                             </div>
 
                             <div className="flex items-center gap-2 shrink-0">
-                              <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${
-                                mastery >= 75
+                              <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${mastery >= 75
                                   ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
                                   : mastery > 0
-                                  ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
-                                  : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
-                              }`}>
+                                    ? 'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300'
+                                    : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+                                }`}>
                                 {mastery}%
                               </span>
                               <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover/topic:translate-x-0.5 transition-transform" />
