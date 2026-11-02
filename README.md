@@ -201,3 +201,4 @@ pnpm --filter api build
 - **Model 404 Error:** Ensure `GEMINI_API_KEY` targets `gemini-1.5-flash` or `gemini-2.0-flash` (do not use experimental unreleased model tags).
 - **Connection Timeout on Local Dev:** Verify the API dev server is running on port 3001. The web Vite proxy forwards all `/api/*` calls from port 3002 to 3001.
 - **Database Connection Exhaustion:** The backend is configured with `max: 3` connections. Do not instantiate multiple `postgres()` connection pools in route handlers; always import `db` from `@/db`.
+

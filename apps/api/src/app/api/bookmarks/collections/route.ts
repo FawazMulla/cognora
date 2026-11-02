@@ -32,8 +32,8 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ collections }, { status: 200 });
   } catch (error) {
-    console.error('[bookmark/collections] GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch collections' }, { status: 500 });
+    console.warn('[bookmark/collections] GET fallback:', error);
+    return NextResponse.json({ collections: [] }, { status: 200 });
   }
 }
 

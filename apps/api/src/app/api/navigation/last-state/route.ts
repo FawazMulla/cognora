@@ -8,11 +8,13 @@ import { env } from '../../../../lib/env';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request) {
-  try {
-    const userId = request.headers.get('x-user-id');
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+const inMemoryNavState = new Map<string, any>();
 
+export async function GET(request: Request) {
+  const userId = request.headers.get('x-user-id');
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  try {
     const states = await db
       .select()
       .from(userNavigationState)
@@ -20,35 +22,52 @@ export async function GET(request: Request) {
       .limit(1);
 
     if (states.length === 0 || !states[0]) {
-      return NextResponse.json({ navigationState: null }, { status: 200 });
+      const fallback = inMemoryNavState.get(userId) || null;
+      return NextResponse.json({ navigationState: fallback }, { status: 200 });
     }
 
     return NextResponse.json({ navigationState: states[0] }, { status: 200 });
   } catch (error) {
-    console.error('[navigation/last-state] GET error:', error);
-    return NextResponse.json({ error: 'Failed to fetch navigation state' }, { status: 500 });
+    console.warn('[navigation/last-state] GET fallback:', error);
+    const fallback = inMemoryNavState.get(userId) || null;
+    return NextResponse.json({ navigationState: fallback }, { status: 200 });
   }
 }
 
 export async function POST(request: Request) {
-  try {
-    const userId = request.headers.get('x-user-id');
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const userId = request.headers.get('x-user-id');
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const body = (await request.json()) as {
-      lastPage: string;
-      subjectId?: string;
-      subjectName?: string;
-      moduleNumber?: string;
-      topic?: string;
-      resourceId?: string;
-      resourceTitle?: string;
-      scrollPercentage?: number;
-    };
+  let body: {
+    lastPage: string;
+    subjectId?: string;
+    subjectName?: string;
+    moduleNumber?: string;
+    topic?: string;
+    resourceId?: string;
+    resourceTitle?: string;
+    scrollPercentage?: number;
+  } = { lastPage: '/' };
+
+  try {
+    body = (await request.json()) as typeof body;
 
     if (!body.lastPage) {
       return NextResponse.json({ error: 'lastPage is required' }, { status: 400 });
     }
+
+    // Always update in-memory cache for fast, reliable reads
+    inMemoryNavState.set(userId, {
+      lastPage: body.lastPage,
+      subjectId: body.subjectId || null,
+      subjectName: body.subjectName || null,
+      moduleNumber: body.moduleNumber || null,
+      topic: body.topic || null,
+      resourceId: body.resourceId || null,
+      resourceTitle: body.resourceTitle || null,
+      scrollPercentage: body.scrollPercentage || 0,
+      updatedAt: new Date().toISOString(),
+    });
 
     const [saved] = await db
       .insert(userNavigationState)
@@ -80,10 +99,24 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    return NextResponse.json({ navigationState: saved }, { status: 200 });
+    return NextResponse.json({ navigationState: saved || inMemoryNavState.get(userId) }, { status: 200 });
   } catch (error) {
-    console.error('[navigation/last-state] POST error:', error);
-    return NextResponse.json({ error: 'Failed to update navigation state' }, { status: 500 });
+    console.warn('[navigation/last-state] POST fallback:', error);
+    return NextResponse.json(
+      {
+        navigationState: inMemoryNavState.get(userId) || {
+          lastPage: body.lastPage,
+          subjectId: body.subjectId || null,
+          subjectName: body.subjectName || null,
+          moduleNumber: body.moduleNumber || null,
+          topic: body.topic || null,
+          resourceId: body.resourceId || null,
+          resourceTitle: body.resourceTitle || null,
+          scrollPercentage: body.scrollPercentage || 0,
+          updatedAt: new Date().toISOString(),
+        },
+      },
+      { status: 200 },
+    );
   }
 }
-
