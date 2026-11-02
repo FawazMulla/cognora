@@ -200,32 +200,32 @@ export default function VivaEngine() {
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 font-sans min-h-screen text-[#2d2d34] dark:text-slate-100 bg-[#f8f9fc] dark:bg-slate-950 transition-colors">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed] shrink-0">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-2 border-b border-[#e3e6ed] dark:border-slate-800 shrink-0">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
             <span className="w-2 h-2 rounded-full bg-[#4f75f2] animate-pulse" />
-            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] uppercase font-bold">
+            <span className="text-[11px] font-mono tracking-widest text-[#6b6f82] dark:text-slate-400 uppercase font-bold">
               Interactive Oral Exam
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-[#121217] dark:text-white tracking-tight">
             Viva Engine
           </h1>
-          <p className="text-xs md:text-sm text-[#6b6f82] mt-1 font-sans">
+          <p className="text-xs md:text-sm text-[#6b6f82] dark:text-slate-400 mt-1 font-sans">
             Oral examination simulation with real-time AI grading, voice transcription, and adaptive follow-up questioning.
           </p>
         </div>
         
         {!active && subjects.length > 0 && (
-          <div className="flex items-center gap-2 bg-white border border-[#e3e6ed] rounded-2xl p-1.5 shadow-xs">
-            <Volume2 className="w-3.5 h-3.5 text-[#8c8fa1] ml-2" />
+          <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-2xl p-1.5 shadow-xs">
+            <Volume2 className="w-3.5 h-3.5 text-[#8c8fa1] dark:text-slate-400 ml-2" />
             <select
               value={selectedSubjectId}
               onChange={(e) => setSelectedSubjectId(e.target.value)}
-              className="bg-transparent text-[#121217] outline-none text-xs font-bold pr-3 cursor-pointer"
+              className="bg-transparent text-[#121217] dark:text-slate-200 outline-none text-xs font-bold pr-3 cursor-pointer"
             >
               {subjects.map(s => (
-                <option key={s.id} value={s.id}>
+                <option key={s.id} value={s.id} className="dark:bg-slate-900 dark:text-white">
                   {s.name}
                 </option>
               ))}
@@ -237,7 +237,7 @@ export default function VivaEngine() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Interaction Panel */}
-        <div className="lg:col-span-2 bg-white border border-[#e3e6ed] rounded-3xl flex flex-col relative overflow-hidden min-h-[480px] shadow-xs">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl flex flex-col relative overflow-hidden min-h-[480px] shadow-xs">
           <div className="flex-1 p-6 md:p-8 flex flex-col justify-center">
             {active ? (
               loading ? (
@@ -248,14 +248,14 @@ export default function VivaEngine() {
               ) : (
                 <div className="space-y-6">
                   {/* Examiner Question Box */}
-                  <div className="p-6 bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl space-y-3">
+                  <div className="p-6 bg-[#f8f9fc] dark:bg-slate-800/80 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] bg-[#edf3fc] text-[#4f75f2] border border-[#d0dcf5] px-2.5 py-0.5 rounded-lg font-mono font-bold uppercase tracking-wider">
+                      <span className="text-[10px] bg-[#edf3fc] dark:bg-indigo-950/60 text-[#4f75f2] dark:text-indigo-400 border border-[#d0dcf5] dark:border-indigo-800 px-2.5 py-0.5 rounded-lg font-mono font-bold uppercase tracking-wider">
                         Question #{questionCount}
                       </span>
-                      <span className="text-[10px] font-mono text-[#8c8fa1] uppercase">External Examiner AI</span>
+                      <span className="text-[10px] font-mono text-[#8c8fa1] dark:text-slate-400 uppercase">External Examiner AI</span>
                     </div>
-                    <p className="text-[#121217] font-bold text-lg leading-snug">{currentQuestion}</p>
+                    <p className="text-[#121217] dark:text-white font-bold text-lg leading-snug">{currentQuestion}</p>
                   </div>
 
                   {/* Evaluation Box */}
@@ -263,8 +263,8 @@ export default function VivaEngine() {
                     <div className="space-y-4 animate-in fade-in duration-200">
                       <div className={`p-4 rounded-2xl border ${
                         evaluation.isCorrect 
-                          ? 'bg-[#e2f6eb] border-[#c9eed9] text-[#1f7247]' 
-                          : 'bg-[#fee2e2]/60 border-[#fca5a5] text-[#b91c1c]'
+                          ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300' 
+                          : 'bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300'
                       } flex items-start gap-3`}>
                         <Award className="w-5 h-5 shrink-0 mt-0.5" />
                         <div>
@@ -273,15 +273,15 @@ export default function VivaEngine() {
                         </div>
                       </div>
 
-                      <div className="p-4 bg-[#edf3fc] border border-[#d0dcf5] rounded-2xl space-y-1">
-                        <h4 className="text-[10px] font-mono font-bold text-[#3b52c4] uppercase tracking-wide">Model Academic Formulation:</h4>
-                        <p className="text-xs text-[#1e255e] leading-relaxed font-sans">{evaluation.suggestedCorrection}</p>
+                      <div className="p-4 bg-indigo-50/70 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-2xl space-y-1">
+                        <h4 className="text-[10px] font-mono font-bold text-[#3b52c4] dark:text-indigo-400 uppercase tracking-wide">Model Academic Formulation:</h4>
+                        <p className="text-xs text-indigo-950 dark:text-indigo-200 leading-relaxed font-sans">{evaluation.suggestedCorrection}</p>
                       </div>
 
                       <div className="flex justify-end gap-3 pt-2">
                         <button
                           onClick={() => setActive(false)}
-                          className="bg-[#f8f9fc] hover:bg-[#edf3fc] text-[#6b6f82] hover:text-[#121217] border border-[#e3e6ed] px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                          className="bg-[#f8f9fc] dark:bg-slate-800 hover:bg-[#edf3fc] dark:hover:bg-slate-700 text-[#6b6f82] dark:text-slate-300 hover:text-[#121217] dark:hover:text-white border border-[#e3e6ed] dark:border-slate-700 px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
                         >
                           End Session
                         </button>
@@ -303,12 +303,12 @@ export default function VivaEngine() {
                           value={studentAnswer}
                           onChange={(e) => setStudentAnswer(e.target.value)}
                           placeholder="Type your verbal response or use microphone..."
-                          className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl p-4 text-xs text-[#121217] outline-none focus:border-[#4f75f2] transition-colors placeholder-[#8c8fa1] resize-none font-sans"
+                          className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl p-4 text-xs text-[#121217] dark:text-white outline-none focus:border-[#4f75f2] transition-colors placeholder-[#8c8fa1] dark:placeholder-slate-500 resize-none font-sans"
                         />
                         {isListening && (
-                          <div className="absolute inset-0 bg-white/95 rounded-2xl flex items-center justify-center gap-2 border border-[#4f75f2]">
+                          <div className="absolute inset-0 bg-white/95 dark:bg-slate-900/95 rounded-2xl flex items-center justify-center gap-2 border border-[#4f75f2]">
                             <div className="w-2.5 h-2.5 rounded-full bg-[#4f75f2] animate-ping" />
-                            <span className="text-xs text-[#121217] font-mono uppercase tracking-wider font-bold">Listening &amp; transcribing vocal response...</span>
+                            <span className="text-xs text-[#121217] dark:text-white font-mono uppercase tracking-wider font-bold">Listening &amp; transcribing vocal response...</span>
                           </div>
                         )}
                       </div>
@@ -318,18 +318,18 @@ export default function VivaEngine() {
                           onClick={handleToggleListening}
                           className={`px-4 py-2.5 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
                             isListening
-                              ? 'bg-[#fee2e2] border-[#fca5a5] text-[#dc2626]'
-                              : 'bg-[#edf3fc] hover:bg-[#e1f1fd] border-[#d0dcf5] text-[#4f75f2]'
+                              ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300'
+                              : 'bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 border-indigo-200 dark:border-indigo-800 text-[#4f75f2] dark:text-indigo-400'
                           }`}
                         >
-                          <Mic className="w-3.5 h-3.5 text-[#4f75f2]" />
+                          <Mic className="w-3.5 h-3.5 text-[#4f75f2] dark:text-indigo-400" />
                           {isListening ? 'Stop Recording' : 'Voice Input (Mic / Sim)'}
                         </button>
                         
                         <div className="flex gap-2">
                           <button
                             onClick={() => setActive(false)}
-                            className="bg-[#f8f9fc] hover:bg-[#fee2e2]/40 text-[#6b6f82] hover:text-[#dc2626] border border-[#e3e6ed] hover:border-[#fca5a5] px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
+                            className="bg-[#f8f9fc] dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-[#6b6f82] dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-300 border border-[#e3e6ed] dark:border-slate-700 hover:border-rose-300 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5"
                           >
                             <Square className="w-3 h-3" />
                             Quit
@@ -349,12 +349,12 @@ export default function VivaEngine() {
               )
             ) : (
               <div className="text-center py-10 space-y-5">
-                <div className="w-16 h-16 bg-[#edf3fc] rounded-2xl mx-auto flex items-center justify-center border border-[#d0dcf5] shadow-xs">
-                  <Mic className="w-7 h-7 text-[#4f75f2]" />
+                <div className="w-16 h-16 bg-[#edf3fc] dark:bg-indigo-950/60 rounded-2xl mx-auto flex items-center justify-center border border-[#d0dcf5] dark:border-indigo-800 shadow-xs">
+                  <Mic className="w-7 h-7 text-[#4f75f2] dark:text-indigo-400" />
                 </div>
                 <div className="space-y-1.5 max-w-md mx-auto">
-                  <h3 className="text-2xl font-extrabold text-[#121217]">Simulate Oral Viva</h3>
-                  <p className="text-[#6b6f82] text-xs leading-relaxed font-sans">
+                  <h3 className="text-2xl font-extrabold text-[#121217] dark:text-white">Simulate Oral Viva</h3>
+                  <p className="text-[#6b6f82] dark:text-slate-400 text-xs leading-relaxed font-sans">
                     Practice answering theoretical exam questions orally. The AI examiner assesses conceptual clarity, detects missing axioms, and asks follow-ups dynamically.
                   </p>
                 </div>
@@ -366,7 +366,7 @@ export default function VivaEngine() {
                     Start Viva Session ({selectedSubject?.name || 'Active Subject'})
                   </button>
                 ) : (
-                  <div className="text-[#b91c1c] text-xs flex items-center justify-center gap-1.5 font-mono">
+                  <div className="text-rose-600 dark:text-rose-400 text-xs flex items-center justify-center gap-1.5 font-mono">
                     <AlertCircle className="w-3.5 h-3.5" />
                     Please set up your subjects on the dashboard first.
                   </div>
@@ -377,50 +377,50 @@ export default function VivaEngine() {
         </div>
 
         {/* Analytics Panel */}
-        <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 h-fit space-y-6 shadow-xs">
-          <h2 className="text-xs font-mono font-bold text-[#121217] uppercase tracking-wider flex items-center gap-2 border-b border-[#e3e6ed] pb-3">
-            <Activity className="w-4 h-4 text-[#4f75f2]" />
+        <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 h-fit space-y-6 shadow-xs">
+          <h2 className="text-xs font-mono font-bold text-[#121217] dark:text-white uppercase tracking-wider flex items-center gap-2 border-b border-[#e3e6ed] dark:border-slate-800 pb-3">
+            <Activity className="w-4 h-4 text-[#4f75f2] dark:text-indigo-400" />
             Session Analytics
           </h2>
           
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-xs font-mono mb-1.5">
-                <span className="text-[#6b6f82] uppercase">Average Score</span>
-                <span className="text-[#121217] font-bold">{scoresList.length > 0 ? `${(Number(averageScore) * 10)}%` : "N/A"}</span>
+                <span className="text-[#6b6f82] dark:text-slate-400 uppercase">Average Score</span>
+                <span className="text-[#121217] dark:text-white font-bold">{scoresList.length > 0 ? `${(Number(averageScore) * 10)}%` : "N/A"}</span>
               </div>
-              <div className="h-2 bg-[#f0f2f7] rounded-full overflow-hidden">
+              <div className="h-2 bg-[#f0f2f7] dark:bg-slate-800 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-[#4f75f2] to-[#713fb8] transition-all duration-500 rounded-full" 
+                  className="h-full bg-gradient-to-r from-[#4f75f2] via-[#6366f1] to-emerald-500 transition-all duration-500 rounded-full" 
                   style={{ width: scoresList.length > 0 ? `${(Number(averageScore) * 10)}%` : "0%" }}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-3.5 rounded-2xl text-center">
-                <div className="text-xl font-mono font-extrabold text-[#121217]">{questionCount}</div>
-                <div className="text-[10px] font-mono text-[#6b6f82] uppercase tracking-wider mt-0.5">Questions</div>
+              <div className="bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 p-3.5 rounded-2xl text-center">
+                <div className="text-xl font-mono font-extrabold text-[#121217] dark:text-white">{questionCount}</div>
+                <div className="text-[10px] font-mono text-[#6b6f82] dark:text-slate-400 uppercase tracking-wider mt-0.5">Questions</div>
               </div>
-              <div className="bg-[#f8f9fc] border border-[#e3e6ed] p-3.5 rounded-2xl text-center">
-                <div className="text-xl font-mono font-extrabold text-[#4f75f2]">{averageScore}/10</div>
-                <div className="text-[10px] font-mono text-[#6b6f82] uppercase tracking-wider mt-0.5">Avg Grade</div>
+              <div className="bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 p-3.5 rounded-2xl text-center">
+                <div className="text-xl font-mono font-extrabold text-[#4f75f2] dark:text-indigo-400">{averageScore}/10</div>
+                <div className="text-[10px] font-mono text-[#6b6f82] dark:text-slate-400 uppercase tracking-wider mt-0.5">Avg Grade</div>
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl">
-              <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <MessageSquare className="w-3.5 h-3.5 text-[#4f75f2]" />
+            <div className="p-4 bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl">
+              <h3 className="text-[10px] font-mono font-bold text-[#6b6f82] dark:text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <MessageSquare className="w-3.5 h-3.5 text-[#4f75f2] dark:text-indigo-400" />
                 Viva Question History
               </h3>
               {scoresList.length === 0 ? (
-                <p className="text-[10px] font-mono text-[#8c8fa1] italic">No responses evaluated in this session yet.</p>
+                <p className="text-[10px] font-mono text-[#8c8fa1] dark:text-slate-500 italic">No responses evaluated in this session yet.</p>
               ) : (
                 <div className="space-y-1.5 max-h-[180px] overflow-y-auto pr-1">
                   {scoresList.map((sc, i) => (
-                    <div key={i} className="text-xs font-mono text-[#121217] flex justify-between items-center py-1.5 border-b border-[#e3e6ed] last:border-0">
+                    <div key={i} className="text-xs font-mono text-[#121217] dark:text-slate-200 flex justify-between items-center py-1.5 border-b border-[#e3e6ed] dark:border-slate-700 last:border-0">
                       <span>Q#{i + 1} Assessment</span>
-                      <span className={`font-bold ${sc >= 6 ? 'text-[#1f7247]' : 'text-[#dc2626]'}`}>{sc}/10</span>
+                      <span className={`font-bold ${sc >= 6 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>{sc}/10</span>
                     </div>
                   ))}
                 </div>

@@ -1004,13 +1004,13 @@ export function generatePYQDataAI(subjectName: string = '') {
 export function generateKnowledgeGraphAI(subjectName: string = '') {
   return {
     nodes: [
-      { id: 'n1', label: `${subjectName || 'Core Domain'} Foundations`, type: 'System', mastery: 'strong', x: 300, y: 180 },
-      { id: 'n2', label: 'State Representation', type: 'Concept', mastery: 'strong', x: 160, y: 100 },
-      { id: 'n3', label: 'Search & Optimization', type: 'Algorithm', mastery: 'improving', x: 440, y: 100 },
-      { id: 'n4', label: 'Admissibility Invariant', type: 'Property', mastery: 'weak', x: 120, y: 260 },
-      { id: 'n5', label: 'Priority Priority Queue', type: 'Data Structure', mastery: 'strong', x: 260, y: 320 },
-      { id: 'n6', label: 'Convergence Guarantees', type: 'Property', mastery: 'improving', x: 440, y: 290 },
-      { id: 'n7', label: 'Enterprise Deployment', type: 'Component', mastery: 'weak', x: 520, y: 200 }
+      { id: 'n1', label: `${subjectName || 'Core Domain'} Foundations`, type: 'System', mastery: 'strong', x: 350, y: 220 },
+      { id: 'n2', label: 'State Representation', type: 'Concept', mastery: 'strong', x: 140, y: 110 },
+      { id: 'n3', label: 'Search & Optimization', type: 'Algorithm', mastery: 'improving', x: 560, y: 110 },
+      { id: 'n4', label: 'Admissibility Invariant', type: 'Property', mastery: 'weak', x: 120, y: 350 },
+      { id: 'n5', label: 'Priority Queue', type: 'Data Structure', mastery: 'strong', x: 350, y: 390 },
+      { id: 'n6', label: 'Convergence Guarantees', type: 'Property', mastery: 'improving', x: 580, y: 350 },
+      { id: 'n7', label: 'Enterprise Deployment', type: 'Component', mastery: 'weak', x: 620, y: 220 }
     ],
     edges: [
       { source: 'n1', target: 'n2', label: 'decomposes to' },

@@ -3,6 +3,7 @@ import {
   Check,
   Cloud,
   Copy,
+  ExternalLink,
   FileText,
   Filter,
   Loader2,
@@ -12,6 +13,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { FormattedAnswer } from '../components/FormattedAnswer';
 import { QuickPickSelector } from '../components/QuickPickSelector';
@@ -282,7 +284,7 @@ export default function PYQIntelligence() {
                         <span>{item.reason}</span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3 text-xs border-t border-[#e3e6ed] pt-3">
+                      <div className="flex flex-wrap items-center gap-3 text-xs border-t border-[#e3e6ed] dark:border-slate-800 pt-3">
                         <span className="text-[10px] font-mono text-[#121217] dark:text-slate-200 font-bold flex items-center gap-1">
                           <FileText className="w-3.5 h-3.5 text-[#4f75f2]" /> {item.marks} Marks
                         </span>
@@ -290,25 +292,35 @@ export default function PYQIntelligence() {
                           {item.unit}
                         </span>
 
-                        <button
-                          disabled={loadingAnswers[item.id]}
-                          onClick={() => {
-                            void handleGenerateAnswer(item);
-                          }}
-                          className="ml-auto bg-[#4f75f2] hover:bg-[#385dd8] text-white px-4 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
-                        >
-                          {loadingAnswers[item.id] ? (
-                            <>
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                              Drafting...
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-3 h-3 text-amber-200" />
-                              Draft Model Answer
-                            </>
-                          )}
-                        </button>
+                        <div className="ml-auto flex items-center gap-2">
+                          <Link
+                            to={`/answers?q=${encodeURIComponent(item.questionText)}&marks=${item.marks}`}
+                            className="p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-400 transition-colors shadow-xs"
+                            title="Open in Full Model Answers Studio"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </Link>
+
+                          <button
+                            disabled={loadingAnswers[item.id]}
+                            onClick={() => {
+                              void handleGenerateAnswer(item);
+                            }}
+                            className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-4 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-xs"
+                          >
+                            {loadingAnswers[item.id] ? (
+                              <>
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                                Drafting...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="w-3 h-3 text-amber-200" />
+                                Draft Model Answer
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -383,39 +395,39 @@ export default function PYQIntelligence() {
             <header className="p-6 border-b border-[#e3e6ed] dark:border-slate-800 bg-[#f8f9fc] dark:bg-slate-850 flex justify-between items-start gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#3b52c4] bg-[#e4e7fd] border border-[#d0d8fb] px-3 py-1 rounded-full inline-block">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#3b52c4] dark:text-indigo-400 bg-[#e4e7fd] dark:bg-indigo-950/60 border border-[#d0d8fb] dark:border-indigo-800 px-3 py-1 rounded-full inline-block">
                     Topper Model Answer
                   </span>
                   {responseSource === 'quick_pick_cache' ? (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2.5 py-0.5 rounded-full">
                       <Zap className="w-3 h-3 text-emerald-600" /> Pre-computed Quick Pick
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 px-2.5 py-0.5 rounded-full">
                       <Cloud className="w-3 h-3 text-blue-600" /> Live OCI GenAI
                     </span>
                   )}
                 </div>
-                <h3 className="text-base font-extrabold text-[#121217] leading-snug">
+                <h3 className="text-base font-extrabold text-[#121217] dark:text-white leading-snug">
                   {activeAnswer.question}
                 </h3>
               </div>
               <button
                 onClick={() => setActiveAnswer(null)}
-                className="text-[#6b6f82] hover:text-[#121217] p-2 rounded-xl hover:bg-[#edf3fc] transition-colors cursor-pointer"
+                className="text-[#6b6f82] dark:text-slate-400 hover:text-[#121217] dark:hover:text-white p-2 rounded-xl hover:bg-[#edf3fc] dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </header>
 
-            <div className="p-6 md:p-8 overflow-y-auto space-y-4 select-text bg-[#ffffff]">
+            <div className="p-6 md:p-8 overflow-y-auto space-y-4 select-text bg-white dark:bg-slate-900">
               <FormattedAnswer content={activeAnswer.answer} />
             </div>
 
-            <footer className="p-4 bg-[#f8f9fc] border-t border-[#e3e6ed] flex justify-between items-center">
+            <footer className="p-4 bg-[#f8f9fc] dark:bg-slate-850 border-t border-[#e3e6ed] dark:border-slate-800 flex justify-between items-center">
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-1.5 text-xs font-bold text-[#4f75f2] hover:text-[#385dd8] cursor-pointer bg-white px-4 py-2 rounded-xl border border-[#d0dcf5] shadow-xs"
+                className="flex items-center gap-1.5 text-xs font-bold text-[#4f75f2] dark:text-indigo-400 hover:text-[#385dd8] cursor-pointer bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-[#d0dcf5] dark:border-slate-700 shadow-xs"
               >
                 {copied ? (
                   <Check className="w-3.5 h-3.5 text-emerald-600" />

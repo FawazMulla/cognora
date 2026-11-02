@@ -167,7 +167,7 @@ export const aiGateway: AIGateway = {
         } else {
           routeConfig = {
             provider: env.GOOGLE_AI_API_KEY ? 'gemini' : 'mock',
-            modelName: env.GOOGLE_AI_API_KEY ? 'gemini-2.5-flash' : 'mock-model',
+            modelName: env.GOOGLE_AI_API_KEY ? 'gemini-1.5-flash' : 'mock-model',
           };
         }
       }
@@ -218,7 +218,7 @@ export const aiGateway: AIGateway = {
         (clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'])
       ) {
         activeProvider = 'gemini';
-        activeModel = 'gemini-2.5-flash';
+        activeModel = 'gemini-1.5-flash';
         apiKey = clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'] || '';
       } else {
         // Fallback checks
@@ -227,7 +227,7 @@ export const aiGateway: AIGateway = {
           activeModel = env.OCI_MODEL_ID || 'cohere.command-a-03-2025';
         } else if (clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY']) {
           activeProvider = 'gemini';
-          activeModel = 'gemini-2.5-flash';
+          activeModel = 'gemini-1.5-flash';
           apiKey = clientGeminiKey || env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'] || '';
         } else if (clientCohereKey || env.COHERE_API_KEY) {
           activeProvider = 'cohere';
@@ -246,7 +246,7 @@ export const aiGateway: AIGateway = {
           activeModel = env.OCI_MODEL_ID || 'cohere.command-a-03-2025';
         } else {
           activeProvider = preferredProvider === 'cohere' ? 'cohere' : 'gemini';
-          activeModel = activeProvider === 'cohere' ? 'command-r-plus-08-2024' : 'gemini-2.5-flash';
+          activeModel = activeProvider === 'cohere' ? 'command-r-plus-08-2024' : 'gemini-1.5-flash';
         }
       }
 
@@ -345,7 +345,7 @@ async function callGeminiWithTools(
   context: string,
   options: InvokeOptions,
 ): Promise<any> {
-  const geminiModel = model.includes('gemini') ? model : 'gemini-2.5-flash';
+  const geminiModel = model.includes('gemini') ? model : 'gemini-1.5-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
 
   const prompt = buildPrompt(taskType, input, context);
@@ -420,7 +420,7 @@ async function callGeminiAPI(
   input: any,
   context: string,
 ): Promise<any> {
-  const geminiModel = model.includes('gemini') ? model : 'gemini-2.5-flash';
+  const geminiModel = model.includes('gemini') ? model : 'gemini-1.5-flash';
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${apiKey}`;
 
   const prompt = buildPrompt(taskType, input, context);

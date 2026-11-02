@@ -12,6 +12,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { QuickPickSelector } from '../components/QuickPickSelector';
 import { generatePracticalAI, getDefaultSubjects } from '../lib/ai-service';
@@ -112,6 +113,17 @@ export default function PracticalGenerator() {
   const [activeQuickPickId, setActiveQuickPickId] = useState<string | undefined>(
     'qp-practical-mp-neuron',
   );
+  const [searchParams] = useSearchParams();
+
+  // Listen to deep-linked query parameters from Atlas
+  useEffect(() => {
+    const aimParam = searchParams.get('aim');
+    if (aimParam && aimParam.trim()) {
+      setAim(aimParam.trim());
+      setActiveQuickPickId(undefined);
+      void triggerGeneration(aimParam.trim(), false);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     let interval: ReturnType<typeof setInterval> | undefined;

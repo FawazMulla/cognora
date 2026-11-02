@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Activity, Search, Flame, Target, Clock, Sparkles, BrainCircuit, Loader2, ChevronRight, Zap, PlayCircle, X, Layers, FileText, HelpCircle, Award, Edit3, Check } from 'lucide-react';
+import { BookOpen, Activity, Search, Flame, Target, Clock, Sparkles, BrainCircuit, Loader2, ChevronRight, Zap, PlayCircle, X, Layers, FileText, HelpCircle, Award, Edit3, Check, Compass } from 'lucide-react';
 import { fetchApi } from '../lib/api';
 import { getDefaultSubjects } from '../lib/ai-service';
 import { getLastNavigationState, type NavigationState } from '../lib/navigation-tracker';
@@ -323,15 +323,15 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* LEFT COLUMN: Subject / Course Selection (Pastel Cards) */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-[#ffffff] border border-[#e3e6ed] rounded-3xl p-6 shadow-xs space-y-5">
+          <div className="bg-[#ffffff] dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 shadow-xs space-y-5 transition-colors">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-lg font-extrabold text-[#121217]">Select a Course</h2>
-                <p className="text-xs text-[#6b6f82]">Start focused learning today</p>
+                <h2 className="text-lg font-extrabold text-[#121217] dark:text-white">Select a Course</h2>
+                <p className="text-xs text-[#6b6f82] dark:text-slate-400">Start focused learning today</p>
               </div>
               <button
                 onClick={() => setShowAddSubject(true)}
-                className="text-xs font-bold text-[#4f75f2] hover:text-[#385dd8] bg-[#edf3fc] hover:bg-[#e1f1fd] px-3 py-1.5 rounded-xl transition-all cursor-pointer border border-[#d0dcf5]"
+                className="text-xs font-bold text-[#4f75f2] hover:text-[#385dd8] bg-[#edf3fc] dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 hover:bg-[#e1f1fd] px-3 py-1.5 rounded-xl transition-all cursor-pointer border border-[#d0dcf5] dark:border-indigo-800"
               >
                 + Add Course
               </button>
@@ -339,26 +339,26 @@ export default function Dashboard() {
 
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-4 h-4 text-[#8c8fa1] absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#8c8fa1] dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search your subjects or topics..."
-                className="w-full bg-[#f8f9fc] border border-[#e3e6ed] rounded-2xl pl-10 pr-4 py-2.5 text-xs text-[#121217] placeholder-[#8c8fa1] outline-none focus:border-[#4f75f2] transition-colors"
+                className="w-full bg-[#f8f9fc] dark:bg-slate-800/90 border border-[#e3e6ed] dark:border-slate-700 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-[#121217] dark:text-white placeholder-[#8c8fa1] dark:placeholder-slate-400 outline-none focus:border-[#4f75f2] transition-colors"
               />
             </div>
 
             {/* Filter Toggle: All | Theory | Labs */}
-            <div className="flex items-center gap-1.5 pb-1 border-b border-[#e3e6ed]">
+            <div className="flex items-center gap-1.5 pb-1 border-b border-[#e3e6ed] dark:border-slate-800">
               {(['All', 'Theory', 'Labs'] as const).map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}
                   className={`px-3 py-1 rounded-xl text-[11px] font-mono font-bold transition-all cursor-pointer ${
                     categoryFilter === cat
-                      ? 'bg-[#121217] text-white'
-                      : 'bg-[#f2f3f7] text-[#6b6f82] hover:text-[#121217]'
+                      ? 'bg-[#121217] dark:bg-white text-white dark:text-slate-900'
+                      : 'bg-[#f2f3f7] dark:bg-slate-800 text-[#6b6f82] dark:text-slate-300 hover:text-[#121217] dark:hover:text-white'
                   }`}
                 >
                   {cat} ({cat === 'All' ? subjects.length : subjects.filter((s: any) => cat === 'Labs' ? (s.name.toLowerCase().includes('lab') || s.type === 'Lab') : (!s.name.toLowerCase().includes('lab') && s.type !== 'Lab')).length})
@@ -369,41 +369,46 @@ export default function Dashboard() {
             {/* Subject Pastel Cards (Periwinkle, Sky, Mint, Sand, Lavender) */}
             <div className="space-y-3 max-h-[560px] overflow-y-auto pr-1">
               {filteredSubjects.length === 0 ? (
-                <div className="text-center py-8 text-[#8c8fa1] text-xs">
+                <div className="text-center py-8 text-[#8c8fa1] dark:text-slate-400 text-xs">
                   No courses found. Click "+ Add Course" to get started.
                 </div>
               ) : (
                 filteredSubjects.map((subj, idx) => {
                   const pastelStyles = [
                     {
-                      bg: 'bg-[#e4e7fd]', // Soft Periwinkle
-                      border: 'border-[#d0d8fb]',
-                      badge: 'bg-[#ffffff]/80 text-[#3b52c4]',
-                      text: 'text-[#1e255e]'
+                      bg: 'bg-[#e4e7fd] dark:bg-indigo-950/40',
+                      border: 'border-[#d0d8fb] dark:border-indigo-900/60',
+                      badge: 'bg-[#ffffff]/80 dark:bg-slate-900/90 text-[#3b52c4] dark:text-indigo-300',
+                      text: 'text-[#1e255e] dark:text-indigo-100',
+                      subText: 'text-[#5d6175] dark:text-slate-300'
                     },
                     {
-                      bg: 'bg-[#e1f1fd]', // Soft Sky Blue
-                      border: 'border-[#cce5fc]',
-                      badge: 'bg-[#ffffff]/80 text-[#216ea3]',
-                      text: 'text-[#143e5e]'
+                      bg: 'bg-[#e1f1fd] dark:bg-sky-950/40',
+                      border: 'border-[#cce5fc] dark:border-sky-900/60',
+                      badge: 'bg-[#ffffff]/80 dark:bg-slate-900/90 text-[#216ea3] dark:text-sky-300',
+                      text: 'text-[#143e5e] dark:text-sky-100',
+                      subText: 'text-[#5d6175] dark:text-slate-300'
                     },
                     {
-                      bg: 'bg-[#e2f6eb]', // Soft Mint
-                      border: 'border-[#c9eed9]',
-                      badge: 'bg-[#ffffff]/80 text-[#1f7247]',
-                      text: 'text-[#124229]'
+                      bg: 'bg-[#e2f6eb] dark:bg-emerald-950/40',
+                      border: 'border-[#c9eed9] dark:border-emerald-900/60',
+                      badge: 'bg-[#ffffff]/80 dark:bg-slate-900/90 text-[#1f7247] dark:text-emerald-300',
+                      text: 'text-[#124229] dark:text-emerald-100',
+                      subText: 'text-[#5d6175] dark:text-slate-300'
                     },
                     {
-                      bg: 'bg-[#fbf5e6]', // Soft Warm Sand
-                      border: 'border-[#f4e8cc]',
-                      badge: 'bg-[#ffffff]/80 text-[#967018]',
-                      text: 'text-[#543d0b]'
+                      bg: 'bg-[#fbf5e6] dark:bg-amber-950/40',
+                      border: 'border-[#f4e8cc] dark:border-amber-900/60',
+                      badge: 'bg-[#ffffff]/80 dark:bg-slate-900/90 text-[#967018] dark:text-amber-300',
+                      text: 'text-[#543d0b] dark:text-amber-100',
+                      subText: 'text-[#5d6175] dark:text-slate-300'
                     },
                     {
-                      bg: 'bg-[#f0eafb]', // Soft Lavender
-                      border: 'border-[#e4d7f8]',
-                      badge: 'bg-[#ffffff]/80 text-[#7a48ba]',
-                      text: 'text-[#381666]'
+                      bg: 'bg-[#f0eafb] dark:bg-purple-950/40',
+                      border: 'border-[#e4d7f8] dark:border-purple-900/60',
+                      badge: 'bg-[#ffffff]/80 dark:bg-slate-900/90 text-[#7a48ba] dark:text-purple-300',
+                      text: 'text-[#381666] dark:text-purple-100',
+                      subText: 'text-[#5d6175] dark:text-slate-300'
                     }
                   ];
                   const style = pastelStyles[idx % pastelStyles.length];
@@ -424,20 +429,35 @@ export default function Dashboard() {
                           {subj.code || 'CODE'}
                         </span>
                       </div>
-                      <p className="text-xs text-[#5d6175] mb-4 line-clamp-1 font-medium">
+                      <p className={`text-xs ${style.subText} mb-4 line-clamp-1 font-medium`}>
                         {subj.name.toLowerCase().includes('lab')
                           ? 'Hands-on experiments, simulation models, and journal viva prep.'
                           : 'Master university syllabus, key theorems, and predicted exam question patterns.'}
                       </p>
 
-                      <div className="flex items-center justify-between text-[11px] font-mono font-bold text-[#5d6175]">
+                      <div className="flex items-center justify-between text-[11px] font-mono font-bold text-[#5d6175] dark:text-slate-300">
                         <div className="flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5" />
                           <span>{examDays !== null ? `${examDays} days until exam` : (subj.name.toLowerCase().includes('lab') ? 'Semester Lab' : 'Active Term')}</span>
                         </div>
-                        <span className="text-xs font-bold text-[#121217]">
-                          {progress}% Complete
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-[#121217] dark:text-white">
+                            {progress}% Complete
+                          </span>
+                          {subj.code && (
+                            <span
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                window.location.href = `/atlas/${subj.code}`;
+                              }}
+                              className="px-2 py-0.5 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-mono font-bold transition-all shadow-xs flex items-center gap-1"
+                              title="Open Visual Learning Atlas for this syllabus"
+                            >
+                              <Compass className="w-3 h-3" /> Atlas
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </Link>
                   );
@@ -450,21 +470,21 @@ export default function Dashboard() {
         {/* RIGHT COLUMN: Performance Chart + Homework + Friends Score */}
         <div className="lg:col-span-7 space-y-6">
           {/* Performance Chart Card */}
-          <div className="bg-[#ffffff] border border-[#e3e6ed] rounded-3xl p-6 shadow-xs space-y-4">
+          <div className="bg-[#ffffff] dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 shadow-xs space-y-4 transition-colors">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-lg font-extrabold text-[#121217]">Performance Chart</h2>
-                <p className="text-xs text-[#6b6f82]">Track results and watch your retention rise</p>
+                <h2 className="text-lg font-extrabold text-[#121217] dark:text-white">Performance Chart</h2>
+                <p className="text-xs text-[#6b6f82] dark:text-slate-400">Track results and watch your retention rise</p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold bg-[#f2f3f7] text-[#121217] px-3 py-1.5 rounded-xl border border-[#e3e6ed]">
+                <span className="text-xs font-bold bg-[#f2f3f7] dark:bg-slate-800 text-[#121217] dark:text-slate-200 px-3 py-1.5 rounded-xl border border-[#e3e6ed] dark:border-slate-700">
                   Weekly ▾
                 </span>
               </div>
             </div>
 
             {/* Legend */}
-            <div className="flex items-center gap-4 text-xs font-medium text-[#6b6f82]">
+            <div className="flex items-center gap-4 text-xs font-medium text-[#6b6f82] dark:text-slate-400">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#4f75f2]" />
                 <span>Theory</span>
@@ -490,9 +510,9 @@ export default function Dashboard() {
                 </defs>
 
                 {/* Grid guidelines */}
-                <line x1="0" y1="30" x2="500" y2="30" stroke="#f0f2f7" strokeDasharray="3 3" />
-                <line x1="0" y1="80" x2="500" y2="80" stroke="#f0f2f7" strokeDasharray="3 3" />
-                <line x1="0" y1="130" x2="500" y2="130" stroke="#f0f2f7" strokeDasharray="3 3" />
+                <line x1="0" y1="30" x2="500" y2="30" stroke="currentColor" className="text-slate-100 dark:text-slate-800" strokeDasharray="3 3" />
+                <line x1="0" y1="80" x2="500" y2="80" stroke="currentColor" className="text-slate-100 dark:text-slate-800" strokeDasharray="3 3" />
+                <line x1="0" y1="130" x2="500" y2="130" stroke="currentColor" className="text-slate-100 dark:text-slate-800" strokeDasharray="3 3" />
 
                 {/* Shaded Area under Curve */}
                 <path
@@ -524,17 +544,17 @@ export default function Dashboard() {
               </svg>
 
               {/* Floating Pill on Peak */}
-              <div className="absolute top-2 right-28 bg-[#121217] text-white text-[10px] font-mono font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-bounce">
+              <div className="absolute top-2 right-28 bg-[#121217] dark:bg-indigo-600 text-white text-[10px] font-mono font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5 animate-bounce">
                 <span>↑ +18% Higher Recall</span>
               </div>
 
               {/* Day Labels */}
-              <div className="flex justify-between text-[11px] font-mono text-[#8c8fa1] px-2 pt-2 border-t border-[#f0f2f7]">
+              <div className="flex justify-between text-[11px] font-mono text-[#8c8fa1] dark:text-slate-400 px-2 pt-2 border-t border-[#f0f2f7] dark:border-slate-800">
                 <span>Sun</span>
                 <span>Mon</span>
                 <span>Tue</span>
                 <span>Wed</span>
-                <span className="text-[#4f75f2] font-bold">Thu</span>
+                <span className="text-[#4f75f2] dark:text-indigo-400 font-bold">Thu</span>
                 <span>Fri</span>
                 <span>Sat</span>
               </div>
@@ -544,13 +564,13 @@ export default function Dashboard() {
           {/* Bottom Split: Homework/Task Progress + Community Score */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Homework / Study Queue */}
-            <div className="bg-[#ffffff] border border-[#e3e6ed] rounded-3xl p-6 shadow-xs space-y-4">
+            <div className="bg-[#ffffff] dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 shadow-xs space-y-4 transition-colors">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-base font-extrabold text-[#121217]">Study Tasks</h3>
-                  <p className="text-[11px] text-[#6b6f82]">Check and complete today</p>
+                  <h3 className="text-base font-extrabold text-[#121217] dark:text-white">Study Tasks</h3>
+                  <p className="text-[11px] text-[#6b6f82] dark:text-slate-400">Check and complete today</p>
                 </div>
-                <span className="text-[11px] font-bold bg-[#f2f3f7] text-[#121217] px-2.5 py-1 rounded-lg">
+                <span className="text-[11px] font-bold bg-[#f2f3f7] dark:bg-slate-800 text-[#121217] dark:text-slate-300 px-2.5 py-1 rounded-lg">
                   Today ▾
                 </span>
               </div>
@@ -563,32 +583,32 @@ export default function Dashboard() {
                   { title: 'Write 3 model answers', progress: 92, color: 'from-[#8e7bf3] to-[#4f75f2]' },
                 ].map((task, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-[#f8f9fc] border border-[#e3e6ed] flex items-center justify-center shrink-0 text-[#121217]">
-                      <Check className="w-3.5 h-3.5 text-[#4f75f2]" />
+                    <div className="w-8 h-8 rounded-xl bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 flex items-center justify-center shrink-0 text-[#121217] dark:text-white">
+                      <Check className="w-3.5 h-3.5 text-[#4f75f2] dark:text-indigo-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-bold text-[#121217] truncate">{task.title}</div>
-                      <div className="h-1.5 w-full bg-[#f0f2f7] rounded-full overflow-hidden mt-1.5">
+                      <div className="text-xs font-bold text-[#121217] dark:text-white truncate">{task.title}</div>
+                      <div className="h-1.5 w-full bg-[#f0f2f7] dark:bg-slate-800 rounded-full overflow-hidden mt-1.5">
                         <div
                           className={`h-full bg-gradient-to-r ${task.color} rounded-full`}
                           style={{ width: `${task.progress}%` }}
                         />
                       </div>
                     </div>
-                    <span className="text-xs font-mono font-bold text-[#121217]">{task.progress}%</span>
+                    <span className="text-xs font-mono font-bold text-[#121217] dark:text-slate-300">{task.progress}%</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Academic Health & Community Score */}
-            <div className="bg-[#ffffff] border border-[#e3e6ed] rounded-3xl p-6 shadow-xs space-y-4">
+            <div className="bg-[#ffffff] dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 shadow-xs space-y-4 transition-colors">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-base font-extrabold text-[#121217]">Cohort Health</h3>
-                  <p className="text-[11px] text-[#6b6f82]">Your ranking among peers</p>
+                  <h3 className="text-base font-extrabold text-[#121217] dark:text-white">Cohort Health</h3>
+                  <p className="text-[11px] text-[#6b6f82] dark:text-slate-400">Your ranking among peers</p>
                 </div>
-                <span className="text-[11px] font-bold text-[#4f75f2] bg-[#edf3fc] px-2.5 py-1 rounded-lg border border-[#d0dcf5]">
+                <span className="text-[11px] font-bold text-[#4f75f2] dark:text-indigo-400 bg-[#edf3fc] dark:bg-indigo-950/60 px-2.5 py-1 rounded-lg border border-[#d0dcf5] dark:border-indigo-800">
                   Active
                 </span>
               </div>
@@ -600,17 +620,17 @@ export default function Dashboard() {
                   { name: 'Riya Sen', hours: '74h', score: '9,892' },
                   { name: 'Fawaz Mulla', hours: '68h', score: '9,322' },
                 ].map((user, i) => (
-                  <div key={i} className="flex items-center justify-between py-1 border-b border-[#f0f2f7] last:border-none">
+                  <div key={i} className="flex items-center justify-between py-1 border-b border-[#f0f2f7] dark:border-slate-800 last:border-none">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-full bg-[#edf3fc] border border-[#d0dcf5] text-[11px] font-bold text-[#4f75f2] flex items-center justify-center">
+                      <div className="w-7 h-7 rounded-full bg-[#edf3fc] dark:bg-slate-800 border border-[#d0dcf5] dark:border-slate-700 text-[11px] font-bold text-[#4f75f2] dark:text-indigo-400 flex items-center justify-center">
                         {user.name[0]}
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-[#121217]">{user.name}</div>
-                        <div className="text-[10px] text-[#8c8fa1] font-mono">{user.hours} total study</div>
+                        <div className="text-xs font-bold text-[#121217] dark:text-white">{user.name}</div>
+                        <div className="text-[10px] text-[#8c8fa1] dark:text-slate-400 font-mono">{user.hours} total study</div>
                       </div>
                     </div>
-                    <div className="text-xs font-mono font-bold text-[#121217]">{user.score}</div>
+                    <div className="text-xs font-mono font-bold text-[#121217] dark:text-slate-300">{user.score}</div>
                   </div>
                 ))}
               </div>
@@ -621,7 +641,7 @@ export default function Dashboard() {
 
       {/* Quick Action Navigation Grid */}
       <div className="space-y-3 pt-4">
-        <h3 className="text-xs font-mono font-bold text-[#6b6f82] uppercase tracking-wider">
+        <h3 className="text-xs font-mono font-bold text-[#6b6f82] dark:text-slate-400 uppercase tracking-wider">
           Quick Modules
         </h3>
         <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
@@ -629,10 +649,10 @@ export default function Dashboard() {
             <Link
               key={i}
               to={action.href}
-              className="bg-white border border-[#e3e6ed] hover:border-[#4f75f2] hover:shadow-sm p-4 rounded-2xl transition-all cursor-pointer group flex flex-col justify-between min-h-[90px]"
+              className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 hover:border-[#4f75f2] dark:hover:border-indigo-500 hover:shadow-sm p-4 rounded-2xl transition-all cursor-pointer group flex flex-col justify-between min-h-[90px]"
             >
-              <action.icon className="w-5 h-5 text-[#4f75f2] group-hover:scale-110 transition-transform mb-2" />
-              <span className="text-xs font-bold text-[#121217] leading-tight">
+              <action.icon className="w-5 h-5 text-[#4f75f2] dark:text-indigo-400 group-hover:scale-110 transition-transform mb-2" />
+              <span className="text-xs font-bold text-[#121217] dark:text-white leading-tight">
                 {action.label}
               </span>
             </Link>
@@ -643,42 +663,40 @@ export default function Dashboard() {
       {/* Recent Sessions */}
       {sessions.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-xs font-mono font-bold text-[#75758a] uppercase tracking-wider">Recent Study Sessions</h3>
+          <h3 className="text-xs font-mono font-bold text-[#75758a] dark:text-slate-400 uppercase tracking-wider">Recent Study Sessions</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {sessions.map(session => (
               <Link
                 key={session.id}
                 to={`/session/${session.id}`}
-                className="bg-[#eeece7] border border-[#d9d9dd] hover:bg-white hover:border-black p-5 rounded transition-all group cursor-pointer flex items-center gap-4 shadow-none"
+                className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 hover:border-indigo-500 p-5 rounded-2xl transition-all group cursor-pointer flex items-center gap-4 shadow-xs"
               >
-                <div className="w-9 h-9 rounded bg-white border border-[#d9d9dd] flex items-center justify-center shrink-0">
-                  <PlayCircle className="w-4 h-4 text-black" />
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center shrink-0">
+                  <PlayCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-mono font-bold text-black truncate group-hover:text-[#1863dc] transition-colors uppercase tracking-wider">
+                  <div className="text-xs font-mono font-bold text-[#121217] dark:text-white truncate group-hover:text-[#4f75f2] transition-colors uppercase tracking-wider">
                     {session.goalMode || 'Study Session'}
                   </div>
-                  <div className="text-[10px] text-[#75758a] mt-0.5 flex items-center gap-1 font-mono">
+                  <div className="text-[10px] text-[#75758a] dark:text-slate-400 mt-0.5 flex items-center gap-1 font-mono">
                     <Clock className="w-3 h-3" />
                     {new Date(session.startedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-[#75758a] group-hover:text-black group-hover:translate-x-0.5 transition-all shrink-0" />
+                <ChevronRight className="w-4 h-4 text-[#75758a] dark:text-slate-500 group-hover:text-indigo-600 group-hover:translate-x-0.5 transition-all shrink-0" />
               </Link>
             ))}
           </div>
         </div>
       )}
 
-
-
       {/* Add Subject Modal */}
       {showAddSubject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white border border-[#d9d9dd] w-full max-w-md rounded-2xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in duration-200">
-            <header className="p-6 border-b border-[#d9d9dd] flex justify-between items-center bg-white">
-              <h3 className="text-sm font-bold text-black uppercase tracking-wider flex items-center gap-2 font-display">
-                <BookOpen className="w-4 h-4 text-black" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 w-full max-w-md rounded-3xl overflow-hidden flex flex-col relative animate-in fade-in zoom-in duration-200 shadow-xl">
+            <header className="p-6 border-b border-[#e3e6ed] dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900">
+              <h3 className="text-sm font-bold text-[#121217] dark:text-white uppercase tracking-wider flex items-center gap-2 font-display">
+                <BookOpen className="w-4 h-4 text-[#4f75f2]" />
                 Add New Subject
               </h3>
               <button 
@@ -688,38 +706,38 @@ export default function Dashboard() {
                   setNewSubjectName('');
                   setNewSubjectDate('');
                 }}
-                className="text-[#75758a] hover:text-black p-1.5 rounded-full hover:bg-[#eeece7] transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </header>
             
-            <form onSubmit={handleAddSubjectSubmit} className="p-6 space-y-5 bg-white">
+            <form onSubmit={handleAddSubjectSubmit} className="p-6 space-y-5 bg-white dark:bg-slate-900">
               {addSubjectError && (
-                <div className="bg-[#b30000]/10 border border-[#b30000]/20 text-[#b30000] p-3 rounded text-xs text-center font-semibold">
+                <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 p-3 rounded-xl text-xs text-center font-semibold">
                   {addSubjectError}
                 </div>
               )}
 
               <div className="space-y-2">
-                <label className="block text-[11px] font-mono text-[#75758a] uppercase tracking-wide">Subject Name</label>
+                <label className="block text-[11px] font-mono text-[#75758a] dark:text-slate-400 uppercase tracking-wide">Subject Name</label>
                 <input
                   type="text"
                   value={newSubjectName}
                   onChange={e => setNewSubjectName(e.target.value)}
                   placeholder="e.g. Distributed Systems"
-                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-[#212121] placeholder-[#93939f] outline-none focus:border-[#9b60aa] transition-colors"
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs text-[#121217] dark:text-white placeholder-slate-400 outline-none focus:border-[#4f75f2] transition-colors"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="block text-[11px] font-mono text-[#75758a] uppercase tracking-wide">Exam Date (Optional)</label>
+                <label className="block text-[11px] font-mono text-[#75758a] dark:text-slate-400 uppercase tracking-wide">Exam Date (Optional)</label>
                 <input
                   type="date"
                   value={newSubjectDate}
                   onChange={e => setNewSubjectDate(e.target.value)}
-                  className="w-full bg-white border border-[#d9d9dd] rounded px-4 py-2.5 text-xs text-[#212121] outline-none focus:border-[#9b60aa] transition-colors"
+                  className="w-full bg-[#f8f9fc] dark:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs text-[#121217] dark:text-white outline-none focus:border-[#4f75f2] transition-colors"
                 />
               </div>
 
@@ -732,14 +750,14 @@ export default function Dashboard() {
                     setNewSubjectName('');
                     setNewSubjectDate('');
                   }}
-                  className="bg-transparent hover:bg-[#eeece7] border border-[#d9d9dd] text-[#212121] px-5 py-2.5 rounded-full text-xs font-semibold transition-colors cursor-pointer"
+                  className="bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 border border-[#e3e6ed] dark:border-slate-700 text-[#121217] dark:text-white px-5 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit"
                   disabled={addSubjectLoading}
-                  className="bg-black hover:bg-zinc-800 text-white px-6 py-2.5 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-6 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
                 >
                   {addSubjectLoading ? (
                     <>

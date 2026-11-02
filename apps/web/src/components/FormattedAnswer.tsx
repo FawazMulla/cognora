@@ -28,7 +28,7 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
       >
         <table className="w-full text-left border-collapse text-xs md:text-sm">
           <thead>
-            <tr className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+            <tr className="bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
               {header.map((col, idx) => (
                 <th
                   key={idx}
@@ -83,7 +83,7 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
             ASCII System Pipeline
           </span>
         </div>
-        <pre className="p-4 md:p-6 overflow-x-auto text-[11px] md:text-xs font-mono text-emerald-800 dark:text-emerald-300 leading-relaxed select-text font-bold bg-white/70 dark:bg-slate-950">
+        <pre className="p-4 md:p-6 overflow-x-auto text-[11px] md:text-xs font-mono text-emerald-800 dark:text-emerald-300 leading-relaxed select-text font-bold bg-white/90 dark:bg-slate-950">
           {rawCode}
         </pre>
       </div>,
@@ -144,7 +144,7 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
       blocks.push(
         <div key={`h1-${i}`} className="pb-3 pt-2 border-b-2 border-indigo-500/20 mb-4">
           <h2 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-            <Award className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+            <Award className="w-6 h-6 text-indigo-600 dark:text-indigo-400 shrink-0" />
             <span>{line.replace('# ', '')}</span>
           </h2>
         </div>,
@@ -157,7 +157,7 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
       const headingText = line.replace('## ', '');
       blocks.push(
         <div key={`h2-${i}`} className="mt-6 mb-3 flex items-center gap-2.5">
-          <div className="w-1.5 h-5 bg-indigo-600 dark:bg-indigo-400 rounded-full" />
+          <div className="w-1.5 h-5 bg-indigo-600 dark:bg-indigo-400 rounded-full shrink-0" />
           <h3 className="text-base md:text-lg font-bold text-slate-900 dark:text-white">
             {headingText}
           </h3>
@@ -171,11 +171,11 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
       blocks.push(
         <h4
           key={`h3-${i}`}
-          className="text-sm font-bold text-slate-900 dark:text-white mt-4 mb-2 flex items-center gap-1.5"
+          className="text-sm md:text-base font-bold text-slate-900 dark:text-white mt-5 mb-2.5 flex items-center gap-2"
         >
-          <BookOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+          <BookOpen className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
           <span>{renderInlineFormatted(line.replace('### ', ''))}</span>
-        </h4>,
+        </h4>
       );
       continue;
     }
@@ -186,7 +186,7 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
       blocks.push(
         <div key={`bullet-${i}`} className="flex items-start gap-2.5 my-1.5 pl-2">
           <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400 mt-2 shrink-0" />
-          <div className="text-xs md:text-sm text-slate-800 dark:text-slate-200 leading-relaxed flex-1">
+          <div className="text-xs md:text-sm text-slate-800 dark:text-slate-100 leading-relaxed flex-1">
             {renderInlineFormatted(content)}
           </div>
         </div>,
@@ -202,10 +202,10 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
         const text = match[2];
         blocks.push(
           <div key={`num-${i}`} className="flex items-start gap-3 my-2 pl-1">
-            <span className="w-5 h-5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5">
+            <span className="w-5 h-5 rounded-full bg-indigo-600 dark:bg-indigo-500 text-white text-[11px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
               {num}
             </span>
-            <div className="text-xs md:text-sm text-slate-800 dark:text-slate-200 leading-relaxed flex-1">
+            <div className="text-xs md:text-sm text-slate-800 dark:text-slate-100 leading-relaxed flex-1">
               {renderInlineFormatted(text)}
             </div>
           </div>,
@@ -220,7 +220,7 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
       blocks.push(
         <div
           key={`math-${i}`}
-          className="my-3.5 p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-center font-mono text-sm md:text-base font-bold text-slate-900 dark:text-slate-100 shadow-xs overflow-x-auto"
+          className="my-3.5 p-4 bg-slate-900 dark:bg-slate-950 border border-slate-700 dark:border-slate-800 rounded-2xl text-center font-mono text-xs md:text-sm font-bold text-cyan-300 dark:text-cyan-300 shadow-sm overflow-x-auto select-text"
         >
           {math}
         </div>,
@@ -237,7 +237,7 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
       blocks.push(
         <div
           key={`meta-${i}`}
-          className="text-xs text-slate-600 dark:text-slate-300 font-mono bg-slate-100 dark:bg-slate-800 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 my-1 inline-block mr-2"
+          className="text-xs text-slate-700 dark:text-slate-200 font-mono bg-slate-100 dark:bg-slate-800 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 my-1 inline-block mr-2"
         >
           {renderInlineFormatted(line)}
         </div>,
@@ -249,7 +249,7 @@ export function FormattedAnswer({ content }: FormattedAnswerProps) {
     blocks.push(
       <p
         key={`p-${i}`}
-        className="my-2.5 text-xs md:text-sm text-slate-800 dark:text-slate-200 leading-relaxed"
+        className="my-2.5 text-xs md:text-sm text-slate-800 dark:text-slate-100 leading-relaxed"
       >
         {renderInlineFormatted(line)}
       </p>,
@@ -321,7 +321,11 @@ function renderInlineFormatted(text: string): React.ReactNode {
           );
         }
 
-        return <span key={index}>{part}</span>;
+        return (
+          <span key={index} className="text-slate-800 dark:text-slate-100">
+            {part}
+          </span>
+        );
       })}
     </>
   );

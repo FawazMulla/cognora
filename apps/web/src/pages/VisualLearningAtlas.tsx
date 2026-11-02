@@ -679,7 +679,10 @@ export default function VisualLearningAtlas() {
 
                         <div className="flex justify-end pt-1">
                           <Link
-                            to="/answers"
+                            to={{
+                              pathname: '/answers',
+                              search: `?q=${encodeURIComponent(pyq.question)}&marks=${pyq.marks}`,
+                            }}
                             className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-mono font-bold transition-all shadow-2xs flex items-center gap-1.5"
                           >
                             <Sparkles className="w-3.5 h-3.5" /> Draft Topper Answer

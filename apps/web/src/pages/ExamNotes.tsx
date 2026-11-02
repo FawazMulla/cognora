@@ -326,26 +326,26 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
       {notes && (
         <div className="space-y-8 animate-in fade-in duration-300">
           {/* Notes Top Bar */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-[#e3e6ed] p-6 rounded-3xl shadow-xs">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 p-6 rounded-3xl shadow-xs">
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#3b52c4] bg-[#e4e7fd] px-3 py-1 rounded-full border border-[#d0d8fb] mb-2 inline-block font-bold">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#3b52c4] dark:text-indigo-400 bg-[#e4e7fd] dark:bg-indigo-950/60 px-3 py-1 rounded-full border border-[#d0d8fb] dark:border-indigo-800 mb-2 inline-block font-bold">
                 GENERATED EXAM PACK
               </span>
-              <h2 className="text-2xl font-extrabold text-[#121217]">{notes.examTitle}</h2>
-              <p className="text-[#6b6f82] text-xs mt-0.5 font-medium">{selectedSubject?.name} • {selectedUnits.join(', ')}</p>
+              <h2 className="text-2xl font-extrabold text-[#121217] dark:text-white">{notes.examTitle}</h2>
+              <p className="text-[#6b6f82] dark:text-slate-400 text-xs mt-0.5 font-medium">{selectedSubject?.name} • {selectedUnits.join(', ')}</p>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={handleCopyNotes}
-                className="flex items-center gap-2 bg-white hover:bg-[#edf3fc] text-[#4f75f2] border border-[#d0dcf5] px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-2 bg-white dark:bg-slate-800 hover:bg-[#edf3fc] dark:hover:bg-slate-700 text-[#4f75f2] dark:text-indigo-400 border border-[#d0dcf5] dark:border-slate-750 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
               >
                 {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
                 {copied ? 'Copied to Clipboard' : 'Copy Full Pack'}
               </button>
               <button
                 onClick={handleDownload}
-                className="flex items-center gap-2 bg-[#121217] hover:bg-[#252530] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-2 bg-[#121217] dark:bg-indigo-600 hover:bg-[#252530] dark:hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
               >
                 <Download className="w-4 h-4" /> Export JSON
               </button>
@@ -353,25 +353,25 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
           </div>
 
           {/* Section 1: High Yield Topics */}
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
-            <h3 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+            <h3 className="text-lg font-extrabold text-[#121217] dark:text-white flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-amber-500" /> High-Yield Priority Topics
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {notes.highYieldTopics.map((item, idx) => (
-                <div key={idx} className="bg-[#f8f9fc] border border-[#e3e6ed] p-5 rounded-2xl space-y-3 hover:border-[#4f75f2] transition-all">
+                <div key={idx} className="bg-[#f8f9fc] dark:bg-slate-800/80 border border-[#e3e6ed] dark:border-slate-700 p-5 rounded-2xl space-y-3 hover:border-[#4f75f2] dark:hover:border-indigo-500 transition-all">
                   <div className="flex justify-between items-start gap-2">
-                    <span className="text-sm font-bold text-[#121217]">{item.topic}</span>
-                    <span className="bg-[#fbf5e6] text-[#967018] border border-[#f4e8cc] px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold shrink-0">
+                    <span className="text-sm font-bold text-[#121217] dark:text-white">{item.topic}</span>
+                    <span className="bg-[#fbf5e6] dark:bg-amber-950/60 text-[#967018] dark:text-amber-300 border border-[#f4e8cc] dark:border-amber-800 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold shrink-0">
                       {Math.round(item.probability * 100)}% Prob.
                     </span>
                   </div>
-                  <div className="space-y-1 text-xs text-[#6b6f82]">
-                    <span className="bg-[#edf3fc] text-[#4f75f2] border border-[#d0dcf5] px-2 py-0.5 rounded text-[10px] font-mono font-bold inline-block">
+                  <div className="space-y-1 text-xs text-[#6b6f82] dark:text-slate-400">
+                    <span className="bg-[#edf3fc] dark:bg-indigo-950/60 text-[#4f75f2] dark:text-indigo-400 border border-[#d0dcf5] dark:border-indigo-800 px-2 py-0.5 rounded text-[10px] font-mono font-bold inline-block">
                       {item.markRange}
                     </span>
-                    <p className="text-[#6b6f82] text-xs pt-1 leading-relaxed">{item.rationale}</p>
+                    <p className="text-[#6b6f82] dark:text-slate-400 text-xs pt-1 leading-relaxed">{item.rationale}</p>
                   </div>
                 </div>
               ))}
@@ -379,18 +379,18 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
           </div>
 
           {/* Section 2: 2-Mark Definitions & Formula Sheet */}
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
-            <h3 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
-              <Zap className="w-5 h-5 text-[#4f75f2]" /> 2-Mark Definitions &amp; Invariant Equations
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+            <h3 className="text-lg font-extrabold text-[#121217] dark:text-white flex items-center gap-2">
+              <Zap className="w-5 h-5 text-[#4f75f2] dark:text-indigo-400" /> 2-Mark Definitions &amp; Invariant Equations
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {notes.twoMarkDefinitions.map((def, idx) => (
-                <div key={idx} className="bg-[#f8f9fc] border border-[#e3e6ed] p-5 rounded-2xl space-y-2.5">
-                  <div className="text-sm font-bold text-[#121217]">{def.term}</div>
-                  <p className="text-xs text-[#4f5367] leading-relaxed">{def.definition}</p>
+                <div key={idx} className="bg-[#f8f9fc] dark:bg-slate-800/80 border border-[#e3e6ed] dark:border-slate-700 p-5 rounded-2xl space-y-2.5">
+                  <div className="text-sm font-bold text-[#121217] dark:text-white">{def.term}</div>
+                  <p className="text-xs text-[#4f5367] dark:text-slate-300 leading-relaxed">{def.definition}</p>
                   {def.keyFormula && (
-                    <div className="bg-white text-[#121217] border border-[#e3e6ed] p-2.5 rounded-xl font-mono text-xs mt-2 font-bold">
+                    <div className="bg-white dark:bg-slate-900 text-[#121217] dark:text-cyan-300 border border-[#e3e6ed] dark:border-slate-750 p-2.5 rounded-xl font-mono text-xs mt-2 font-bold select-text">
                       {def.keyFormula}
                     </div>
                   )}
@@ -400,36 +400,36 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
           </div>
 
           {/* Section 3: 5-Mark & 10-Mark Core Concept Answers */}
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
-            <h3 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
-              <FileText className="w-5 h-5 text-[#4f75f2]" /> 5-Mark &amp; 10-Mark Standard Concept Answers
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs">
+            <h3 className="text-lg font-extrabold text-[#121217] dark:text-white flex items-center gap-2">
+              <FileText className="w-5 h-5 text-[#4f75f2] dark:text-indigo-400" /> 5-Mark &amp; 10-Mark Standard Concept Answers
             </h3>
 
             <div className="space-y-6">
               {notes.fiveAndTenMarkNotes.map((note, idx) => (
-                <div key={idx} className="bg-[#f8f9fc] border border-[#e3e6ed] p-6 rounded-2xl space-y-4">
+                <div key={idx} className="bg-[#f8f9fc] dark:bg-slate-800/80 border border-[#e3e6ed] dark:border-slate-700 p-6 rounded-2xl space-y-4">
                   <div className="flex justify-between items-start gap-4">
-                    <h4 className="text-base font-bold text-[#121217] leading-snug">{note.question}</h4>
-                    <span className="bg-[#e4e7fd] text-[#3b52c4] border border-[#d0d8fb] px-3 py-1 rounded-full text-xs font-mono font-bold shrink-0">
+                    <h4 className="text-base font-bold text-[#121217] dark:text-white leading-snug">{note.question}</h4>
+                    <span className="bg-[#e4e7fd] dark:bg-indigo-950/60 text-[#3b52c4] dark:text-indigo-400 border border-[#d0d8fb] dark:border-indigo-800 px-3 py-1 rounded-full text-xs font-mono font-bold shrink-0">
                       {note.marks} Marks
                     </span>
                   </div>
 
-                  <div className="bg-white p-3.5 rounded-xl border border-[#e3e6ed] font-mono text-xs text-[#121217]">
-                    <span className="text-[#6b6f82] block text-[10px] uppercase tracking-wider mb-1 font-sans font-bold">Diagram Architecture</span>
+                  <div className="bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-[#e3e6ed] dark:border-slate-700 font-mono text-xs text-[#121217] dark:text-emerald-300">
+                    <span className="text-[#6b6f82] dark:text-slate-400 block text-[10px] uppercase tracking-wider mb-1 font-sans font-bold">Diagram Architecture</span>
                     {note.diagramOutline}
                   </div>
 
                   <div className="space-y-1.5">
-                    <span className="text-xs font-mono uppercase tracking-wider text-[#6b6f82] font-bold">Key Scoring Points:</span>
-                    <ul className="list-disc list-inside text-xs text-[#4f5367] space-y-1">
+                    <span className="text-xs font-mono uppercase tracking-wider text-[#6b6f82] dark:text-slate-400 font-bold">Key Scoring Points:</span>
+                    <ul className="list-disc list-inside text-xs text-[#4f5367] dark:text-slate-300 space-y-1">
                       {note.keyPoints.map((pt, i) => (
                         <li key={i}>{pt}</li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="text-xs text-[#2d2d34] leading-relaxed bg-white p-4 rounded-xl border border-[#e3e6ed] whitespace-pre-wrap font-sans">
+                  <div className="text-xs text-[#2d2d34] dark:text-slate-200 leading-relaxed bg-white dark:bg-slate-900 p-4 rounded-xl border border-[#e3e6ed] dark:border-slate-700 whitespace-pre-wrap font-sans">
                     {note.modelAnswerSnippet}
                   </div>
                 </div>
@@ -438,14 +438,14 @@ ${notes.crammingSummary.map((s, i) => `${i + 1}. ${s}`).join('\n')}
           </div>
 
           {/* Section 4: Cramming Flash Summary */}
-          <div className="bg-white border border-[#e3e6ed] rounded-3xl p-6 md:p-8 space-y-4 shadow-xs">
-            <h3 className="text-lg font-extrabold text-[#121217] flex items-center gap-2">
-              <Clock className="w-5 h-5 text-emerald-600" /> Last-Night Cramming Flash Points
+          <div className="bg-white dark:bg-slate-900 border border-[#e3e6ed] dark:border-slate-800 rounded-3xl p-6 md:p-8 space-y-4 shadow-xs">
+            <h3 className="text-lg font-extrabold text-[#121217] dark:text-white flex items-center gap-2">
+              <Clock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /> Last-Night Cramming Flash Points
             </h3>
 
-            <div className="space-y-2 bg-[#f8f9fc] p-5 rounded-2xl border border-[#e3e6ed]">
+            <div className="space-y-2 bg-[#f8f9fc] dark:bg-slate-800/80 p-5 rounded-2xl border border-[#e3e6ed] dark:border-slate-700">
               {notes.crammingSummary.map((point, idx) => (
-                <div key={idx} className="flex items-start gap-3 text-xs text-[#121217]">
+                <div key={idx} className="flex items-start gap-3 text-xs text-[#121217] dark:text-slate-100">
                   <span className="w-5 h-5 rounded-full bg-[#4f75f2] text-white flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">
                     {idx + 1}
                   </span>

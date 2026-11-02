@@ -129,7 +129,7 @@ You MUST respond ONLY with a valid JSON object matching this schema:
       const geminiKey = env.GOOGLE_AI_API_KEY || process.env['GEMINI_API_KEY'];
       if (geminiKey) {
         try {
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
           const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

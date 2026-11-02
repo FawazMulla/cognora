@@ -5,6 +5,7 @@ import {
   Copy,
   Download,
   Edit3,
+  ExternalLink,
   Eye,
   Filter,
   Loader2,
@@ -16,6 +17,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { FormattedAnswer } from '../components/FormattedAnswer';
 import { QuickPickSelector } from '../components/QuickPickSelector';
@@ -675,7 +677,7 @@ export default function QuestionBank() {
                     <span className="text-[10px] font-mono font-bold bg-[#edf3fc] dark:bg-indigo-950/60 text-[#4f75f2] dark:text-indigo-400 border border-[#d0dcf5] dark:border-indigo-800 px-2.5 py-0.5 rounded-lg uppercase">
                       {q.unit}
                     </span>
-                    <span className="text-[10px] font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-2.5 py-0.5 rounded-lg">
+                    <span className="text-[10px] font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 px-2.5 py-0.5 rounded-lg">
                       {q.marks} Marks
                     </span>
                     {q.tags.map((tag) => (
@@ -683,10 +685,10 @@ export default function QuestionBank() {
                         key={tag}
                         className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-lg uppercase border ${
                           tag === 'IAE'
-                            ? 'bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800'
+                            ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800'
                             : tag === 'PYQ'
                               ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800'
-                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-750'
                         }`}
                       >
                         {tag}
@@ -719,25 +721,35 @@ export default function QuestionBank() {
                     <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
                   </button>
 
-                  <button
-                    disabled={loadingAnswerId === q.id}
-                    onClick={() => {
-                      void handleGenerateAnswer(q);
-                    }}
-                    className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shadow-xs disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    {loadingAnswerId === q.id ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin text-white" />
-                        <span>Synthesizing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-4 h-4 text-amber-200" />
-                        <span>Draft Topper Answer</span>
-                      </>
-                    )}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/answers?q=${encodeURIComponent(q.questionText)}&marks=${q.marks}`}
+                      className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-400 transition-colors shadow-xs"
+                      title="Open in Full Model Answers Studio"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </Link>
+
+                    <button
+                      disabled={loadingAnswerId === q.id}
+                      onClick={() => {
+                        void handleGenerateAnswer(q);
+                      }}
+                      className="bg-[#4f75f2] hover:bg-[#385dd8] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 shadow-xs disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      {loadingAnswerId === q.id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-white" />
+                          <span>Synthesizing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4 text-amber-200" />
+                          <span>Draft Topper Answer</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             );

@@ -50,16 +50,16 @@ export const QuickPickSelector: React.FC<QuickPickSelectorProps> = ({
   };
 
   return (
-    <div className="space-y-3 bg-gradient-to-r from-blue-50/70 via-indigo-50/50 to-purple-50/50 dark:from-slate-900/90 dark:via-indigo-950/40 dark:to-slate-900/90 p-4 sm:p-5 rounded-2xl border border-blue-100 dark:border-slate-800 shadow-xs transition-colors">
+    <div className="space-y-3 bg-white dark:bg-slate-900 p-4 sm:p-5 rounded-3xl border border-[#e3e6ed] dark:border-slate-800 shadow-xs transition-colors">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm shrink-0">
+          <div className="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
             <Zap className="w-4 h-4 fill-current text-white" />
           </div>
           <div>
             <h4 className="text-xs font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-1.5">
               Instant Quick Picks
-              <span className="bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-indigo-200/60 dark:border-indigo-800">
+              <span className="bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
                 Hybrid Pipeline
               </span>
             </h4>
@@ -80,13 +80,13 @@ export const QuickPickSelector: React.FC<QuickPickSelectorProps> = ({
               onClick={() => onSelect(item)}
               className={`shrink-0 text-left w-72 sm:w-80 p-3.5 rounded-2xl border transition-all cursor-pointer ${
                 isSelected
-                  ? 'bg-white dark:bg-slate-800 border-indigo-500 dark:border-indigo-400 ring-2 ring-indigo-500/25 shadow-sm transform -translate-y-0.5'
-                  : 'bg-white/80 dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-800 border-slate-200/80 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 shadow-2xs'
+                  ? 'bg-slate-50 dark:bg-slate-800 border-indigo-500 dark:border-indigo-400 ring-2 ring-indigo-500/25 shadow-sm transform -translate-y-0.5'
+                  : 'bg-[#f8f9fc] dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 border-slate-200 dark:border-slate-700/80 hover:border-indigo-300 dark:hover:border-indigo-600 shadow-2xs'
               }`}
             >
               <div className="flex items-center justify-between gap-2 mb-2">
                 {getCategoryBadge(item.category)}
-                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 font-bold">
+                <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-bold">
                   {item.subjectCode} • {item.marks}M
                 </span>
               </div>

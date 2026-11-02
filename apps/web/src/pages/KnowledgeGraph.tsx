@@ -258,51 +258,87 @@ export default function KnowledgeGraph() {
                   );
                 })}
 
-                {/* Nodes */}
+                {/* Nodes rendered as modern interactive academic concept capsules */}
                 {nodes.map(node => {
                   const colorConfig = isDark ? (DARK_NODE_COLORS[node.type] || DARK_NODE_COLORS.default) : (NODE_COLORS[node.type] || NODE_COLORS.default);
                   const ringColor = MASTERY_RING[node.mastery] || MASTERY_RING.none;
                   const isSelected = selectedNode?.id === node.id;
+                  const cardWidth = 146;
+                  const cardHeight = 44;
+                  const cardX = node.x - cardWidth / 2;
+                  const cardY = node.y - cardHeight / 2;
+
                   return (
                     <g
                       key={node.id}
                       onClick={() => setSelectedNode(isSelected ? null : node)}
-                      className="cursor-pointer transition-transform hover:scale-105"
-                      style={{ filter: isSelected ? 'drop-shadow(0 6px 16px rgba(79,117,242,0.25))' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.04))' }}
+                      className="cursor-pointer transition-all duration-200"
+                      style={{
+                        transformOrigin: `${node.x}px ${node.y}px`,
+                        filter: isSelected
+                          ? 'drop-shadow(0 8px 24px rgba(79,117,242,0.45))'
+                          : isDark
+                            ? 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))'
+                            : 'drop-shadow(0 2px 6px rgba(0,0,0,0.06))'
+                      }}
                     >
-                      {/* Outer Mastery Halo */}
-                      <circle cx={node.x} cy={node.y} r="32" fill={ringColor} opacity={isDark ? 0.35 : 0.18} />
-                      {/* Main Node Circle */}
-                      <circle
-                        cx={node.x}
-                        cy={node.y}
-                        r="24"
+                      {/* Selection Outline */}
+                      {isSelected && (
+                        <rect
+                          x={cardX - 4}
+                          y={cardY - 4}
+                          width={cardWidth + 8}
+                          height={cardHeight + 8}
+                          rx={18}
+                          fill="none"
+                          stroke="#4f75f2"
+                          strokeWidth="2.5"
+                          strokeDasharray="4 2"
+                        />
+                      )}
+
+                      {/* Main Node Capsule */}
+                      <rect
+                        x={cardX}
+                        y={cardY}
+                        width={cardWidth}
+                        height={cardHeight}
+                        rx={14}
                         fill={colorConfig.fill}
                         stroke={isSelected ? '#4f75f2' : colorConfig.stroke}
-                        strokeWidth={isSelected ? 3 : 2}
+                        strokeWidth={isSelected ? 2.5 : 1.5}
                       />
+
+                      {/* Mastery Indicator Dot */}
+                      <circle
+                        cx={cardX + 16}
+                        cy={node.y}
+                        r="5"
+                        fill={ringColor}
+                      />
+
+                      {/* Node Label */}
                       <text
-                        x={node.x}
-                        y={node.y + 1}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        fontSize="9"
-                        fill={colorConfig.text}
+                        x={cardX + 28}
+                        y={node.y - 3}
+                        fontSize="10"
+                        fill={isDark ? '#f8fafc' : '#121217'}
                         fontWeight="800"
                         fontFamily="sans-serif"
                       >
-                        {node.label.slice(0, 10)}
+                        {node.label.length > 16 ? node.label.slice(0, 15) + '…' : node.label}
                       </text>
+
+                      {/* Node Type Subtitle */}
                       <text
-                        x={node.x}
-                        y={node.y + 44}
-                        textAnchor="middle"
-                        fontSize="10"
-                        fill={isDark ? "#f8fafc" : "#121217"}
-                        fontWeight="700"
-                        fontFamily="sans-serif"
+                        x={cardX + 28}
+                        y={node.y + 11}
+                        fontSize="8"
+                        fontFamily="monospace"
+                        fontWeight="600"
+                        fill={isDark ? '#94a3b8' : '#6b6f82'}
                       >
-                        {node.label}
+                        {node.type.toUpperCase()}
                       </text>
                     </g>
                   );

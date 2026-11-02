@@ -1,5 +1,6 @@
 import { AlertCircle, Check, Cloud, Copy, Loader2, RefreshCw, Sparkles, Zap, BookOpen, Download, FileText } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import { FormattedAnswer } from '../components/FormattedAnswer';
 import { QuickPickSelector } from '../components/QuickPickSelector';
@@ -34,6 +35,21 @@ export default function StructuredAnswer() {
     'qp-qa-activation-functions',
   );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+
+  // Listen to deep-linked query parameters from Atlas / PYQ / Question Bank
+  useEffect(() => {
+    const qParam = searchParams.get('q');
+    const marksParam = searchParams.get('marks');
+    if (qParam && qParam.trim()) {
+      const q = qParam.trim();
+      const m = marksParam ? parseInt(marksParam, 10) || 10 : 10;
+      setQuestionText(q);
+      setMarkValue(m);
+      setActiveQuickPickId(undefined);
+      void triggerGeneration(q, m, false);
+    }
+  }, [searchParams]);
 
   // Track navigation position
   useEffect(() => {
