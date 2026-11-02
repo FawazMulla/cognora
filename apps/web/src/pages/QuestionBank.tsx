@@ -448,12 +448,11 @@ export default function QuestionBank() {
           subjectId: selectedSubjectId,
           topic: q.unit,
         },
-        minDelayMs: 900,
-        maxDelayMs: 1800,
+        marks: q.marks,
       });
 
       if (res && res.data) {
-        const ans = res.data.answer || res.matchedItem?.answerMarkdown || '';
+        const ans = (res.data.answer as string) || res.matchedItem?.answerMarkdown || '';
         setActiveAnswer({
           question: q.questionText,
           marks: q.marks,

@@ -147,12 +147,11 @@ export default function PYQIntelligence() {
           topic: q.unit,
         },
         forceLiveOci,
-        minDelayMs: 900,
-        maxDelayMs: 1800,
+        marks: q.marks,
       });
 
       if (res && res.data) {
-        const answerText = res.data.answer || res.matchedItem?.answerMarkdown || '';
+        const answerText = (res.data.answer as string) || res.matchedItem?.answerMarkdown || '';
         setActiveAnswer({ question: q.questionText, answer: answerText });
         setResponseSource(res.source);
         setLoadingAnswers((prev) => ({ ...prev, [q.id]: false }));

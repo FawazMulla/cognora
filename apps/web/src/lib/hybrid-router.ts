@@ -6,11 +6,11 @@
  */
 
 import { fetchApi } from './api';
-import { QUICK_PICK_DATASET } from './quick-picks-data';
+import { QUICK_PICK_DATASET, getAnswerForMarks } from './quick-picks-data';
 import type { QuickPickItem } from './quick-picks-data';
 
 export interface HybridExecutionOptions {
-  category?: 'practical' | 'qa' | 'pyq' | 'smart_module';
+  category?: 'practical' | 'qa' | 'pyq' | 'smart_module' | 'qb';
   endpoint?: string;
   payload?: Record<string, unknown>;
   onProgress?: (progress: number, stage: string) => void;
@@ -19,6 +19,7 @@ export interface HybridExecutionOptions {
   minDelayMs?: number;
   maxDelayMs?: number;
   forceLiveOci?: boolean;
+  marks?: number;
 }
 
 export interface HybridResponseResult {
@@ -44,7 +45,7 @@ function normalizeQuery(str: string): string {
  */
 export function isQuickPickHardcoded(
   query: string,
-  category?: 'practical' | 'qa' | 'pyq' | 'smart_module',
+  category?: 'practical' | 'qa' | 'pyq' | 'smart_module' | 'qb',
 ): QuickPickItem | null {
   if (!query || !query.trim()) return null;
 
@@ -55,8 +56,14 @@ export function isQuickPickHardcoded(
   let highestScore = 0;
 
   for (const item of QUICK_PICK_DATASET) {
-    if (category && item.category !== category) {
-      continue;
+    if (category) {
+      if (category === 'qb') {
+        if (item.category !== 'qa' && item.category !== 'pyq' && item.category !== 'smart_module') {
+          continue;
+        }
+      } else if (item.category !== category) {
+        continue;
+      }
     }
 
     // 1. Direct ID match
@@ -145,21 +152,50 @@ export async function callOciAiBackend(
 }
 
 /**
- * Executes a simulated realistic AI generation streaming delay for pre-computed responses.
+ * Calculates realistic AI generation latency calibrated by examination mark weightage:
+ * - 2 Marks: ~3.5s - 4.5s (fastest)
+ * - 5 Marks: ~6.5s - 7.5s (moderate)
+ * - 10 Marks: ~9.5s - 11.0s (around 10 seconds, slowest)
+ * - 15 Marks: ~11.5s - 13.0s (deep synthesis)
+ */
+function getCalibratedTargetDelay(marks: number, options: HybridExecutionOptions): number {
+  if (options.minDelayMs !== undefined && options.maxDelayMs !== undefined) {
+    return Math.floor(Math.random() * (options.maxDelayMs - options.minDelayMs + 1)) + options.minDelayMs;
+  }
+
+  if (marks <= 2) {
+    // 2 Marks: ~3.6s to 4.4s (fastest)
+    return Math.floor(Math.random() * 800) + 3600;
+  } else if (marks <= 5) {
+    // 5 Marks: ~6.5s to 7.6s (moderate)
+    return Math.floor(Math.random() * 1100) + 6500;
+  } else if (marks <= 10) {
+    // 10 Marks: Around 10 seconds (~9.6s to 11.2s, slowest)
+    return Math.floor(Math.random() * 1600) + 9600;
+  } else {
+    // 15 Marks: Extended analysis (~11.5s to 13.2s)
+    return Math.floor(Math.random() * 1700) + 11500;
+  }
+}
+
+/**
+ * Executes a simulated realistic AI generation streaming delay for pre-computed responses,
+ * strictly calibrated by mark weightage.
  */
 async function simulateAiGeneration(
   content: string,
   options: HybridExecutionOptions,
+  marks: number = 10,
 ): Promise<void> {
-  const minDelay = options.minDelayMs ?? 800;
-  const maxDelay = options.maxDelayMs ?? 2000;
-  const targetDelay = Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
+  const targetDelay = getCalibratedTargetDelay(marks, options);
 
   const stages = [
-    { pct: 15, msg: 'Connecting to OCI Cohere Command A model...' },
-    { pct: 40, msg: 'Analyzing syllabus criteria and question invariants...' },
-    { pct: 70, msg: 'Synthesizing formal definitions, equations, and diagrams...' },
-    { pct: 90, msg: 'Calibrating university topper mark scheme...' },
+    { pct: 12, msg: `Connecting to OCI Cohere Command A (${marks}M Pipeline)...` },
+    { pct: 28, msg: 'Retrieving Mumbai University syllabus criteria & exam rubrics...' },
+    { pct: 48, msg: `Synthesizing ${marks}-mark theoretical concepts & formal definitions...` },
+    { pct: 68, msg: 'Generating technical derivations, LaTeX equations & ASCII schematics...' },
+    { pct: 86, msg: 'Verifying Topper answer completeness against university scoring scheme...' },
+    { pct: 96, msg: 'Finalizing response formatting & rendering equations...' },
     { pct: 100, msg: 'Complete!' },
   ];
 
@@ -190,7 +226,7 @@ async function simulateAiGeneration(
 
 /**
  * Master Hybrid Pipeline Execution Handler.
- * Transparently decides whether to serve from the pre-mapped store (with realistic latency)
+ * Transparently decides whether to serve from the pre-mapped store (with realistic mark-calibrated latency)
  * or fall back to the live OCI GenAI backend.
  */
 export async function executeHybridQuery(
@@ -199,16 +235,21 @@ export async function executeHybridQuery(
 ): Promise<HybridResponseResult> {
   const startTime = Date.now();
   const matchedItem = !options.forceLiveOci ? isQuickPickHardcoded(query, options.category) : null;
+  const markValue =
+    (options.payload?.markValue as number) ||
+    options.marks ||
+    matchedItem?.marks ||
+    10;
 
   // ── BRANCH 1: Pre-mapped Quick Pick Response ──────────────────────────────
   if (matchedItem) {
-    // Deliver realistic simulated generation experience
+    // Deliver realistic simulated generation experience calibrated by mark weightage
     const outputContent =
       options.category === 'practical' && matchedItem.practicalData
         ? matchedItem.practicalData.theory
-        : matchedItem.answerMarkdown;
+        : getAnswerForMarks(matchedItem, markValue);
 
-    await simulateAiGeneration(outputContent, options);
+    await simulateAiGeneration(outputContent, { ...options, marks: markValue }, markValue);
 
     return {
       source: 'quick_pick_cache',
@@ -216,9 +257,9 @@ export async function executeHybridQuery(
         options.category === 'practical' && matchedItem.practicalData
           ? (matchedItem.practicalData as unknown as Record<string, unknown>)
           : {
-              answer: matchedItem.answerMarkdown,
-              wordCount: matchedItem.answerMarkdown.split(/\s+/).length,
-              model: 'cohere.command-a-03-2025 (Cached Topper Standard)',
+              answer: outputContent,
+              wordCount: outputContent.split(/\s+/).length,
+              model: `cohere.command-a-03-2025 (${markValue}M Topper Standard)`,
             },
       latencyMs: Date.now() - startTime,
       matchedItem,

@@ -78,18 +78,17 @@ export default function StructuredAnswer() {
           format: formatVariant,
         },
         forceLiveOci,
-        minDelayMs: 900,
-        maxDelayMs: 1900,
+        marks,
         onProgress: (pct, stage) => {
           setProgress(pct);
           setGenerationStage(stage);
         },
       });
 
-      const answerText = result.data?.answer || result.matchedItem?.answerMarkdown || '';
+      const answerText = (result.data?.answer as string) || result.matchedItem?.answerMarkdown || '';
       setGeneratedAnswer(answerText);
       setDisplayText(answerText);
-      setWordCount(result.data?.wordCount || answerText.split(/\\s+/).length);
+      setWordCount((result.data?.wordCount as number) || answerText.split(/\s+/).filter(Boolean).length);
       setResponseSource(result.source);
       setResponseLatency(result.latencyMs);
     } catch (err: unknown) {
@@ -213,7 +212,12 @@ export default function StructuredAnswer() {
                   <button
                     key={m}
                     type="button"
-                    onClick={() => setMarkValue(m)}
+                    onClick={() => {
+                      setMarkValue(m);
+                      if (questionText.trim()) {
+                        void triggerGeneration(questionText, m, false);
+                      }
+                    }}
                     className={`py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                       markValue === m
                         ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
@@ -423,7 +427,7 @@ export default function StructuredAnswer() {
           </div>
 
           {/* Rendered Answer Container */}
-          <div className="p-6 md:p-8 bg-[#f8f9fc] dark:bg-slate-800/40 rounded-2xl border border-[#e3e6ed] dark:border-slate-800 select-text">
+          <div className="p-6 md:p-8 bg-[#f8f9fc] dark:bg-slate-900/70 text-slate-900 dark:text-slate-100 rounded-2xl border border-[#e3e6ed] dark:border-slate-800 select-text">
             <FormattedAnswer content={displayText || generatedAnswer} />
           </div>
         </div>
