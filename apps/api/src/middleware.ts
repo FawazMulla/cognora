@@ -2,6 +2,33 @@ import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// In-memory token & user ID cache for high-throughput concurrency
+interface CachedAuthSession {
+  authId: string;
+  userId: string;
+  expiresAt: number;
+}
+
+const authSessionCache = new Map<string, CachedAuthSession>();
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds fast-path cache
+
+let cachedSupabaseAdmin: ReturnType<typeof createClient> | null = null;
+function getSupabaseAdmin() {
+  if (!cachedSupabaseAdmin) {
+    cachedSupabaseAdmin = createClient(
+      process.env['SUPABASE_URL'] || '',
+      process.env['SUPABASE_SERVICE_ROLE_KEY'] || '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      },
+    );
+  }
+  return cachedSupabaseAdmin;
+}
+
 function addCorsHeaders(request: NextRequest, response: NextResponse) {
   const origin = request.headers.get('origin') || '*';
   response.headers.set('Access-Control-Allow-Origin', origin);
@@ -15,6 +42,7 @@ function addCorsHeaders(request: NextRequest, response: NextResponse) {
 }
 
 export async function middleware(request: NextRequest) {
+  const startTime = Date.now();
   const { pathname } = request.nextUrl;
 
   // 1. Handle CORS preflight options requests
@@ -24,11 +52,19 @@ export async function middleware(request: NextRequest) {
   }
 
   const wrapResponse = (response: NextResponse) => {
-    return addCorsHeaders(request, response);
+    addCorsHeaders(request, response);
+    response.headers.set('Server-Timing', `total;dur=${Date.now() - startTime}`);
+    return response;
   };
 
   // Skip auth routes and public routes
-  if (pathname.startsWith('/api/auth') || pathname === '/api/health' || pathname.startsWith('/api/atlas/subjects') || pathname.startsWith('/api/atlas/topic') || pathname.startsWith('/api/intelligence')) {
+  if (
+    pathname.startsWith('/api/auth') ||
+    pathname === '/api/health' ||
+    pathname.startsWith('/api/atlas/subjects') ||
+    pathname.startsWith('/api/atlas/topic') ||
+    pathname.startsWith('/api/intelligence')
+  ) {
     return wrapResponse(NextResponse.next());
   }
 
@@ -53,6 +89,15 @@ export async function middleware(request: NextRequest) {
     return wrapResponse(
       NextResponse.json({ error: 'Unauthorized: Missing token' }, { status: 401 }),
     );
+  }
+
+  // Fast-path: check in-memory cache for concurrent requests
+  const cached = authSessionCache.get(accessToken);
+  if (cached && cached.expiresAt > Date.now()) {
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-user-id', cached.userId);
+    requestHeaders.set('x-auth-id', cached.authId);
+    return wrapResponse(NextResponse.next({ request: { headers: requestHeaders } }));
   }
 
   // Use Supabase client to validate token
@@ -82,17 +127,8 @@ export async function middleware(request: NextRequest) {
 
   const authId = user.id;
 
-  // Fetch the public.users id mapping using the admin client to bypass RLS
-  const supabaseAdmin = createClient(
-    process.env['SUPABASE_URL'] || '',
-    process.env['SUPABASE_SERVICE_ROLE_KEY'] || '',
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    },
-  );
+  // Fetch the public.users id mapping using the singleton admin client
+  const supabaseAdmin = getSupabaseAdmin();
 
   const { data: userData, error: dbError } = await supabaseAdmin
     .from('users')
@@ -112,7 +148,24 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  const userId = userData.id;
+  const userId = (userData as { id: string }).id;
+
+  // Cache resolved credentials to avoid duplicate queries on subsequent/concurrent calls
+  authSessionCache.set(accessToken, {
+    authId,
+    userId,
+    expiresAt: Date.now() + CACHE_TTL_MS,
+  });
+
+  // Periodically clean up expired cache entries (keep under 500 items)
+  if (authSessionCache.size > 500) {
+    const now = Date.now();
+    for (const [key, value] of authSessionCache.entries()) {
+      if (value.expiresAt <= now) {
+        authSessionCache.delete(key);
+      }
+    }
+  }
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-user-id', userId);

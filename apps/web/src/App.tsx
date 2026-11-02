@@ -6,26 +6,36 @@ import { usePreferences } from './context/PreferencesContext';
 import { CommandPalette } from './components/CommandPalette';
 import Sidebar from './components/Sidebar';
 
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import SubjectDetail from './pages/SubjectDetail';
-import StudySession from './pages/StudySession';
-import PYQIntelligence from './pages/PYQIntelligence';
-import PracticalGenerator from './pages/PracticalGenerator';
-import VivaEngine from './pages/VivaEngine';
-import AssignmentEngine from './pages/AssignmentEngine';
-import StudentTwin from './pages/StudentTwin';
-import SmartRevision from './pages/SmartRevision';
-import KnowledgeGraph from './pages/KnowledgeGraph';
-import Onboarding from './pages/Onboarding';
-import SyllabusManager from './pages/SyllabusManager';
-import ExamNotes from './pages/ExamNotes';
-import QuestionBank from './pages/QuestionBank';
-import StructuredAnswer from './pages/StructuredAnswer';
-import AnswerOptimizer from './pages/AnswerOptimizer';
-import Bookmarks from './pages/Bookmarks';
-import VisualLearningAtlas from './pages/VisualLearningAtlas';
-import AcademicIntelligence from './pages/AcademicIntelligence';
+// Route-level code-splitting for optimal TTI & bundle size
+const Login = React.lazy(() => import('./pages/Login'));
+const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const SubjectDetail = React.lazy(() => import('./pages/SubjectDetail'));
+const StudySession = React.lazy(() => import('./pages/StudySession'));
+const PYQIntelligence = React.lazy(() => import('./pages/PYQIntelligence'));
+const PracticalGenerator = React.lazy(() => import('./pages/PracticalGenerator'));
+const VivaEngine = React.lazy(() => import('./pages/VivaEngine'));
+const AssignmentEngine = React.lazy(() => import('./pages/AssignmentEngine'));
+const StudentTwin = React.lazy(() => import('./pages/StudentTwin'));
+const SmartRevision = React.lazy(() => import('./pages/SmartRevision'));
+const KnowledgeGraph = React.lazy(() => import('./pages/KnowledgeGraph'));
+const Onboarding = React.lazy(() => import('./pages/Onboarding'));
+const SyllabusManager = React.lazy(() => import('./pages/SyllabusManager'));
+const ExamNotes = React.lazy(() => import('./pages/ExamNotes'));
+const QuestionBank = React.lazy(() => import('./pages/QuestionBank'));
+const StructuredAnswer = React.lazy(() => import('./pages/StructuredAnswer'));
+const AnswerOptimizer = React.lazy(() => import('./pages/AnswerOptimizer'));
+const Bookmarks = React.lazy(() => import('./pages/Bookmarks'));
+const VisualLearningAtlas = React.lazy(() => import('./pages/VisualLearningAtlas'));
+const AcademicIntelligence = React.lazy(() => import('./pages/AcademicIntelligence'));
+
+function PageLoader() {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3 text-slate-500 dark:text-slate-400 font-mono text-xs uppercase tracking-wider animate-in fade-in duration-150">
+      <Loader2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400 animate-spin" />
+      <span>Loading View...</span>
+    </div>
+  );
+}
 
 function ProtectedRoute({ children, requireProfile = true }: { children: React.ReactNode; requireProfile?: boolean }) {
   const { session, loading, hasProfile } = useAuth();
@@ -311,7 +321,8 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
 function App() {
   return (
-    <Routes>
+    <React.Suspense fallback={<PageLoader />}>
+      <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/onboarding" element={<ProtectedRoute requireProfile={false}><Onboarding /></ProtectedRoute>} />
       <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
@@ -336,6 +347,7 @@ function App() {
       <Route path="/revision" element={<ProtectedRoute><AppLayout><SmartRevision /></AppLayout></ProtectedRoute>} />
       <Route path="/knowledge" element={<ProtectedRoute><AppLayout><KnowledgeGraph /></AppLayout></ProtectedRoute>} />
     </Routes>
+    </React.Suspense>
   );
 }
 

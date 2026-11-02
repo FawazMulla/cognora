@@ -3,6 +3,10 @@ import { ATLAS_SUBJECTS, getSubjectByCode } from "../../../../lib/atlasCatalogue
 
 export const dynamic = "force-dynamic";
 
+const CACHE_HEADERS = {
+  "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+};
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -13,7 +17,7 @@ export async function GET(request: Request) {
       if (!subject) {
         return NextResponse.json({ error: "Subject not found in Visual Learning Atlas" }, { status: 404 });
       }
-      return NextResponse.json({ subject }, { status: 200 });
+      return NextResponse.json({ subject }, { status: 200, headers: CACHE_HEADERS });
     }
 
     // Return all subjects summary
@@ -44,7 +48,7 @@ export async function GET(request: Request) {
       subjects: summaries,
       totalCatalogVideos: 58,
       source: "University of Mumbai Choice Based Credit System (CBCS)"
-    }, { status: 200 });
+    }, { status: 200, headers: CACHE_HEADERS });
   } catch (error) {
     console.error("Atlas subjects GET error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
